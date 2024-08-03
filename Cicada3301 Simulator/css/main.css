@@ -1,0 +1,54 @@
+@font-face {
+	font-family: 'ASCII Pigpen';
+	src: local('ASCII Pigpen') local('ASCIIPigpen-Regular') url("fonts/asciipigpen.ttf") format('truetype');
+}
+
+body{
+	background-color: #2B2C2E;
+}
+
+.sqlInject {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+.header {
+	font-family: "Futura Light";
+	text-align: center;
+	color: #D5D4D2;
+	font-size: 24px;
+}
+
+
+.monitor {
+	text-align: center;
+	border-radius: 25px;
+	padding: 80px;
+	margin: auto;
+	margin-top: 10px;
+	overflow-wrap: break-word;
+	background-color: #A3A2A1;
+}
+
+.redditPost {
+	text-align: center;
+	border-radius: 25px;
+	padding: 80px;
+    width: 800px;
+	margin: auto;
+	margin-top: 10px;
+	overflow-wrap: break-word;
+	background-color: #FFFFFF;
+}
+
+.incorrect {
+	color: red;
+
+}
+
+#webApp {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
