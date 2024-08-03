@@ -1,6 +1,6 @@
 @font-face {
-	font-family: 'ASCII Pigpen';
-	src: local('ASCII Pigpen') local('ASCIIPigpen-Regular') url("fonts/asciipigpen.ttf") format('truetype');
+	font-family: 'ASCIIPigpen-Regular';
+	src: url("fonts/asciipigpen.ttf") format('truetype');
 }
 
 body{

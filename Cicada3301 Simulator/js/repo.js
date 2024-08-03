@@ -386,7 +386,7 @@ function toolTips()
 		temp += `</tr><tr class="sqlInject">`
 		for(var i = 0; i < ASCII.length/4; i++)
 		{
-			temp += `<td class="sqlInject" style="font-family: ASCII Pigpen">`+ASCII[i]+`</td>`;
+			temp += `<td class="sqlInject" style="font-family: ASCIIPigpen-Regular">`+ASCII[i]+`</td>`;
 		}
 		temp += `</tr><tr class="sqlInject">`
 		for(var i = Math.floor(ASCII.length/4+1); i < ASCII.length/2; i++)
@@ -396,7 +396,7 @@ function toolTips()
 		temp += `</tr><tr class="sqlInject">`
 		for(var i = Math.floor(ASCII.length/4+1); i < ASCII.length/2; i++)
 		{
-			temp += `<td class="sqlInject" style="font-family: ASCII Pigpen">`+ASCII[i]+`</td>`;
+			temp += `<td class="sqlInject" style="font-family: ASCIIPigpen-Regular">`+ASCII[i]+`</td>`;
 		}
 		temp += `</tr><tr class="sqlInject">`
 		for(var i = ASCII.length/2; i < ASCII.length/4*3; i++)
@@ -406,7 +406,7 @@ function toolTips()
 		temp += `</tr><tr class="sqlInject">`
 		for(var i = ASCII.length/2; i < ASCII.length/4*3; i++)
 		{
-			temp += `<td class="sqlInject" style="font-family: ASCII Pigpen">`+ASCII[i]+`</td>`;
+			temp += `<td class="sqlInject" style="font-family: ASCIIPigpen-Regular">`+ASCII[i]+`</td>`;
 		}
 		temp += `</tr><tr class="sqlInject">`
 		for(var i = Math.floor(ASCII.length/4*3+1); i < ASCII.length; i++)
@@ -416,7 +416,7 @@ function toolTips()
 		temp += `</tr><tr class="sqlInject">`
 		for(var i = Math.floor(ASCII.length/4*3+1); i < ASCII.length; i++)
 		{
-			temp += `<td class="sqlInject" style="font-family: ASCII Pigpen">`+ASCII[i]+`</td>`;
+			temp += `<td class="sqlInject" style="font-family: ASCIIPigpen-Regular">`+ASCII[i]+`</td>`;
 		}
 		temp += `</tr></tbody></table>`
 		
@@ -1254,7 +1254,7 @@ function generatePigpenMessage(ruleseed)
 			message = generateCaesarReturn(ruleseed);
 			break;
 	}
-	ctx.font = '24px ASCII Pigpen';
+	ctx.font = '24px ASCIIPigpen-Regular';
     ctx.fillText(message, (x0+x1)/(40), ((y0+y1)/4));
 	console.log(ctx.font);
 }
