@@ -1,25 +1,373 @@
 <!DOCTYPE html>
-<html>
-    <head>
-		<link rel="icon" href="img/favicon.png">
-	    <link rel="stylesheet" type="text/css" href="css/main.css">
-		<script src="js/repo.js"></script>
-		<script src="js/wordlist.js"></script>
-		<script src="js/jquery.min.js"></script>
-		<script src="js/jquery.3.7.0.min.js"></script>
-		<script src="js/qrcode.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/@tonejs/midi"></script>
-		<meta charset="utf-8" />
-	    <title>Cicada3301 Simulator</title>
-		<style>
-        @font-face {
-            font-family: 'ASCIIPigpen';
-            src: url('fonts/ascii-pigpen.ttf') format('truetype');
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masyu Puzzle Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .puzzle-container {
+            margin: 20px 0;
+        }
+        .puzzle {
+            display: grid;
+            grid-template-columns: repeat(5, 30px);
+            gap: 1px;
+            margin-top: 10px;
+        }
+        .cell {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            border: 1px solid #000;
+        }
+        .black {
+            background-color: #000;
+            color: #fff;
+        }
+        .white {
+            background-color: #fff;
+            color: #000;
+        }
+        .path {
+            background-color: #d0d0d0;
         }
     </style>
-	</head>
-	<body>
-	    <p class="header" font-family="ASCIIPigpen">Cicada3301 Simulator</p>
-	    <div class="monitor", height="400px"></div>
-	</body>
+</head>
+<body>
+    <h1>Masyu Puzzle Generator</h1>
+    <form id="puzzleForm">
+        <label for="message">Enter your message:</label>
+        <input type="text" id="message" name="message" required>
+        <button type="submit">Generate Puzzles</button>
+    </form>
+    <div id="puzzles"></div>
+
+    <script>
+        document.getElementById('puzzleForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const message = document.getElementById('message').value.toUpperCase();
+            generatePuzzles(message);
+        });
+
+        function generatePuzzles(message) {
+            const puzzlesContainer = document.getElementById('puzzles');
+            puzzlesContainer.innerHTML = '';
+
+            message.split('').forEach(char => {
+                const puzzleDiv = document.createElement('div');
+                puzzleDiv.className = 'puzzle-container';
+                puzzleDiv.innerHTML = `<h3>Character: ${char}</h3>`;
+                
+                const puzzleGrid = document.createElement('div');
+                puzzleGrid.className = 'puzzle';
+                puzzleDiv.appendChild(puzzleGrid);
+
+                const grid = createMasyuGrid(char);
+                grid.forEach((cell) => {
+                    const div = document.createElement('div');
+                    div.className = 'cell ' + cell.type;
+                    if (cell.path) div.classList.add('path');
+                    div.textContent = cell.char;
+                    puzzleGrid.appendChild(div);
+                });
+
+                puzzlesContainer.appendChild(puzzleDiv);
+            });
+        }
+
+        function createMasyuGrid(char) {
+            // Define grid patterns for each character (basic Masyu example)
+            const patterns = {
+                'A': [
+                    '  0 ',
+                    '0  0',
+                    '0000',
+                    '0  0',
+                    '0  0'
+                ],
+                'B': [
+                    '000 ',
+                    '0  0',
+                    '000 ',
+                    '0  0',
+                    '000 '
+                ],
+                'C': [
+                    ' 000',
+                    '0   ',
+                    '0   ',
+                    '0   ',
+                    ' 000'
+                ],
+                'D': [
+                    '000 ',
+                    '0  0',
+                    '0  0',
+                    '0  0',
+                    '000 '
+                ],
+                'E': [
+                    '0000',
+                    '0   ',
+                    '000 ',
+                    '0   ',
+                    '0000'
+                ],
+                'F': [
+                    '0000',
+                    '0   ',
+                    '000 ',
+                    '0   ',
+                    '0   '
+                ],
+                'G': [
+                    ' 000',
+                    '0   ',
+                    '0 00',
+                    '0  0',
+                    ' 000'
+                ],
+                'H': [
+                    '0  0',
+                    '0  0',
+                    '0000',
+                    '0  0',
+                    '0  0'
+                ],
+                'I': [
+                    ' 000',
+                    '  0 ',
+                    '  0 ',
+                    '  0 ',
+                    ' 000'
+                ],
+                'J': [
+                    '  00',
+                    '   0 ',
+                    '   0 ',
+                    '0  0 ',
+                    ' 00  '
+                ],
+                'K': [
+                    '0  0',
+                    '0 0 ',
+                    '00  ',
+                    '0 0 ',
+                    '0  0'
+                ],
+                'L': [
+                    '0   ',
+                    '0   ',
+                    '0   ',
+                    '0   ',
+                    '0000'
+                ],
+                'M': [
+                    '0   0',
+                    '00 00',
+                    '0 0 0',
+                    '0 0 0',
+                    '0   0'
+                ],
+                'N': [
+                    '0   0',
+                    '00  0',
+                    '0 0 0',
+                    '0  00',
+                    '0   0'
+                ],
+                'O': [
+                    ' 000',
+                    '0   0',
+                    '0   0',
+                    '0   0',
+                    ' 000'
+                ],
+                'P': [
+                    '0000',
+                    '0  0',
+                    '0000',
+                    '0   ',
+                    '0   '
+                ],
+                'Q': [
+                    ' 000',
+                    '0   0',
+                    '0   0',
+                    '0 0 0',
+                    ' 0000'
+                ],
+                'R': [
+                    '0000',
+                    '0  0',
+                    '0000',
+                    '0  0',
+                    '0   0'
+                ],
+                'S': [
+                    ' 000',
+                    '0   ',
+                    ' 000',
+                    '   0',
+                    ' 000'
+                ],
+                'T': [
+                    '0000',
+                    '  0 ',
+                    '  0 ',
+                    '  0 ',
+                    '  0 '
+                ],
+                'U': [
+                    '0   0',
+                    '0   0',
+                    '0   0',
+                    '0   0',
+                    ' 000 '
+                ],
+                'V': [
+                    '0   0',
+                    '0   0',
+                    '0   0',
+                    ' 0 0 ',
+                    '  0  '
+                ],
+                'W': [
+                    '0   0',
+                    '0   0',
+                    '0 0 0',
+                    '0 0 0',
+                    ' 0 0 '
+                ],
+                'X': [
+                    '0   0',
+                    ' 0 0 ',
+                    ' 000 ',
+                    ' 0 0 ',
+                    '0   0'
+                ],
+                'Y': [
+                    '0   0',
+                    ' 0 0 ',
+                    '  0  ',
+                    '  0  ',
+                    '  0  '
+                ],
+                'Z': [
+                    '0000',
+                    '   0',
+                    '  0 ',
+                    ' 0  ',
+                    '0000'
+                ],
+                ' ': [ // Space is an empty grid
+                    '    ',
+                    '    ',
+                    '    ',
+                    '    ',
+                    '    '
+                ],
+                '0': [
+                    ' 000 ',
+                    '0   0',
+                    '0   0',
+                    '0   0',
+                    ' 000 '
+                ],
+                '1': [
+                    '  0  ',
+                    ' 00  ',
+                    '  0  ',
+                    '  0  ',
+                    ' 000 '
+                ],
+                '2': [
+                    ' 000 ',
+                    '0   0',
+                    '   00',
+                    ' 0   ',
+                    ' 0000'
+                ],
+                '3': [
+                    ' 000 ',
+                    '    0',
+                    ' 000 ',
+                    '    0',
+                    ' 000 '
+                ],
+                '4': [
+                    '0   0',
+                    '0   0',
+                    '0 000',
+                    '    0',
+                    '    0'
+                ],
+                '5': [
+                    ' 0000',
+                    '0    ',
+                    ' 000 ',
+                    '    0',
+                    ' 000 '
+                ],
+                '6': [
+                    ' 000 ',
+                    '0    ',
+                    '0000 ',
+                    '0   0',
+                    ' 000 '
+                ],
+                '7': [
+                    '0000 ',
+                    '   0 ',
+                    '  0  ',
+                    ' 0   ',
+                    '0    '
+                ],
+                '8': [
+                    ' 000 ',
+                    '0   0',
+                    ' 000 ',
+                    '0   0',
+                    ' 000 '
+                ],
+                '9': [
+                    ' 000 ',
+                    '0   0',
+                    ' 0000',
+                    '    0',
+                    ' 000 '
+                ]
+            };
+
+            // Default pattern if the character is not defined
+            const defaultPattern = [
+                '     ',
+                '     ',
+                '     ',
+                '     ',
+                '     '
+            ];
+
+            const pattern = patterns[char] || defaultPattern;
+            const size = pattern.length;
+
+            return pattern.flatMap((row, y) =>
+                row.split('').map((cell, x) => ({
+                    char: cell === ' ' ? '' : cell,
+                    type: cell === ' ' ? 'empty' : (cell === '0' ? 'black' : 'white'),
+                    path: false // Default path state
+                }))
+            ).map((cell, index) => ({
+                ...cell,
+                index: index % size + Math.floor(index / size) * size
+            }));
+        }
+    </script>
+</body>
 </html>

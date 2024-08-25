@@ -4,25 +4,31 @@ const passwords = ["","","","","","","","","","","","","","","","","","","","","
 var downloads = [];
 var downloadRules = [];
 var downloadName = [];
-const onionLeads = ["messageInImageFile","qrCode","imageProductWebsite"]
-const redditLeads = ["messageInImageFile","asciiCaesarCipher","imageProductWebsite","asciiPigpen"]
-const fourChanLeads = ["imageProductWebsite","imageProductWebsite","asciiPigpen","hexToASCII","hexToASCII"]
+const onionLeads = ["messageInImageFile","qrCode","imageProductWebsite","pizzaOrder"]
+const redditLeads = ["messageInImageFile","asciiCaesarCipher","imageProductWebsite","asciiPigpen","asciiPlayfairCipher"]
+const fourChanLeads = ["imageProductWebsite","imageProductWebsite","asciiPigpen","hexToASCII","hexToASCII","pizzaOrder"]
 const imgurLeads = ["messageInImageFile","qrCode","imageProductWebsite","imgurPage"]
-const pastebinLeads = ["asciiCaesarCipher","asciiCaesarCipher","hexToASCII","hexToASCII"]
-const twitterLeads = ["imageProductWebsite","imageProductWebsite","hexToASCII","hexToASCII"]
+const pastebinLeads = ["asciiCaesarCipher","asciiCaesarCipher","hexToASCII","hexToASCII","asciiPlayfairCipher","asciiPlayfairCipher","pizzaOrder"]
+const twitterLeads = ["imageProductWebsite","imageProductWebsite","hexToASCII","hexToASCII","pizzaOrder"]
 const dropboxLeads = ["imageProductWebsite","asciiCaesarCipher","messageInImageFile","qrCode","midiSubstitution","pgp"]
-var googleSite = ["reddit","4chan","imgur","pastebin","twitter","x","dropbox"];
+var googleSite = ["reddit","4chan","imgur","pastebin","twitter","x","dropbox","wordle"];
 var initialHTML = ``;
 var user = null;
 var pass = null;
 var callend = false;
 var play = false;
+var typable = false;
+var isWordle = false;
+var isCrossword = false;
 var userID = 0;
 var attempt = 0;
 var phoneDigits = 0;
 var traversals = 0;
 var phoneNumberDisplay;
 var callerID = "";
+var wordleCounter=0;
+var wordle1 = 0;
+var wordle2 = 0;
 var gematriaPrimus = ['ᚠ','ᚢ','ᚦ','ᚩ','ᚱ','ᚳ','ᚷ','ᚹ','ᚻ','ᚾ','ᛁ','ᛄ','ᛇ','ᛈ','ᛉ','ᛋ','ᛏ','ᛒ','ᛖ','ᛗ','ᛚ','ᛝ','ᛟ','ᛞ','ᚪ','ᚫ','ᚣ','ᛡ','ᛠ'];
 var ruleseedChars = "abcdefghijklmnopqrstuvwxyz234567";
 var websiteChars = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -32,6 +38,9 @@ var messageChars = ["1","2","3","4","5","6","7","8","9","0","q","w","e","r","t",
 let audio = {};
 var tapCodes = [["a","b","c","d","e","f","g"],["h","i","j","k","l","m","n"],["o","p","q","r","s","t","u"],["v","w","x","y","z","0","1"],["2","3","4","5","6","7","8"],["9","dot","slash"]]
 var morseAlpha = [".----","..---","...--","....-",".....","-....","--...","---..","----.","-----","--.-",".--",".",".-.","-","-.--","..-","..","---",".--.",".-","...","-..","..-.","--.","....",".---","-.-",".-..","--..","-..-","-.-.","...-","-...","-.","--",".-.-.-","-..-."];
+var pizzaOrders = [];
+var currentPizza = [];
+
 window.onload=function()
 {
 	user = document.getElementById("login");
@@ -147,6 +156,14 @@ async function searchGoogle()
 		else if(input.value == "www.asciicaesarcipher.com")
 		{
 			prepCaesar();
+		}
+		else if(input.value == "pizza.net")
+		{
+			prepPizza();
+		}
+		else if(input.value == "decryptpgp.com")
+		{
+			prepDecryptPGP();
 		}
 		else if(input.value.includes("www.dropbox.com/sh/"))
 		{
@@ -314,6 +331,33 @@ async function searchGoogle()
 				play=false;
 			}
 		}
+		if(input.value.includes("www.nytimes.com/games/wordle/"))
+		{
+			for(var i = 29; i < input.value.length; i++)
+			{
+				if(websiteChars.indexOf(input.value[i]) == -1) break;
+				ruleseedNumber += websiteChars.indexOf(input.value[i]);
+				if(i == input.value.length-1) cont= true;
+				r += input.value[i];
+			}
+			
+			if(cont)
+			{
+				traversals++;
+				ruleseedNumber = ruleseedNumber % 2147483647;
+				prepWordle(ruleseedNumber);
+			}
+			else
+			{
+				play=true;
+				input.value = "Link contains invalid character."
+				input.disabled = true;
+				await delay(1000)
+				input.value = ""
+				input.disabled = false;
+				play=false;
+			}
+		}
 		else if (input.value.includes(".com") && isnum)
 		{
 			
@@ -360,14 +404,14 @@ function toolTips()
 		html.innerHTML = `<table align="center"><tbody><tr><th><img src="img/bar.png"></th><th margin="-15px"><button onclick="closeApp()"><img src="img/x.png" width="28px" height="28px"></button></th></tr></tbody></table>`;
 		html.innerHTML += `<h3>NOTE: All links have lowercase letters. Do not use uppercase letters in any links.</h3>`;
 		html.innerHTML += `<h3>NOTE: All links and phone numbers may be real links and phone numbers. We do not advice you to actually visit these websites or actually call these numbers. If you do, that's on you.</h3>`;
-		html.innerHTML += `<br><p>Below are tool websites in this webpage's google mini-app:</p>`;
-		html.innerHTML += `<p>www.cicada3301solved.com</p>`;
-		html.innerHTML += `<p>www.asciicaesarcipher.com</p>`;
-		html.innerHTML += `<p>liberprimus.onion</p>`;
+		html.innerHTML += `<br><p>Below are tool websites in this webpage's Google or Tor mini-apps:</p>`;
+		html.innerHTML += `<p>www.cicada3301solved.com</p> - This Webpage`;
+		html.innerHTML += `<p>www.asciicaesarcipher.com</p> - Webpage used to decrypt ASCII Caesar Cipher ciphertext`;
+		html.innerHTML += `<p>decryptpgp.com</p> - Webpage used to decrypt openpgp.js-encrypted PGP messages`;
+		html.innerHTML += `<p>liberprimus.onion</p> - Hashed webpage that houses information related to the Liber Primus`;
 		html.innerHTML += `<br><p>Below are programs, websites, and other miscellaneous things you may need.</p>`;
 		html.innerHTML += `<br><a target="_blank" rel="noopener noreferrer" href="https://academo.org/demos/spectrum-analyzer/">Spectrum Analyzer</a>`;
 		html.innerHTML += `<br><a target="_blank" rel="noopener noreferrer" href="https://www.rapidtables.com/convert/number/hex-to-ascii.html">Hex to ASCII</a>`;
-		html.innerHTML += `<br><a target="_blank" rel="noopener noreferrer" href="https://onlinepgp.com/">PGP</a>`;
 		html.innerHTML += `<br><a target="_blank" rel="noopener noreferrer" href="https://www.boxentriq.com/code-breaking/atbash-cipher">Atbash Cipher</a>`;
 		html.innerHTML += `<br><a target="_blank" rel="noopener noreferrer" href="https://cryptii.com/pipes/caesar-cipher">Caesar Cipher</a>`;
 		html.innerHTML += `<br><a target="_blank" rel="noopener noreferrer" href="https://cryptii.com/pipes/vigenere-cipher">Vigenere Cipher</a>`;
@@ -375,10 +419,27 @@ function toolTips()
 		html.innerHTML += `<p>Photoshop... or paint.net</p>`;
 		html.innerHTML += `<br><p>Cicada3301's Tap Code Table</p>`;
 		html.innerHTML += `<table align="center" class="sqlInject"><tbody><tr><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td></tr><tr><td>1</td><td>a</td><td>b</td><td>c</td><td>d</td><td>e</td><td>f</td><td>g</td></tr><tr><td>2</td><td>h</td><td>i</td><td>j</td><td>k</td><td>l</td><td>m</td><td>n</td></tr><tr><td>3</td><td>o</td><td>p</td><td>q</td><td>r</td><td>s</td><td>t</td><td>u</td></tr><tr><td>4</td><td>v</td><td>w</td><td>x</td><td>y</td><td>z</td><td>0</td><td>1</td></tr><tr><td>5</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td></tr><tr><td>6</td><td>9</td><td>.</td><td>/</td></tr></tbody></table>`;
-		html.innerHTML += `<br><p>Cicada3301's ASCII Pigpen Table</p>`;
-		
-		var temp = `<table align="center" class="sqlInject"><tbody><tr class="sqlInject">`;
+		html.innerHTML += `<br><p>Cicada3301's ASCII Playfair Polybius Square</p>`;
 		var ASCII = ["!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/","0","1","2","3","4","5","6","7","8","9",":",";","&lt;","=","&gt;","?","@","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","[","\\","]","^","_","`","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","{","|","}","~"];
+		var temp = `<table align="center" class="sqlInject"><tbody><tr class="sqlInject">`;
+		for(var i = 0; i < 10; i++)
+		{
+			for(var j = 0; j < 9; j++)
+			{
+				temp += `<td class="sqlInject">`+ASCII[i+j*10]+`</td>`;
+			}
+			if(i != 9)
+			{
+				temp += `</tr><tr class="sqlInject">`
+			}
+			else
+			{
+				temp += `</tr></tbody></table>`
+			}
+		}
+		html.innerHTML += temp;
+		html.innerHTML += `<br><p>Cicada3301's ASCII Pigpen Table</p>`;
+		temp = `<table align="center" class="sqlInject"><tbody><tr class="sqlInject">`;
 		for(var i = 0; i < ASCII.length/4; i++)
 		{
 			temp += `<td class="sqlInject">`+ASCII[i]+`</td>`;
@@ -435,6 +496,156 @@ function prepCaesar()
 		html.innerHTML += `<div id="result"></div>`;
 }
 
+function prepDecryptPGP()
+{
+	html.innerHTML = `<table align="center"><tbody><tr><th><img src="img/bar.png"></th><th margin="-15px"><button onclick="closeApp()"><img src="img/x.png" width="28px" height="28px"></button></th></tr></tbody></table>`;
+	html.innerHTML += `<h1>Decrypt PGP</h1>`;
+	html.innerHTML += `<br><p>Private Key:</p><textarea id="pgpKey"></textarea><p>\t</p><p>Message:</p><textarea id="pgpMess"></textarea><p>\t</p><p>Passphrase:</p><textarea id="pgpPass"></textarea>`;
+	html.innerHTML += `<button onclick="decryptPGP()">Decrypt</button>`;
+	html.innerHTML += `<br><div id="result"><p>Encrypted Message:</p></div>`;
+}
+
+function decryptPGP()
+{
+	var decryptKey = document.getElementById("pgpKey").value;
+	var message = document.getElementById("pgpMess").value;
+	var passphrase = document.getElementById("pgpPass").value;
+	
+	decryptedMessage = decryptMessage(message, decryptKey, passphrase);
+}
+
+function prepPizza()
+{
+	initialHTML = html.innerHTML;
+	html.innerHTML = `<table align="center"><tbody><tr><th><img src="img/bar.png"></th><th margin="-15px"><button onclick="closeApp()"><img src="img/x.png" width="28px" height="28px"></button></th></tr></tbody></table>`;
+	html.innerHTML += `<img src="img/pizzahut.png" width="48px" height="48px">`;
+	html.innerHTML += `<br><h1>Pizza.NET</h1>`;
+	html.innerHTML += `<br><p>Select Pizza Size:</p>`;
+	html.innerHTML += `<br><button id="small" onclick="addTopping(this.id)">Small</button><button id="medium" onclick="addTopping(this.id)">Medium</button><button id="large" onclick="addTopping(this.id)">Large</button><button id="extralarge" onclick="addTopping(this.id)">Extra-Large</button>`;
+	html.innerHTML += `<br><button id="pepperoni" onclick="addTopping(this.id)" disabled><img src="img/toppings/pepperoni.png" width="50px" height="50px">Pepperoni</button><button id="sausage" onclick="addTopping(this.id)" disabled><img src="img/toppings/sausage.png" width="50px" height="50px">Sausage</button><button id="canadianbacon" onclick="addTopping(this.id)" disabled><img src="img/toppings/canadianbacon.png" width="50px" height="50px">Canadian Bacon</button>`;
+	html.innerHTML += `<br><button id="bacon" onclick="addTopping(this.id)" disabled><img src="img/toppings/bacon.png" width="50px" height="50px">Bacon</button><button id="chicken" onclick="addTopping(this.id)" disabled><img src="img/toppings/chicken.png" width="50px" height="50px">Chicken</button><button id="beef" onclick="addTopping(this.id)" disabled><img src="img/toppings/beef.png" width="50px" height="50px">Beef</button>`;
+	html.innerHTML += `<br><button id="meatball" onclick="addTopping(this.id)" disabled><img src="img/toppings/meatball.png" width="50px" height="50px">Meatball</button><button id="salami" onclick="addTopping(this.id)" disabled><img src="img/toppings/salami.png" width="50px" height="50px">Salami</button><button id="anchovies" onclick="addTopping(this.id)" disabled><img src="img/toppings/anchovies.png" width="50px" height="50px">Anchovies</button>`;
+	html.innerHTML += `<br><button id="mushroom" onclick="addTopping(this.id)" disabled><img src="img/toppings/mushroom.png" width="50px" height="50px">Mushroom</button><button id="onion" onclick="addTopping(this.id)" disabled><img src="img/toppings/onion.png" width="50px" height="50px">Onion</button><button id="pineapple" onclick="addTopping(this.id)" disabled><img src="img/toppings/pineapple.png" width="50px" height="50px">Pineapple</button>`;
+	html.innerHTML += `<br><button id="olive" onclick="addTopping(this.id)" disabled><img src="img/toppings/olive.png" width="50px" height="50px">Olive</button><button id="jalapeno" onclick="addTopping(this.id)" disabled><img src="img/toppings/jalapeno.png" width="50px" height="50px">Jalapeno</button><button id="bananapepper" onclick="addTopping(this.id)" disabled><img src="img/toppings/bananapepper.png" width="50px" height="50px">Banana Pepper</button>`;
+	html.innerHTML += `<br><button id="greenpepper" onclick="addTopping(this.id)" disabled><img src="img/toppings/greenpepper.png" width="50px" height="50px">Green Pepper</button><button id="tomato" onclick="addTopping(this.id)" disabled><img src="img/toppings/tomato.png" width="50px" height="50px">Tomato</button><button id="spinach" onclick="addTopping(this.id)" disabled><img src="img/toppings/spinach.png" width="50px" height="50px">Spinach</button>`;
+	html.innerHTML += `<br><button id="garlic" onclick="addTopping(this.id)" disabled><img src="img/toppings/garlic.png" width="50px" height="50px">Garlic</button><button id="artichokehearts" onclick="addTopping(this.id)" disabled><img src="img/toppings/artichokehearts.png" width="50px" height="50px">Artichoke Hearts</button><button id="zucchini" onclick="addTopping(this.id)" disabled><img src="img/toppings/zucchini.png" width="50px" height="50px">Zucchini</button>`;
+	html.innerHTML += `<br><button id="turkey" onclick="addTopping(this.id)" disabled><img src="img/toppings/turkey.png" width="50px" height="50px">Turkey</button><button id="corn" onclick="addTopping(this.id)" disabled><img src="img/toppings/corn.png" width="50px" height="50px">Corn</button><button id="cranberries" onclick="addTopping(this.id)" disabled><img src="img/toppings/cranberries.png" width="50px" height="50px">Cranberries</button>`;
+	html.innerHTML += `<br><button id="blueberries" onclick="addTopping(this.id)" disabled><img src="img/toppings/blueberries.png" width="50px" height="50px">Blueberries</button><button id="kimchi" onclick="addTopping(this.id)" disabled><img src="img/toppings/kimchi.png" width="50px" height="50px">Kimchi</button><button id="sauerkraut" onclick="addTopping(this.id)" disabled><img src="img/toppings/sauerkraut.png" width="50px" height="50px">Sauerkraut</button>`;
+	html.innerHTML += `<br><button id="apricot" onclick="addTopping(this.id)" disabled><img src="img/toppings/apricot.png" width="50px" height="50px">Apricot</button><button id="clam" onclick="addTopping(this.id)" disabled><img src="img/toppings/clam.png" width="50px" height="50px">Clam</button><button id="potato" onclick="addTopping(this.id)" disabled><img src="img/toppings/potato.png" width="50px" height="50px">Potato</button>`;
+	html.innerHTML += `<br><button id="peach" onclick="addTopping(this.id)" disabled><img src="img/toppings/peach.png" width="50px" height="50px">Peach</button><button id="brusselsprouts" onclick="addTopping(this.id)" disabled><img src="img/toppings/brusselsprouts.png" width="50px" height="50px">Brussel Sprouts</button><button id="crab" onclick="addTopping(this.id)" disabled><img src="img/toppings/crab.png" width="50px" height="50px">Crab</button>`;
+	html.innerHTML += `<br><button id="skittles" onclick="addTopping(this.id)" disabled><img src="img/toppings/skittles.png" width="50px" height="50px">Skittles</button><button id="cicadas" onclick="addTopping(this.id)" disabled><img src="img/toppings/cicadas.png" width="50px" height="50px">Cicadas</button>`;
+	html.innerHTML += `<br><br><p>Select Drink (if any)</p>`;
+	html.innerHTML += `<br><button id="coke" onclick="addDrink(this.id)" disabled><img src="img/toppings/coke.png" width="50px" height="50px">Coke</button><button id="pepsi" onclick="addDrink(this.id)" disabled><img src="img/toppings/pepsi.png" width="50px" height="50px">Pepsi</button>`;
+	html.innerHTML += `<br><button id="starry" onclick="addDrink(this.id)" disabled><img src="img/toppings/starry.png" width="50px" height="50px">Starry</button><button id="sprite" onclick="addDrink(this.id)" disabled><img src="img/toppings/sprite.png" width="50px" height="50px">Sprite (WIDE)</button>`;
+	html.innerHTML += `<br><button id="water" onclick="addDrink(this.id)" disabled><img src="img/toppings/water.png" width="50px" height="50px">Water</button><button id="drpepper" onclick="addDrink(this.id)" disabled><img src="img/toppings/drpepper.png" width="50px" height="50px">Dr. Pepper</button>`;
+	html.innerHTML += `<br><button id="mrpibb" onclick="addDrink(this.id)" disabled><img src="img/toppings/mrpibb.png" width="50px" height="50px">Mr. Pibb</button><button id="mountaindew" onclick="addDrink(this.id)" disabled><img src="img/toppings/mountaindew.png" width="50px" height="50px">Mountain Dew</button>`;
+	html.innerHTML += `<br><button id="melloyello" onclick="addDrink(this.id)" disabled><img src="img/toppings/melloyello.png" width="50px" height="50px">Mello Yello</button><button id="bleach" onclick="addDrink(this.id)" disabled><img src="img/toppings/bleach.png" width="50px" height="50px">Bleach</button>`;
+	html.innerHTML += `<br><button id="bacongrease" onclick="addDrink(this.id)" disabled><img src="img/toppings/bacongrease.png" width="50px" height="50px">Bacon Grease</button><button id="picklejuice" onclick="addDrink(this.id)" disabled><img src="img/toppings/picklejuice.png" width="50px" height="50px">Pickle Juice</button>`;
+	html.innerHTML += `<br><button id="beverly" onclick="addDrink(this.id)" disabled><img src="img/toppings/beverly.png" width="50px" height="50px">Beverly</button>`;
+	html.innerHTML += `<br><br><button id="addCart" onclick="addOrder()" disabled>Add To Cart</button>`;
+	html.innerHTML += `<br><button id="compOrder" onclick="order()" disabled>Confirm</button>`;
+}
+
+function addTopping(value)
+{
+	addToOrder(value);
+}
+
+var selectDrink = false
+
+function addDrink(value)
+{
+	var cartButton = document.getElementById("addCart");
+	var sizeButtons = ["small","medium","large","extralarge"];
+	var drinks = ["coke","pepsi","starry","sprite","water","drpepper","mrpibb","mountaindew","melloyello","bleach","bacongrease", "picklejuice", "beverly"]
+	if(!selectDrink) cartButton.disabled = false;
+	if(!selectDrink) for(var i = 0; i < sizeButtons.length; i++) document.getElementById(sizeButtons[i]).disabled = true;
+	if(!selectDrink) for(var i = 0; i < drinks.length; i++) if(value != drinks[i]) document.getElementById(drinks[i]).disabled = true;
+	if(!selectDrink) currentPizza.push(value);
+	if(selectDrink) cartButton.disabled = true;
+	if(selectDrink) for(var i = 0; i < sizeButtons.length; i++) document.getElementById(sizeButtons[i]).disabled = false;
+	if(selectDrink) for(var i = 0; i < drinks.length; i++) if(value != drinks[i]) document.getElementById(drinks[i]).disabled = false;
+	if(selectDrink) currentPizza.pop(value);
+	selectDrink = !selectDrink;
+	
+}
+
+function addToOrder(detail)
+{
+	var sizeButtons = ["small","medium","large","extralarge"];
+	var toppingButtons = ["pepperoni","sausage","canadianbacon","bacon","chicken","beef","meatball","salami","anchovies","mushroom","onion","pineapple","olive","jalapeno","bananapepper","greenpepper","tomato","spinach","garlic","artichokehearts","zucchini","turkey","corn","cranberries","blueberries","kimchi","sauerkraut","apricot","clam","potato","peach","brusselsprouts","crab","skittles","cicadas"];
+	var drinks = ["coke","pepsi","starry","sprite","water","drpepper","mrpibb","mountaindew","melloyello","bleach","bacongrease", "picklejuice", "beverly"]
+	currentPizza.push(detail);
+	var cartButton = document.getElementById("addCart");
+	cartButton.disabled = false;
+	var compOrder = document.getElementById("compOrder");
+	compOrder.disabled = true;
+	switch(detail)
+	{
+		case "small":
+		case "medium":
+		case "large":
+		case "extralarge":
+			for(var i = 0; i < sizeButtons.length; i++) document.getElementById(sizeButtons[i]).disabled = true;
+			for(var i = 0; i < toppingButtons.length; i++) document.getElementById(toppingButtons[i]).disabled = false;
+			for(var i = 0; i < drinks.length; i++) document.getElementById(drinks[i]).disabled = true;
+	}
+	
+}
+
+function order()
+{
+	var sizeButtons = ["small","medium","large","extralarge"];
+	var toppingButtons = ["pepperoni","sausage","canadianbacon","bacon","chicken","beef","meatball","salami","anchovies","mushroom","onion","pineapple","olive","jalapeno","bananapepper","greenpepper","tomato","spinach","garlic","artichokehearts","zucchini","turkey","corn","cranberries","blueberries","kimchi","sauerkraut","apricot","clam","potato","peach","brusselsprouts","crab","skittles","cicadas"];
+	var drinks = ["coke","pepsi","starry","sprite","water","drpepper","mrpibb","mountaindew","melloyello","bleach","bacongrease", "picklejuice", "beverly"]
+	html.innerHTML = `<table align="center"><tbody><tr><th><img src="img/bar.png"></th><th margin="-15px"><button onclick="closeApp()"><img src="img/x.png" width="28px" height="28px"></button></th></tr></tbody></table>`;
+	html.innerHTML += `<img src="img/pizzahut.png" width="48px" height="48px">`;
+	html.innerHTML += `<br><h1>Pizza.NET</h1>`;
+	html.innerHTML += `<br><p>Your Order:</p>`;
+	var rule = 0;
+	for(var i = 0; i < pizzaOrders.length; i++)
+	{
+		html.innerHTML += `<p>1 `+pizzaOrders[i].toString().replaceAll("picklejuice","pickle juice").replaceAll("bacongrease","bacon grease").replaceAll("melloyello","mello yello").replaceAll("mountaindew","mountain dew").replaceAll("mrpibb","mr. pibb").replaceAll("drpepper","dr. pepper").replaceAll("brusselsprouts","brussel sprouts").replaceAll("artichokehearts","artichoke hearts").replaceAll("bananapepper","banana pepper").replaceAll("greenpepper","green pepper").replaceAll("canadianbacon","canadian bacon").replaceAll(","," ")+` pizza</p>`;
+		for(var j = 0; j < pizzaOrders[i].length; j++)
+		{
+			if(sizeButtons.indexOf(pizzaOrders[i][j]) != -1) rule += sizeButtons.indexOf(pizzaOrders[i][j])*2;
+			if(toppingButtons.indexOf(pizzaOrders[i][j]) != -1) rule += toppingButtons.indexOf(pizzaOrders[i][j]);
+			if(drinks.indexOf(pizzaOrders[i][j]) != -1) rule += drinks.indexOf(pizzaOrders[i][j])*5;
+		}
+	}
+	html.innerHTML += `<p>Paid By: John Doe</p>`;
+	rule = (rule * userID) % 2147483647;
+	var ruleseed = new MonoRandom(rule);
+	html.innerHTML += `<p>Deliver To: `+nextStep(ruleseed)+`</p>`;
+	currentPizza = [];
+	pizzaOrders = [];
+}
+
+function addOrder()
+{
+	var sizeButtons = ["small","medium","large","extralarge"];
+	var toppingButtons = ["pepperoni","sausage","canadianbacon","bacon","chicken","beef","meatball","salami","anchovies","mushroom","onion","pineapple","olive","jalapeno","bananapepper","greenpepper","tomato","spinach","garlic","artichokehearts","zucchini","turkey","corn","cranberries","blueberries","kimchi","sauerkraut","apricot","clam","potato","peach","brusselsprouts","crab","skittles","cicadas"];
+	var drinks = ["coke","pepsi","starry","sprite","water","drpepper","mrpibb","mountaindew","melloyello","bleach","bacongrease", "picklejuice", "beverly"]
+	for(var i = 0; i < sizeButtons.length; i++) document.getElementById(sizeButtons[i]).disabled = false;
+	for(var i = 0; i < toppingButtons.length; i++) document.getElementById(toppingButtons[i]).disabled = true;
+	for(var i = 0; i < drinks.length; i++) document.getElementById(drinks[i]).disabled = false;
+	var temp = false;
+	for(var i = 0; i < drinks.length; i++)
+	{
+		if(currentPizza[0] == drinks[i]) temp = true;
+	}
+	if(temp)
+	{
+		for(var i = 0; i < drinks.length; i++) document.getElementById(drinks[i]).disabled = true;
+	}
+	pizzaOrders.push(currentPizza);
+	currentPizza = [];
+	var cartButton = document.getElementById("addCart");
+	cartButton.disabled = true;
+	var compOrder = document.getElementById("compOrder");
+	compOrder.disabled = false;
+}
+
 function prepLiberHelp()
 {
 		html.innerHTML = `<table align="center"><tbody><tr><th><img src="img/bar.png"></th><th margin="-15px"><button onclick="closeApp()"><img src="img/x.png" width="28px" height="28px"></button></th></tr></tbody></table>`;
@@ -449,6 +660,14 @@ function prepLiberHelp()
 		html.innerHTML += `<br><h3>Known Vigenere Cipher Keys:</h3>`;
 		html.innerHTML += `<p>DIVINITY (ᛞᛁᚢᛁᚾᛁᛏᚣ)</p>`;
 		html.innerHTML += `<p>FIRFUMFERENFE (ᚠᛁᚱᚠᚢᛗᚠᛖᚱᛖᚾᚠᛖ)</p>`;
+		html.innerHTML += `<br><h3>Gematria Primus Alphabet:</h3>`;
+		html.innerHTML += `<br><p>If you have "ᚳᚹ" next to each other: ᚳᚹ = Q</p>`;
+		var temp = "";
+		for(var i = 0; i < gematriaPrimus.length; i++)
+		{
+			temp += gematriaPrimus[i];
+		}
+		html.innerHTML += `<p>`+temp+`</p>`;
 		html.innerHTML += `<br><h3>Gematria Primus:</h3>`;
 		html.innerHTML += `<img src="https://static.wikia.nocookie.net/uncovering-cicada/images/1/1a/Testout.jpg/revision/latest?cb=20130107123015"></img>`;
 }
@@ -590,7 +809,7 @@ function prepOnion(ruleseedNumber)
 {
 	ruleseedNumber = (ruleseedNumber * userID) % 2147483647;
 	var ruleseed = new MonoRandom(ruleseedNumber);
-	var methodID = ruleseed.nextMax(3);
+	var methodID = ruleseed.nextMax(4);
 	switch(onionLeads[methodID])
 	{
 		case "messageInImageFile":
@@ -601,6 +820,9 @@ function prepOnion(ruleseedNumber)
 			break;
 		case "imageProductWebsite":
 			imageProductWebsite(ruleseed);
+			break;
+		case "pizzaOrder":
+			pizzaReceipt(ruleseed);
 			break;
 	}
 }
@@ -721,7 +943,7 @@ function prepReddit(ruleseedNumber, r)
 function redditLoadLink(ruleseed)
 {
 	html.innerHTML = initialHTML;
-	var methodID = ruleseed.nextMax(4);
+	var methodID = ruleseed.nextMax(5);
 	switch(redditLeads[methodID])
 	{
 		case "messageInImageFile":
@@ -735,6 +957,9 @@ function redditLoadLink(ruleseed)
 			break;
 		case "asciiPigpen":
 			asciiPigpen(ruleseed);
+			break;
+		case "asciiPlayfairCipher":
+			asciiPlayfairCipher(ruleseed);
 			break;
 	}
 	html.innerHTML += `</tr></tbody></table>`;
@@ -750,7 +975,7 @@ function prep4Chan(ruleseedNumber)
 	var ruleseed = new MonoRandom(ruleseedNumber);
 	
 	html.innerHTML = initialHTML;
-	var methodID = ruleseed.nextMax(5);
+	var methodID = ruleseed.nextMax(6);
 	switch(fourChanLeads[methodID])
 	{
 		case "imageProductWebsite":
@@ -761,6 +986,9 @@ function prep4Chan(ruleseedNumber)
 			break;
 		case "asciiPigpen":
 			asciiPigpen(ruleseed);
+			break;
+		case "pizzaOrder":
+			pizzaReceipt(ruleseed);
 			break;
 	}
 	html.innerHTML += `</tr></tbody></table>`;
@@ -777,7 +1005,7 @@ function prepPastebin(ruleseedNumber)
 	var ruleseed = new MonoRandom(ruleseedNumber);
 	
 	html.innerHTML = initialHTML;
-	var methodID = ruleseed.nextMax(4);
+	var methodID = ruleseed.nextMax(7);
 	switch(pastebinLeads[methodID])
 	{
 		case "asciiCaesarCipher":
@@ -785,6 +1013,12 @@ function prepPastebin(ruleseedNumber)
 			break;
 		case "hexToASCII":
 			hexToASCII(ruleseed);
+			break;
+		case "asciiPlayfairCipher":
+			asciiPlayfairCipher(ruleseed);
+			break;
+		case "pizzaOrder":
+			pizzaReceiptText(ruleseed);
 			break;
 	}
 	html.innerHTML += `</tr></tbody></table>`;
@@ -867,14 +1101,203 @@ function downloadDropbox(ruleseed)
 	const SECONDS = FULLDATE.getSeconds();
 	
 	var methodID = ruleseed.nextMax(6);
-	methodID = 5;
 	if(traversals >= 20) methodID = 4;
 	downloads.push(dropboxLeads[methodID]);
 	downloadRules.push(ruleseed.seed);
 	downloadName.push(""+YEAR+"-"+MONTH+"-"+DAY+"_"+HOUR+"."+MINUTE+"."+SECONDS+".file");
 }
 
+var linkLength = 0;
+function prepWordle(ruleseedNumber)
+{
+	html.innerHTML = `<table align="center"><tbody><tr><th><img src="img/bar.png"></th><th margin="-15px"><button onclick="closeApp()"><img src="img/x.png" width="28px" height="28px"></button></th></tr></tbody></table>`;
+	html.innerHTML += `<img src="img/wordle.png" width="70px" height="70px">`;
+	html.innerHTML += `<p>Guess the correct link!</p>`
+	html.innerHTML += `<div id="linkWordle"></div>`
+	initialHTML = html.innerHTML;
+	ruleseedNumber = (ruleseedNumber * userID) % 2147483647;
+	var ruleseed = new MonoRandom(ruleseedNumber);
+	
+	html.innerHTML = initialHTML;
+	
+	var link = nextLink(ruleseed);
+	eventLink = link;
+	linkLength = link.length;
+	var linkW = document.getElementById("linkWordle");
+	var linkWord = `<table align="center"><tbody><tr>`;
+	var count = "";
+	if(wordleCounter < 10)
+	{
+		count = "0"+wordleCounter;
+	}
+	else
+	{
+		count = ""+wordleCounter;
+	}
+	for(var i = 0; i < link.length; i++)
+	{
+		var iterate = "";
+		if(i < 10)
+		{
+			iterate = "0"+i;
+		}
+		else
+		{
+			iterate = ""+i;
+		}
+		linkWord += `<td><p class="wordleTextWhite" id="wordle`+count+iterate+`"></p></td>`
+	}
+	linkWord += `</tr><tbody></table>`
+	html.innerHTML += linkWord;
+	typable = true;
+	isWordle = true;
+	initialHTML = html.innerHTML;
+}
 
+document.addEventListener('keydown', handleKeyDown);
+var eventIterate = "";
+var eventCount = "";
+var eventLink = "";
+
+function handleKeyDown(event) 
+{
+	var temp = false;
+	var iterateChars = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0","1","2","3","4","5","6","7","8","9",".","/","Backspace","Enter"];
+	if(typable && isWordle)
+	{
+		for(const c of iterateChars)
+		{
+			if(event.key.toString() == c)
+			{
+				temp = true;
+				break;
+			}
+		}
+		if(temp)
+		{
+			if(wordle2 < linkLength)
+			{
+				if(wordle1 < 10)
+				{
+					eventCount = "0"+wordle1;
+				}
+				else
+				{
+					eventCount = ""+wordle1;
+				}
+				if(wordle2 < 10)
+				{
+					eventIterate = "0"+wordle2;
+				}
+				else
+				{
+					eventIterate = ""+wordle2;
+				}
+			}
+			const square = document.getElementById('wordle'+eventCount+eventIterate);
+			if(event.key.toString() == "Backspace")
+			{
+				html.innerHTML = initialHTML;
+				if(wordle2 == linkLength+1)
+				{
+					square.textContent = ``;
+					wordle2 -= 1;
+				}
+				else
+				{
+					square.textContent = ``;
+					if(parseInt(eventIterate)-1 != -1)
+					{
+						wordle2 -= 1;
+						if(wordle2 < 10)
+						{
+							eventIterate = "0"+wordle2;
+						}
+						else
+						{
+							eventIterate = ""+wordle2;
+						}
+						
+					}
+					document.getElementById('wordle'+eventCount+eventIterate).textContent = ``;
+				}
+				if(wordle2 == -1) wordle2 = 0;
+				initialHTML = html.innerHTML;
+			}
+			
+			else if(event.key.toString() == "Enter")
+			{
+				initialHTML = html.innerHTML;
+				if(wordle2 < linkLength)
+				{
+					html.innerHTML = initialHTML + `<br><p>Try again.</p>`;
+				}
+				else
+				{
+					wordleCounter++;
+					var tableScore = `<table align="center"><tbody><tr>`;
+					var tableNext = `<table align="center"><tbody><tr>`;
+					var count = "";
+					for(var i = 0; i < linkLength; i++)
+					{
+						var j = "";
+						if(i < 10)
+						{
+							j = "0"+i;
+						}
+						else
+						{
+							j = ""+i;
+						}
+						if(wordleCounter < 10)
+						{
+							count = "0"+wordleCounter;
+						}
+						else
+						{
+							count = ""+wordleCounter;
+						}
+						if(document.getElementById('wordle'+eventCount+j).textContent == eventLink[i])
+						{
+							 document.getElementById('wordle'+eventCount+j).className = 'wordleTextGreen'
+							 tableScore += `<td><p class="wordleHint">&#10004;</p></td>`;
+							 tableNext += `<td><p class="wordleTextWhite" id="wordle`+count+j+`"></p></td>`;
+						}
+						else
+						{
+							 document.getElementById('wordle'+eventCount+j).className = 'wordleTextRed'
+							 var linkID = 0;
+							 var answer = 0;
+							 for(var k = 0; k < iterateChars.length; k++)
+							 {
+								if(iterateChars[k] == document.getElementById('wordle'+eventCount+j).textContent) answer = k;
+								if(iterateChars[k] == eventLink[i]) link = k;
+							 }
+							 if(link < answer) tableScore += `<td><p class="wordleHint">&#x2190;</p></td>`;
+							 else if(link > answer) tableScore += `<td><p class="wordleHint">&#x2192;</p></td>`;
+							 tableNext += `<td><p class="wordleTextWhite" id="wordle`+count+j+`"></p></td>`;
+						}
+					}
+					tableScore += `</tr><tbody></table>`
+					tableNext += `</tr><tbody></table>`
+					html.innerHTML += tableScore + `<br>` + tableNext;
+					wordle2 = 0;
+					wordle1 = wordleCounter;
+				}
+			}
+			else
+			{
+				if(wordle2 < linkLength)
+				{
+					square.textContent = `${event.key}`;
+					wordle2++;
+				}
+				initialHTML = html.innerHTML
+			}
+			
+		}
+	}
+}
 
 
 async function hexToASCII(ruleseed)
@@ -886,33 +1309,7 @@ async function hexToASCII(ruleseed)
 
 function generateHex(ruleseed)
 {
-	var googleID = ruleseed.nextMax(googleSite.length);
-	var link = "";
-	if(traversals >= 20) googleID = 6;
-	switch(googleSite[googleID])
-	{
-		case "reddit":
-			link = getRandomReddit(ruleseed);
-			break;
-		case "4chan":
-			link = getRandom4Chan(ruleseed);
-			break;
-		case "imgur":
-			link = getRandomImgur(ruleseed);
-			break;
-		case "pastebin":
-			link = getRandomPastebin(ruleseed);
-			break;
-		case "twitter":
-			link = getRandomTwitter(ruleseed);
-			break;
-		case "x":
-			link = getRandomX(ruleseed);
-			break;
-		case "dropbox":
-			link = getRandomDropbox(ruleseed);
-			break;
-	}
+	var link = nextLink(ruleseed);
 	var encryptedLink = "";
 	for(var i = 0; i < link.length; i++)
 	{
@@ -925,33 +1322,8 @@ function generateHex(ruleseed)
 
 function generateHexReturn(ruleseed)
 {
-	var googleID = ruleseed.nextMax(googleSite.length);
-	var link = "";
-	if(traversals >= 20) googleID = 6;
-	switch(googleSite[googleID])
-	{
-		case "reddit":
-			link = getRandomReddit(ruleseed);
-			break;
-		case "4chan":
-			link = getRandom4Chan(ruleseed);
-			break;
-		case "imgur":
-			link = getRandomImgur(ruleseed);
-			break;
-		case "pastebin":
-			link = getRandomPastebin(ruleseed);
-			break;
-		case "twitter":
-			link = getRandomTwitter(ruleseed);
-			break;
-		case "x":
-			link = getRandomX(ruleseed);
-			break;
-		case "dropbox":
-			link = getRandomDropbox(ruleseed);
-			break;
-	}
+	var link = nextLink(ruleseed);
+	
 	var encryptedLink = "";
 	for(var i = 0; i < link.length; i++)
 	{
@@ -966,33 +1338,8 @@ function generateCaesarReturn(ruleseed)
 	var ASCII = ["!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/","0","1","2","3","4","5","6","7","8","9",":",";","&lt;","=","&gt;","?","@","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","[","\\","]","^","_","`","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","{","|","}","~"];
 	var caesar = "";
 	caesar = "TIBERIVS CLAVDIVS CAESAR says \"";
-	var googleID = ruleseed.nextMax(googleSite.length);
-	var link = "";
-	if(traversals >= 20) googleID = 6;
-	switch(googleSite[googleID])
-	{
-		case "reddit":
-			link = getRandomReddit(ruleseed);
-			break;
-		case "4chan":
-			link = getRandom4Chan(ruleseed);
-			break;
-		case "imgur":
-			link = getRandomImgur(ruleseed);
-			break;
-		case "pastebin":
-			link = getRandomPastebin(ruleseed);
-			break;
-		case "twitter":
-			link = getRandomTwitter(ruleseed);
-			break;
-		case "x":
-			link = getRandomX(ruleseed);
-			break;
-		case "dropbox":
-			link = getRandomDropbox(ruleseed);
-			break;
-	}
+	var link = nextLink(ruleseed);
+	
 	var encryptedLink = "";
 	var encrypt = ruleseed.nextMax(ASCII.length);
 	for(var i = 0; i < link.length; i++)
@@ -1005,6 +1352,49 @@ function generateCaesarReturn(ruleseed)
 	return caesar;
 }
 
+async function pizzaReceipt(ruleseed)
+{
+	html.innerHTML += `<tr><td rowspan="2"><div><canvas id="receipt" width="200" height="200" style="border:1px solid #000000;"></canvas></div></td></tr></tbody></table>`;
+	var temp = generatePizzaOrder(ruleseed);
+	await delay(500);
+	var receipt = document.getElementById("receipt");
+
+	var txt = "Pizza.NET\nORDER:\n"+temp.replaceAll("/","\n");
+	var lines = txt.split('\n');
+	var offset = 0;
+	for(var i = 0; i < lines.length; i++)
+	{
+		if(offset < lines[i].length) offset = lines[i].length;
+	}
+	receipt.width = 600+(offset*3);
+	var ctx = receipt.getContext("2d");
+	receipt.height = 50*lines.length+(offset*2);
+	var y1 = receipt.height;
+	var x0 = 0, y0 = 0, x1 = receipt.width;
+	ctx.beginPath();
+	ctx.rect(x0, y0, x1, y1);
+	ctx.fillStyle = "#999999";
+	ctx.fillRect(x0, y0, x1, y1);
+	ctx.fillStyle = "#000000";
+	var newline = 0;
+	ctx.font = "16px Consolas";
+	newline = 32;
+	
+	
+	for (var i = 0; i<lines.length; i++)
+		ctx.fillText(lines[i],(x0+x1)/(40), ((y0+y1)/24)+(i*newline));
+	ctx.fillText("Thank you for dialing up to Pizza.NET!",(x0+x1)/(40), ((y0+y1)/4)+(lines.length*newline));
+	
+}
+
+async function pizzaReceiptText(ruleseed)
+{
+	html.innerHTML += `<td rowspan="2"><div><p id="receipt"></p></div></td>`;
+	var temp = generatePizzaOrder(ruleseed);
+	await delay(500);
+	var receipt = document.getElementById("receipt");
+	receipt.innerHTML = `<table align="center"><tbody><tr><td><p align="left">`+"Pizza.NET\nORDER:\n"+temp.replaceAll("/",`</p><p align="left">`)+`</p></td></tr></tbody></table>`;
+}
 
 async function asciiCaesarCipher(ruleseed)
 {
@@ -1013,38 +1403,20 @@ async function asciiCaesarCipher(ruleseed)
 	generateCaesar(ruleseed);
 }
 
+async function asciiPlayfairCipher(ruleseed)
+{
+	html.innerHTML += `<td rowspan="2"><div><p id="playfair"></p></div></td>`;
+	await delay(500);
+	generatePlayfair(ruleseed);
+}
+
 function generateCaesar(ruleseed)
 {
 	var ASCII = ["!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/","0","1","2","3","4","5","6","7","8","9",":",";","&lt;","=","&gt;","?","@","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","[","\\","]","^","_","`","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","{","|","}","~"];
 	var caesar = document.getElementById('caesar');
 	caesar.innerHTML = "TIBERIVS CLAVDIVS CAESAR says \"";
-	var googleID = ruleseed.nextMax(googleSite.length);
-	var link = "";
-	if(traversals >= 20) googleID = 6;
-	switch(googleSite[googleID])
-	{
-		case "reddit":
-			link = getRandomReddit(ruleseed);
-			break;
-		case "4chan":
-			link = getRandom4Chan(ruleseed);
-			break;
-		case "imgur":
-			link = getRandomImgur(ruleseed);
-			break;
-		case "pastebin":
-			link = getRandomPastebin(ruleseed);
-			break;
-		case "twitter":
-			link = getRandomTwitter(ruleseed);
-			break;
-		case "x":
-			link = getRandomX(ruleseed);
-			break;
-		case "dropbox":
-			link = getRandomDropbox(ruleseed);
-			break;
-	}
+	var link = nextLink(ruleseed);
+	
 	var encryptedLink = "";
 	var encrypt = ruleseed.nextMax(ASCII.length);
 	for(var i = 0; i < link.length; i++)
@@ -1055,25 +1427,93 @@ function generateCaesar(ruleseed)
 	}
 	caesar.innerHTML += encryptedLink+"\"";
 	
-	var check = "";
-	for(var i = 0; i < encryptedLink.length; i++)
+	
+}
+
+
+function generatePlayfair(ruleseed)
+{
+	var ASCII = ["!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/","0","1","2","3","4","5","6","7","8","9",":",";","&lt;","=","&gt;","?","@","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","[","\\","]","^","_","`","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","{","|","}","~"];
+	
+	var PolybiusSquare = [[],[],[],[],[],[],[],[],[],[]];
+	
+	for(var i = 0; i < 10; i++)
 	{
-		var index = ASCII.indexOf(encryptedLink[i]);
-		if(index-encrypt < 0)
+		for(var j = 0; j < 9; j++)
 		{
-			check += ASCII[(index-encrypt)+ASCII.length];
+			PolybiusSquare[i][j] = ASCII[i+j*10]
+		}
+	}
+	
+	var playfair = document.getElementById('playfair');
+	playfair.innerHTML = "CHARLES WHEATSTONE AND LYON PLAYFAIR says \"";
+	var link = nextLink(ruleseed);
+	
+	var encryptedLink = "";
+	
+	var polyCoords = [];
+	for(var k = 0; k < link.length; k++)
+	{
+		var cont = true;
+		for(var i = 0; i < PolybiusSquare.length; i++)
+		{
+			for(var j = 0; j < PolybiusSquare[i].length; j++)
+			{
+				if(link[k] == PolybiusSquare[i][j])
+				{
+					polyCoords[k] = [i,j];
+					cont = false;
+				}
+				if(cont == false) break;
+			}
+			if(cont == false) break;
+		}
+		console.log(polyCoords[k]+""+PolybiusSquare[polyCoords[k][0]][polyCoords[k][1]])
+	}
+	
+	
+	for(var i = 0; i < polyCoords.length; i+=2)
+	{
+		console.log(polyCoords[i+1])
+		if(polyCoords[i+1] != undefined)
+		{
+			if(polyCoords[i][0] == polyCoords[i+1][0] && polyCoords[i][1] == polyCoords[i+1][1])
+			{
+				encryptedLink += PolybiusSquare[polyCoords[i][0]][polyCoords[i][1]]
+				encryptedLink += PolybiusSquare[polyCoords[i+1][0]][polyCoords[i+1][1]]
+			}
+			else if(polyCoords[i][1] == polyCoords[i+1][1])
+			{
+				encryptedLink += PolybiusSquare[(polyCoords[i][0]+1)%10][polyCoords[i][1]]
+				encryptedLink += PolybiusSquare[(polyCoords[i+1][0]+1)%10][polyCoords[i+1][1]]
+			}
+			else if(polyCoords[i][0] == polyCoords[i+1][0])
+			{
+				encryptedLink += PolybiusSquare[polyCoords[i][0]][(polyCoords[i][1]+1)%9]
+				encryptedLink += PolybiusSquare[polyCoords[i+1][0]][(polyCoords[i+1][1]+1)%9]
+			}
+			else
+			{
+				encryptedLink += PolybiusSquare[polyCoords[i][0]][polyCoords[i+1][1]]
+				encryptedLink += PolybiusSquare[polyCoords[i+1][0]][polyCoords[i][1]]
+			}
 		}
 		else
 		{
-			check += ASCII[(index-encrypt)];
+			encryptedLink += PolybiusSquare[polyCoords[i][0]][polyCoords[i][1]]
 		}
+		console.log(encryptedLink)
 	}
+	
+	
+	playfair.innerHTML += encryptedLink+"\"";
+	
 	
 }
 
 async function asciiPigpen(ruleseed)
 {
-	html.innerHTML += `<tr><td rowspan="2"><div><canvas id="canvas" width="1000" height="1000" style="border:1px solid #000000;"></canvas></div></td></tr></tbody></table>`;
+	html.innerHTML += `<tr><td rowspan="2"><div><canvas id="canvas" width="10000" height="10000" style="border:1px solid #000000;"></canvas></div></td></tr></tbody></table>`;
 	await delay(500);
 	generatePigpenMessage(ruleseed);
 }
@@ -1088,7 +1528,7 @@ async function loadPGP(ruleseed)
 function generatePGPFile(ruleseed)
 {
 	var message = "";
-	var pgpMethods = ["onion", "reddit","4chan","imgur","pastebin","twitter","x","dropbox", "phoneNumber", "coordinates", "hexToASCII", "asciiCaesarCipher"];
+	var pgpMethods = ["onion", "reddit","4chan","imgur","pastebin","twitter","x","dropbox", "phoneNumber", "coordinates", "hexToASCII", "asciiCaesarCipher", "wordle"];
 	var index = ruleseed.nextMax(pgpMethods.length);
 	if(traversals < 20)
 	{
@@ -1130,6 +1570,9 @@ function generatePGPFile(ruleseed)
 			case "asciiCaesarCipher":
 				message = generateCaesarReturn(ruleseed);
 				break;
+			case "wordle":
+				message = getRandomWordle(ruleseed);
+				break;
 		}
 	}
 	else
@@ -1140,6 +1583,7 @@ function generatePGPFile(ruleseed)
 	var passphrases = ["INSTAR","DIVINITY","CICADA","CAESAR"]
 	var temp = ruleseed.nextMax(passphrases.length);
 	var pgpPassphrase = passphrases[temp]
+	console.log(pgpPassphrase);
 	generateKeyPair(message, pgpPassphrase);
 	
 }
@@ -1194,11 +1638,41 @@ async function encryptMessage(message, publicKey) {
 	pgpHTML.innerHTML += `<br><br><pre>`+encryptedMessage+`</pre>`
 }
 
-function generatePigpenMessage(ruleseed)
+async function decryptMessage(encryptedMessage, privateKeyArmored, passphrase) {
+	var decryptedMessage = null;
+	try {
+        // Decrypt the private key
+        const privateKey = await openpgp.decryptKey({
+            privateKey: await openpgp.readPrivateKey({ armoredKey: privateKeyArmored }),
+            passphrase
+        });
+
+        // Read the encrypted message
+        const message = await openpgp.readMessage({ armoredMessage: encryptedMessage });
+
+        // Decrypt the message
+        decryptedMessage = await openpgp.decrypt({
+            message,
+            decryptionKeys: privateKey
+        });
+    } catch (err) {
+        console.error('Error decrypting message:', err);
+        return null;
+    }
+	console.log(decryptedMessage.data);
+	var results = document.getElementById("result");
+	results.innerHTML = `<pre>`+decryptedMessage.data+`</pre>`;
+}
+
+async function generatePigpenMessage(ruleseed)
 {
+	initialHTML = html.innerHTML;
+	html.innerHTML = initialHTML + `<p style="font-family: ASCIIPigpen-Regular">a</p>`;
+	await delay(10);
+	html.innerHTML = initialHTML;
 	var canvas = document.getElementById('canvas');
-	canvas.width = 1000;
-	canvas.height = 1000;
+	canvas.width = 2000;
+	canvas.height = 2000;
 	var ctx = canvas.getContext("2d");
 	var x0 = 0, y0 = 0, x1 = canvas.width, y1 = canvas.height;
 	ctx.beginPath();
@@ -1213,7 +1687,7 @@ function generatePigpenMessage(ruleseed)
 	}
 	ctx.fillStyle = "#"+hexString;
 	var message = "";
-	var pigpenMethods = ["onion", "reddit","4chan","imgur","pastebin","twitter","x","dropbox", "phoneNumber", "coordinates", "hexToASCII", "asciiCaesarCipher"];
+	var pigpenMethods = ["onion", "reddit","4chan","imgur","pastebin","twitter","x","dropbox", "phoneNumber", "coordinates", "hexToASCII", "asciiCaesarCipher", "asciiPigpenCipher", "asciiPlayfairCipher","wordle"];
 	var index = ruleseed.nextMax(pigpenMethods.length);
 	switch(pigpenMethods[index])
 	{
@@ -1253,9 +1727,15 @@ function generatePigpenMessage(ruleseed)
 		case "asciiCaesarCipher":
 			message = generateCaesarReturn(ruleseed);
 			break;
+		case "asciiPlayfairCipher":
+			message = generatePlayfairReturn(ruleseed);
+			break;
+		case "wordle":
+			link = getRandomWordle(ruleseed);
+			break;
 	}
-	ctx.font = '24px ASCIIPigpen-Regular';
-    ctx.fillText(message, (x0+x1)/(40), ((y0+y1)/4));
+	ctx.font = "48px ASCIIPigpen-Regular";
+    ctx.fillText(message, (x0+x1)/(40), ((y0+y1)/40));
 	console.log(ctx.font);
 }
 
@@ -1328,7 +1808,7 @@ async function loadGoogle()
 	await delay(500);
 	var tor = document.getElementById("webApp");
 	tor.style.background = "#ffffff";
-	tor.innerHTML = `<img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" width="72px" height="28px"><br><input id="googleLink"></input><br><br><button type="button" onclick="searchGoogle()">Google Search</button><button type="button" onclick="feelingLucky()">I'm Feeling Lucky</button>`;
+	tor.innerHTML = `<img src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" width="72px" height="28px"><br><input id="googleLink"></input><br><br><button type="button" onclick="searchGoogle()">Google Search</button><button type="button" onclick="window.open('http://www.youtube.com/watch?v=dQw4w9WgXcQ')">I'm Feeling Lucky</button>`;
 }
 
 async function loadSkype()
@@ -1418,7 +1898,7 @@ function closeFile()
 function closeApp()
 {
 	html = document.getElementsByClassName("monitor")[0];
-	
+	typable = false;
 	phoneDigits = 0;
 	html.innerHTML = `<p>Choose app</p>`;
 	html.innerHTML += `<button onclick="loadTor()"><img src="img/tor.png" width="50px" height="50px"></button>`;
@@ -1562,6 +2042,80 @@ function inputNumber(digit)
 	
 }
 
+function generatePizzaOrder(ruleseed, call)
+{
+	var order = "";
+	
+	if(call)
+	{
+		order += "I would like a/";
+	}
+	
+	var orderAmount = ruleseed.nextMax(3)+1;
+	var counter = 0;
+	
+	var pizzaToppings = ["pepperoni","sausage","canadian bacon","bacon","chicken","beef","meatball","salami","anchovies","mushroom","onion","pineapple","olive","jalapeno","banana pepper","green pepper","tomato","spinach","garlic","artichoke hearts","zucchini","turkey","corn","cranberries","blueberries","kimchi","sauerkraut","apricot","clam","potato","peach","brussel sprouts","crab","Skittles","cicadas"]
+	var pizzaSize = ["small","medium","large","extra-large"]
+	var pizzaPrice = [9.99, 12.99, 15.99, 21.99]
+	var drinks = ["Coke","Pepsi","Starry","Sprite","Water","Doctor Pepper","Mister Pibb","Mountain Dew","Mello Yellow","Bleach","Bacon Grease", "Pickle Juice", "Beverly"]
+	var costs = [];
+	
+	while(counter < orderAmount)
+	{
+		if(counter >= 1 && call) order += "I would also like a ";
+		var size = ruleseed.nextMax(pizzaSize.length);
+		var toppingCount = ruleseed.nextMax(Math.floor(pizzaToppings.length / 4));
+		order += pizzaSize[size] + " pizza with "
+		if(toppingCount == 0) order += "nothing on it"
+		else
+		{
+			var toppingC = 0;
+			while(toppingC < toppingCount)
+			{
+				var topping = ruleseed.nextMax(pizzaToppings.length)
+				if(toppingCount == 1) order += pizzaToppings[topping] + ""
+				else if(toppingCount == 2 && toppingC != toppingCount - 1) order += pizzaToppings[topping] + " "
+				else if(toppingCount >= 2 && toppingC != toppingCount - 1) order += pizzaToppings[topping] + ", "
+				if(toppingCount >= 2 && toppingC == toppingCount - 1) order += "and " + pizzaToppings[topping]
+				toppingC++;
+			}
+			if(call) order += " on it";
+			if(!call) order += ": ";
+		}
+		if(!call)
+		{
+			order += "  "+pizzaPrice[size].toString()+"/";
+			costs.push(pizzaPrice[size]);
+		}
+		if(call) order += "/";
+		var ifDrink = ruleseed.nextMax(2);
+		if(ifDrink == 1)
+		{
+			if(call) order += "I would also like a "
+			var drink = ruleseed.nextMax(drinks.length);
+			order += "" + drinks[drink];
+			if(!call)
+			{
+				costs.push(2.99);
+				order += ":  2.99/";
+			}
+			if(call) order += "/";
+		}
+		counter++;
+	}
+	if(!call)
+	{
+		var total = 0
+		for(var i = 0; i < costs.length; i++)
+		{
+			total += costs[i]
+		}
+		order += "Total: "+total.toString()+"/";
+	}
+	if(call) order.replace("/",".");
+	return order;
+}
+
 async function callNumber()
 {
 	if(callerID.length == 10)
@@ -1576,12 +2130,21 @@ async function callNumber()
 		var back = document.getElementById("webApp");
 		back.innerHTML = `<img src="img/skype.png" width="28px" height="28px"><br><font id="display" color="white">`+displayedNumber+`</font>`;
 		
+		var message = "";
+		var messInt = ruleseed.nextMax(5);
+		messInt = 4;
+		if(messInt == 4)
+		{
+			message = generatePizzaOrder(ruleseed, true);
+		}
+		else 
+		{
+			message = nextStep(ruleseed);
+		}
 		
-		var message = nextStep(ruleseed);
 		audio = new Audio('audio/calling.mp3');
 		audio.play();
 		await delay(3000);
-		var messInt = ruleseed.nextMax(4);
 		
 		switch(messInt)
 		{
@@ -1596,6 +2159,9 @@ async function callNumber()
 				break;
 			case 3:
 				tap(message.toLowerCase());
+				break;
+			case 4:
+				pizza(message.toLowerCase());
 				break;
 		}
 	}
@@ -1762,7 +2328,43 @@ function tapCodeDigits(character)
 	return null;
 }
 
+const synth = window.speechSynthesis;
 
+let voices;
+
+function loadVoices() {
+  voices = synth.getVoices();
+}
+
+if ("onvoiceschanged" in synth) {
+  synth.onvoiceschanged = loadVoices;
+} else {
+  loadVoices();
+}
+
+async function pizza(message)
+{
+	message = "Thank you for calling Pizza.NET's hotline. My name is "+users[Math.floor(Math.random()*users.length)]+". How may I take your order?/" + message;
+	var sentences = message.split("/");
+	for(var i = 0; i < sentences.length; i++)
+	{
+		//while()
+		console.log(sentences[i]);
+		const utterThis = new SpeechSynthesisUtterance(sentences[i]);
+		utterThis.voice = voices[0];
+		
+		let utterancePromise = new Promise((resolve, reject) => {
+            utterThis.onend = resolve;
+            utterThis.onerror = reject;
+        });
+		
+		synth.speak(utterThis);
+		
+		await utterancePromise;
+	}
+	await delay(1000);
+	endCall();
+}
 
 function endCall()
 {
@@ -1824,7 +2426,7 @@ function generateImage(ruleseed) {
 		}
 		ctx.fillStyle = "#"+hexString;
 	}
-	var mathod = ruleseed.nextMax(11);
+	var mathod = ruleseed.nextMax(12);
 	if(mathod == 0) mathod++
 	if(traversals >= 20) mathod = 10;
 	switch(mathod)
@@ -1872,6 +2474,10 @@ function generateImage(ruleseed) {
 			ctx.font = "24px Consolas";
 			ctx.fillText(getRandomDropbox(ruleseed),(x0+x1)/(50), (y0+y1)/(2));
 			break;
+		case 11:
+			ctx.font = "24px Consolas";
+			ctx.fillText(getRandomWordle(ruleseed),(x0+x1)/(50), (y0+y1)/(2));
+			break;
 	}
 }
 
@@ -1905,7 +2511,7 @@ function generateImageProduct(ruleseed) {
 
 function nextStep(ruleseed)
 {
-	var mathod = ruleseed.nextMax(11)
+	var mathod = ruleseed.nextMax(12)
 	if(mathod == 0) mathod++;
 	if(traversals >= 20) mathod = 10;
 	switch(mathod)
@@ -1942,6 +2548,43 @@ function nextStep(ruleseed)
 			break;
 		case 10:
 			return getRandomDropbox(ruleseed);
+			break;
+		case 11:
+			return getRandomWordle(ruleseed);
+			break;
+	}
+}
+
+function nextLink(ruleseed)
+{
+	var mathod = ruleseed.nextMax(8)
+	if(mathod == 0) mathod++;
+	if(traversals >= 20) mathod = 6;
+	switch(mathod)
+	{
+		case 0:
+			return getRandomReddit(ruleseed);
+			break;
+		case 1:
+			return getRandom4Chan(ruleseed);
+			break;
+		case 2:
+			return getRandomImgur(ruleseed);
+			break;
+		case 3:
+			return getRandomPastebin(ruleseed);
+			break;
+		case 4:
+			return getRandomTwitter(ruleseed);
+			break;
+		case 5:
+			return getRandomX(ruleseed);
+			break;
+		case 6:
+			return getRandomDropbox(ruleseed);
+			break;
+		case 7:
+			return getRandomWordle(ruleseed);
 			break;
 	}
 }
@@ -2048,6 +2691,18 @@ function getRandomDropbox(ruleseed) {
 	var index = 0;
 	var link = "www.dropbox.com/sh/";
 	var inc = ruleseed.next(5, 10, false);
+	for(var i = 0; i < inc; i++)
+	{
+		link += websiteChars[ruleseed.nextMax(websiteChars.length)];
+	}
+	return link;
+}
+
+function getRandomWordle(ruleseed) {
+	var ruleseed = new MonoRandom(ruleseed.seed);
+	var index = 0;
+	var link = "www.nytimes.com/games/wordle/";
+	var inc = ruleseed.next(8, 12, false);
 	for(var i = 0; i < inc; i++)
 	{
 		link += websiteChars[ruleseed.nextMax(websiteChars.length)];
@@ -2272,10 +2927,6 @@ async function prepPrimus(ruleseedNumber)
 	html.innerHTML = initialHTML + `<tr><td rowspan="2"><div><p id="gematria"></p><br><p class="gematriaLink"></p></div></td></tr></tbody></table>`;
 	var gematria = document.getElementById("gematria");
 	var gematriaLink = document.getElementsByClassName("gematriaLink")[0];
-	for(var i = 0; i < gematriaPrimus.length; i++)
-	{
-		gematria.innerHTML += gematriaPrimus[i];
-	}
 	var ruleseed = new MonoRandom(ruleseedNumber);
 	gematriaLink.innerHTML = await fetchModule(ruleseed);
 }

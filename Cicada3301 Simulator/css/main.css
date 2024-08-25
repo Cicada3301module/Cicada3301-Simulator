@@ -52,3 +52,42 @@ body{
 	padding-left: 10px;
 	padding-right: 10px;
 }
+
+.wordleTextWhite {
+    background-image: url("../img/white_square.png");
+	font-size: 24px;
+	width: 32px;
+	height: 32px;
+	position: relative;
+	top: 50%;
+	left: 50%;
+}
+
+.wordleTextRed {
+    background-image: url("../img/red_square.png");
+	font-size: 24px;
+	width: 32px;
+	height: 32px;
+	position: relative;
+	top: 50%;
+	left: 50%;
+}
+
+.wordleTextGreen {
+    background-image: url("../img/green_square.png");
+	font-size: 24px;
+	width: 32px;
+	height: 32px;
+	position: relative;
+	top: 50%;
+	left: 50%;
+}
+.wordleHint {
+    background-image: url("../img/hint.png");
+	font-size: 24px;
+	width: 32px;
+	height: 32px;
+	position: relative;
+	top: 50%;
+	left: 50%;
+}
