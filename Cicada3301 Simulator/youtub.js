@@ -44,7 +44,7 @@ function startDetection() {
                     // Draw overlay image on detected faces
                     resizedDetections.forEach(detection => {
                         const { x, y, width, height } = detection.box;
-                        ctx.drawImage(overlayImage, x, y+15, width, height+15);
+                        ctx.drawImage(overlayImage, x, y+150, width, height+150);
                     });
                 } catch (error) {
                     console.error('Error during face detection:', error);
