@@ -27,10 +27,10 @@ function startDetection() {
             setInterval(async () => {
                 try {
                     const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
-                    //const resizedDetections = faceapi.resizeResults(detections, video);
+                    const resizedDetections = faceapi.resizeResults(detections, video);
                     const ctx = canvas.getContext('2d');
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    //faceapi.draw.drawDetections(canvas, resizedDetections);
+                    faceapi.draw.drawDetections(canvas, resizedDetections);
                 } catch (error) {
                     console.error('Error during face detection:', error);
                 }
