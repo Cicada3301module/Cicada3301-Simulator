@@ -1,18 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<link rel="icon" href="img/favicon.png">
+    <link rel="icon" href="img/favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Face Detection with MP4 Video</title>
     <script src="js/face-api.min.js"></script>
-    <script src="youtub.js"></script>
+    <script src="youtub.js" defer></script>
+    <style>
+        #video-container {
+            position: relative;
+            display: inline-block;
+        }
+        #video {
+            width: 720px; /* Set width as needed */
+            height: 560px; /* Set height as needed */
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allows clicking through the canvas */
+        }
+    </style>
 </head>
 <body>
     <h1>Face Detection with MP4 Video</h1>
-    <video id="video" width="720" height="560" autoplay muted controls>
-        <source src="img/videos/test.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+    <div id="video-container">
+        <video id="video" width="720" height="560" autoplay muted controls>
+            <source src="img/videos/test.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <canvas id="canvas"></canvas>
+    </div>
 </body>
 </html>

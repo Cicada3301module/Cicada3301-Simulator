@@ -10,18 +10,14 @@ async function loadModels() {
 
 function startDetection() {
     const video = document.getElementById('video');
-    console.log(video);
-	video.addEventListener("playing", (event) => {
-	console.log("video can play");
-	});
+    const canvas = document.getElementById('canvas');
+
     video.addEventListener('playing', () => {
         try {
-            // Create a canvas manually
-            const canvas = document.createElement('canvas');
-			console.log(canvas);
+            // Set canvas size to match the video
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            document.body.append(canvas);
+
             faceapi.matchDimensions(canvas, video);
 
             setInterval(async () => {
@@ -37,7 +33,7 @@ function startDetection() {
             }, 100);
 
         } catch (error) {
-            console.error('Error creating canvas from video:', error);
+            console.error('Error setting up canvas:', error);
         }
     });
 }
@@ -45,8 +41,7 @@ function startDetection() {
 document.addEventListener('DOMContentLoaded', async () => {
     await loadModels();
     const video = document.getElementById('video');
-	console.log("loaded models");
-    // Ensure the video is ready to play before starting detection
+    
     video.oncanplay = () => {
         startDetection();
     };
