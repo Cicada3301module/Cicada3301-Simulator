@@ -18,7 +18,7 @@ function startDetection() {
         try {
             // Create a canvas manually
             const canvas = document.createElement('canvas');
-			//console.log(canvas);
+			console.log(canvas);
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             document.body.append(canvas);
