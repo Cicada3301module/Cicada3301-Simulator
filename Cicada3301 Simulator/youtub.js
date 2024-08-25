@@ -39,12 +39,12 @@ function startDetection() {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     
                     // Draw face detections
-                    faceapi.draw.drawDetections(canvas, resizedDetections);
+                    //faceapi.draw.drawDetections(canvas, resizedDetections);
                     
                     // Draw overlay image on detected faces
                     resizedDetections.forEach(detection => {
                         const { x, y, width, height } = detection.box;
-                        ctx.drawImage(overlayImage, x, y, width, height);
+                        ctx.drawImage(overlayImage, x, y+15, width, height+15);
                     });
                 } catch (error) {
                     console.error('Error during face detection:', error);
