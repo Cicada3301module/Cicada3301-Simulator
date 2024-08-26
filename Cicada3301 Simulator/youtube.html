@@ -10,12 +10,18 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #000; /* Optional: To make the video stand out */
         }
 
         video {
-            position: absolute;
-            top: 0;
-            left: 0;
+            position: relative;
+            width: 640px;
+            height: 480px;
         }
 
         canvas {
@@ -24,13 +30,30 @@
             left: 0;
             pointer-events: none;
         }
+
+        #playButton {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #playButton:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
-    <video id="video" width="640" height="480" autoplay muted>
+    <video id="video" width="640" height="480" muted>
         <source src="img/videos/test.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
+    <button id="playButton">Play Video</button>
     <canvas id="overlayCanvas" width="640" height="480"></canvas>
     <img id="overlayImage" src="img/google.png" style="display: none;"/>
 
