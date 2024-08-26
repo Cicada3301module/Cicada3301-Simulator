@@ -1,16 +1,22 @@
 let overlayImage;
 
 async function loadModels() {
-    await Promise.all([
-        faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
-        faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
-        faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights')
-    ]);
-    console.log('Face API models loaded');
+    console.log('Loading face API models...');
+    try {
+        await Promise.all([
+            faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
+            faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
+            faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights')
+        ]);
+        console.log('Face API models loaded successfully.');
+    } catch (error) {
+        console.error('Error loading models:', error);
+    }
 }
 
 function loadOverlayImage() {
     return new Promise((resolve, reject) => {
+        console.log('Loading overlay image...');
         overlayImage = new Image();
         overlayImage.src = 'img/google.png'; // Ensure the path is correct
         overlayImage.onload = () => {
@@ -30,6 +36,7 @@ function startDetection() {
     const ctx = canvas.getContext('2d');
 
     video.addEventListener('playing', () => {
+        console.log('Video is playing');
         try {
             // Set canvas size to match the video
             canvas.width = video.videoWidth;
@@ -41,7 +48,7 @@ function startDetection() {
             setInterval(async () => {
                 try {
                     const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
-                    console.log('Detections:', detections);
+                    console.log('Face detections:', detections);
 
                     if (detections.length === 0) {
                         console.warn('No faces detected');
@@ -50,9 +57,6 @@ function startDetection() {
 
                     const resizedDetections = faceapi.resizeResults(detections, video);
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                    // Test drawing the image directly on the canvas (for debugging)
-                    // ctx.drawImage(overlayImage, 0, 0, 100, 100);  // Draw at top-left corner
 
                     // Draw overlay image on detected faces
                     resizedDetections.forEach(detection => {
@@ -68,20 +72,28 @@ function startDetection() {
             console.error('Error setting up canvas:', error);
         }
     });
+
+    video.addEventListener('canplay', () => {
+        console.log('Video can play, ready for detection.');
+        // Only start detection when the video can actually play
+        startDetection();
+    });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Document loaded, starting initialization...');
     try {
         await loadModels();
         await loadOverlayImage();
-        console.log('Models and overlay image are loaded');
+        console.log('Models and overlay image are loaded.');
 
         const video = document.getElementById('video');
+        video.pause();  // Ensure the video doesn't play automatically
 
-        video.oncanplay = () => {
-            console.log('Video can play, starting detection');
+        video.addEventListener('canplay', () => {
+            console.log('Video is ready to start detection.');
             startDetection();
-        };
+        });
     } catch (error) {
         console.error('Initialization error:', error);
     }
