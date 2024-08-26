@@ -13,8 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
         faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
         faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights')
     ]).then(() => {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
+        video.addEventListener('loadeddata', () => {
+            // Set canvas size to match the video
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+        });
     });
 
     playButton.addEventListener('click', () => {
@@ -28,8 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     video.addEventListener('play', () => {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
         detectFace();
     });
 
