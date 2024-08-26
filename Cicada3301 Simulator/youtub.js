@@ -10,27 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
         faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
         faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
         faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights')
-    ]).then(startVideo);
-
-    function startVideo() {
-        navigator.mediaDevices.getUserMedia(
-            { video: {} }
-        ).then(stream => {
-            video.srcObject = stream;
-            video.play();
-        }).catch(err => console.error(err));
-    }
-
-    video.addEventListener('play', () => {
+    ]).then(() => {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-        detectFace();
-    });
-
-    video.addEventListener('pause', () => {
-        // Clear canvas and show overlay image when video is paused
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(overlayImage, 0, 0, canvas.width, canvas.height);
     });
 
     playButton.addEventListener('click', () => {
@@ -43,14 +25,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    video.addEventListener('play', () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        detectFace();
+    });
+
+    video.addEventListener('pause', () => {
+        // Clear canvas and show overlay image when video is paused
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        playButton.style.display = 'block';
+    });
+
     async function detectFace() {
+        if (video.paused) return; // Skip detection if video is paused
+        
         // Detect faces and landmarks
         const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
         
         // Clear canvas before drawing
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Draw detections
+        // Draw detections and overlay image
         detections.forEach(detection => {
             // Draw face box
             const { x, y, width, height } = detection.detection.box;
@@ -63,7 +59,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Draw landmarks
             faceapi.draw.drawFaceLandmarks(canvas, [detection]);
+
+            // Draw overlay image on top of face detection
+            ctx.drawImage(
+                overlayImage,
+                x, y, width, height // Position and size of overlay image
+            );
         });
+
+        // Show play button only when detections are visible
+        playButton.style.display = 'block';
 
         requestAnimationFrame(detectFace);
     }
