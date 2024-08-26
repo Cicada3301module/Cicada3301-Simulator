@@ -1,7 +1,6 @@
 // youtub.js
 
 let overlayImage;
-let overlayApplied = false;
 
 async function loadModels() {
     await Promise.all([
@@ -20,34 +19,29 @@ function loadOverlayImage() {
     });
 }
 
-async function detectFaces(video, canvas) {
+async function detectAndOverlayFaces(video, canvas) {
     const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Attempt detection multiple times before giving up
-    for (let attempt = 0; attempt < 5; attempt++) {
-        try {
-            const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
-            if (detections.length > 0) {
-                const resizedDetections = faceapi.resizeResults(detections, video);
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                // Draw overlay image on detected faces
-                resizedDetections.forEach(detection => {
-                    const { x, y, width, height } = detection.box;
-                    ctx.drawImage(overlayImage, x - 100, y - 100, width + 100, height + 100);
-                });
+    try {
+        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
+        if (detections.length > 0) {
+            const resizedDetections = faceapi.resizeResults(detections, video);
 
-                overlayApplied = true;
-                return true; // Successfully applied overlay
-            }
-        } catch (error) {
-            console.error(`Error during face detection (attempt ${attempt + 1}):`, error);
+            resizedDetections.forEach(detection => {
+                const { x, y, width, height } = detection.box;
+                ctx.drawImage(overlayImage, x - 100, y - 100, width + 100, height + 100);
+            });
+
+            return true; // Detection and overlay successful
+        } else {
+            console.warn('No faces detected.');
+            return false;
         }
-        // If detection fails, wait before trying again
-        await new Promise(resolve => setTimeout(resolve, 500));
+    } catch (error) {
+        console.error('Error during face detection:', error);
+        return false;
     }
-
-    return false; // Overlay not applied after retries
 }
 
 function startDetection() {
@@ -60,16 +54,27 @@ function startDetection() {
             // Set canvas size to match the video
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-
             faceapi.matchDimensions(canvas, video);
 
-            const success = await detectFaces(video, canvas);
+            let overlayApplied = false;
+            const maxRetries = 5;
+            let attempts = 0;
 
-            if (success) {
+            // Retry until overlay is applied or max retries reached
+            while (!overlayApplied && attempts < maxRetries) {
+                overlayApplied = await detectAndOverlayFaces(video, canvas);
+                if (!overlayApplied) {
+                    console.log(`Attempt ${attempts + 1} failed. Retrying...`);
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+                attempts++;
+            }
+
+            if (overlayApplied) {
                 playButton.style.display = 'block'; // Show play button if overlay is applied
             } else {
-                console.error('Overlay application failed.');
-                alert('Failed to apply the image overlay. Please try reloading the page.');
+                console.error('Failed to apply overlay after multiple attempts.');
+                alert('Overlay application failed. Please try reloading the page.');
             }
 
         } catch (error) {
@@ -94,7 +99,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Play the video when the play button is clicked
     playButton.addEventListener('click', () => {
-        if (overlayApplied) {
+        if (overlayImage) {
             video.play();
             playButton.style.display = 'none'; // Hide the button after playing
         } else {
