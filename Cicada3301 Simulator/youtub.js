@@ -61,8 +61,15 @@ document.addEventListener('DOMContentLoaded', () => {
         playButton.style.display = 'block'; // Show play button when video is paused
     });
 
+    video.addEventListener('ended', () => {
+        console.log('Video ended');
+        playButton.style.display = 'block'; // Show play button when video ends
+        detections = []; // Clear detections
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+    });
+
     async function detectFace() {
-        if (video.paused) return; // Skip detection if video is paused
+        if (video.paused || video.ended) return; // Skip detection if video is paused or ended
 
         // Detect faces and landmarks
         detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
