@@ -37,6 +37,7 @@ function setupCanvas(video) {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     faceapi.matchDimensions(canvas, video);
+    console.log('Canvas setup complete with dimensions:', canvas.width, canvas.height);
 }
 
 function drawOverlayOnCanvas() {
@@ -62,7 +63,7 @@ function drawOverlayOnCanvas() {
             // Draw overlay image on detected faces
             resizedDetections.forEach(detection => {
                 const { x, y, width, height } = detection.box;
-                console.log('Drawing image at:', x, y, 'with size:', width, height);
+                console.log('Drawing image at:', x - 100, y - 100, 'with size:', width + 100, height + 100);
                 ctx.drawImage(overlayImage, x - 100, y - 100, width + 100, height + 100);
             });
         } catch (error) {
