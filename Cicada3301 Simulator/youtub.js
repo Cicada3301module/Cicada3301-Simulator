@@ -1,3 +1,5 @@
+let isPaused = false; // Track the pause state manually
+
 document.addEventListener('DOMContentLoaded', () => {
     const video = document.getElementById('video');
     const canvas = document.getElementById('overlayCanvas');
@@ -6,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const playButton = document.getElementById('playButton');
 
     let detections = []; // Store face detections
-    let isPaused = false; // Track the pause state manually
 
     // Load face-api.js models from CDN
     Promise.all([
