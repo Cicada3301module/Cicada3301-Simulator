@@ -53,9 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     video.addEventListener('play', () => {
-        if (!videoEnded) {
-            detectFace(); // Start or resume face detection
-        }
+		detectFace();
         playButton.style.display = 'none'; // Hide play button when video plays
     });
 
