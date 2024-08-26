@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const playButton = document.getElementById('playButton');
 
     let detections = []; // Store face detections
+    let videoEnded = false; // Track if the video has ended
 
     // Load face-api.js models from CDN
     Promise.all([
@@ -25,8 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Play button event listener
     playButton.addEventListener('click', () => {
-        if (video.paused) {
+        if (video.paused || videoEnded) {
             video.play().then(() => {
+                videoEnded = false;
                 playButton.style.display = 'none'; // Hide play button when video plays
                 console.log('Play button clicked - Video playing');
             }).catch(error => {
@@ -37,8 +39,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Toggle play/pause on video click with no overlap
     video.addEventListener('click', () => {
-        if (video.paused) {
+        if (video.paused || videoEnded) {
             video.play().then(() => {
+                videoEnded = false;
                 console.log('Video clicked - Video playing');
             }).catch(error => {
                 console.error('Error playing video:', error);
@@ -53,7 +56,9 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         playButton.style.display = 'none'; // Hide play button when video plays
-        detectFace();
+        if (!videoEnded) {
+            detectFace();
+        }
     });
 
     video.addEventListener('pause', () => {
@@ -63,9 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     video.addEventListener('ended', () => {
         console.log('Video ended');
+        videoEnded = true;
         playButton.style.display = 'block'; // Show play button when video ends
-        detections = []; // Clear detections
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+        drawOverlayImage(); // Keep the last detection and overlay visible
     });
 
     async function detectFace() {
