@@ -13,7 +13,7 @@ async function loadModels() {
 function loadOverlayImage() {
     return new Promise((resolve, reject) => {
         overlayImage = new Image();
-        overlayImage.src = 'img/google.png'; // Updated image path
+        overlayImage.src = 'img/google.png';
         overlayImage.onload = () => resolve();
         overlayImage.onerror = reject;
     });
@@ -25,6 +25,8 @@ async function detectAndOverlayFaces(video, canvas) {
 
     try {
         const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
+        console.log('Detections:', detections);  // Log detections to check if face detection works
+
         if (detections.length > 0) {
             const resizedDetections = faceapi.resizeResults(detections, video);
 
@@ -33,7 +35,7 @@ async function detectAndOverlayFaces(video, canvas) {
                 ctx.drawImage(overlayImage, x - 100, y - 100, width + 100, height + 100);
             });
 
-            return true; // Detection and overlay successful
+            return true;  // Overlay applied successfully
         } else {
             console.warn('No faces detected.');
             return false;
@@ -54,13 +56,13 @@ function startDetection() {
             // Set canvas size to match the video
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
+
             faceapi.matchDimensions(canvas, video);
 
             let overlayApplied = false;
             const maxRetries = 5;
             let attempts = 0;
 
-            // Retry until overlay is applied or max retries reached
             while (!overlayApplied && attempts < maxRetries) {
                 overlayApplied = await detectAndOverlayFaces(video, canvas);
                 if (!overlayApplied) {
@@ -71,7 +73,7 @@ function startDetection() {
             }
 
             if (overlayApplied) {
-                playButton.style.display = 'block'; // Show play button if overlay is applied
+                playButton.style.display = 'block';  // Show play button
             } else {
                 console.error('Failed to apply overlay after multiple attempts.');
                 alert('Overlay application failed. Please try reloading the page.');
@@ -85,12 +87,14 @@ function startDetection() {
 
 document.addEventListener('DOMContentLoaded', async () => {
     await loadModels();
-    await loadOverlayImage(); // Ensure image is loaded before starting detection
+    await loadOverlayImage();  // Ensure image is loaded before starting detection
+
     const video = document.getElementById('video');
     const playButton = document.getElementById('playButton');
-    
+
     // Start detection when the video is ready to play
     video.oncanplay = () => {
+        console.log('Video ready for face detection.');
         startDetection();
     };
 
@@ -99,11 +103,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Play the video when the play button is clicked
     playButton.addEventListener('click', () => {
-        if (overlayImage) {
-            video.play();
-            playButton.style.display = 'none'; // Hide the button after playing
-        } else {
-            alert('Overlay not applied correctly. Please wait.');
-        }
+        video.play();
+        playButton.style.display = 'none';  // Hide the button after playing
     });
 });
