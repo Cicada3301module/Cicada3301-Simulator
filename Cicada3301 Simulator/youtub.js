@@ -1,24 +1,20 @@
 let overlayImage;
 
 async function loadModels() {
-    try {
-        await Promise.all([
-            faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
-            faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
-            faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights')
-        ]);
-        console.log('Models loaded successfully.');
-    } catch (error) {
-        console.error('Error loading models:', error);
-    }
+    await Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
+        faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
+        faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights')
+    ]);
+    console.log('Face API models loaded');
 }
 
 function loadOverlayImage() {
     return new Promise((resolve, reject) => {
         overlayImage = new Image();
-        overlayImage.src = 'img/google.png';
+        overlayImage.src = 'img/google.png'; // Ensure the path is correct
         overlayImage.onload = () => {
-            console.log('Overlay image loaded successfully.');
+            console.log('Overlay image loaded successfully:', overlayImage);
             resolve();
         };
         overlayImage.onerror = (error) => {
@@ -28,65 +24,48 @@ function loadOverlayImage() {
     });
 }
 
-async function detectAndOverlayFaces(video, canvas) {
-    try {
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
-        console.log('Detections:', detections);
-
-        if (detections.length > 0) {
-            const resizedDetections = faceapi.resizeResults(detections, video);
-            resizedDetections.forEach(detection => {
-                const { x, y, width, height } = detection.box;
-                ctx.drawImage(overlayImage, x - 100, y - 100, width + 100, height + 100);
-            });
-            return true;
-        } else {
-            console.warn('No faces detected.');
-            return false;
-        }
-    } catch (error) {
-        console.error('Error during face detection:', error);
-        return false;
-    }
-}
-
 function startDetection() {
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
-    const playButton = document.getElementById('playButton');
+    const ctx = canvas.getContext('2d');
 
-    video.addEventListener('playing', async () => {
+    video.addEventListener('playing', () => {
         try {
             // Set canvas size to match the video
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
+            console.log('Canvas dimensions set:', canvas.width, canvas.height);
+
             faceapi.matchDimensions(canvas, video);
 
-            let overlayApplied = false;
-            const maxRetries = 5;
-            let attempts = 0;
+            setInterval(async () => {
+                try {
+                    const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
+                    console.log('Detections:', detections);
 
-            while (!overlayApplied && attempts < maxRetries) {
-                overlayApplied = await detectAndOverlayFaces(video, canvas);
-                if (!overlayApplied) {
-                    console.log(`Attempt ${attempts + 1} failed. Retrying...`);
-                    await new Promise(resolve => setTimeout(resolve, 500));
+                    if (detections.length === 0) {
+                        console.warn('No faces detected');
+                        return; // Skip drawing if no faces are detected
+                    }
+
+                    const resizedDetections = faceapi.resizeResults(detections, video);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    // Test drawing the image directly on the canvas (for debugging)
+                    // ctx.drawImage(overlayImage, 0, 0, 100, 100);  // Draw at top-left corner
+
+                    // Draw overlay image on detected faces
+                    resizedDetections.forEach(detection => {
+                        const { x, y, width, height } = detection.box;
+                        console.log('Drawing image at:', x, y, 'with size:', width, height);
+                        ctx.drawImage(overlayImage, x - 100, y - 100, width + 100, height + 100);
+                    });
+                } catch (error) {
+                    console.error('Error during face detection:', error);
                 }
-                attempts++;
-            }
-
-            if (overlayApplied) {
-                playButton.style.display = 'block';  // Show play button
-            } else {
-                console.error('Failed to apply overlay after multiple attempts.');
-                alert('Overlay application failed. Please try reloading the page.');
-            }
-
+            }, 100);
         } catch (error) {
-            console.error('Error during detection setup:', error);
+            console.error('Error setting up canvas:', error);
         }
     });
 }
@@ -95,23 +74,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         await loadModels();
         await loadOverlayImage();
+        console.log('Models and overlay image are loaded');
 
         const video = document.getElementById('video');
-        const playButton = document.getElementById('playButton');
 
         video.oncanplay = () => {
-            console.log('Video ready for face detection.');
+            console.log('Video can play, starting detection');
             startDetection();
         };
-
-        video.pause();  // Ensure video doesn't play automatically
-
-        playButton.addEventListener('click', () => {
-            video.play();
-            playButton.style.display = 'none';  // Hide the button after playing
-        });
-
     } catch (error) {
-        console.error('Error during initialization:', error);
+        console.error('Initialization error:', error);
     }
 });
