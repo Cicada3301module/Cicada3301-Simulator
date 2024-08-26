@@ -13,16 +13,17 @@ document.addEventListener('DOMContentLoaded', () => {
     ]).then(startVideo);
 
     function startVideo() {
-        navigator.getUserMedia(
-            { video: {} },
-            stream => video.srcObject = stream,
-            err => console.error(err)
-        );
+        navigator.mediaDevices.getUserMedia(
+            { video: {} }
+        ).then(stream => {
+            video.srcObject = stream;
+            video.play();
+        }).catch(err => console.error(err));
     }
 
     video.addEventListener('play', () => {
-        canvas.width = video.width;
-        canvas.height = video.height;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
         detectFace();
     });
 
