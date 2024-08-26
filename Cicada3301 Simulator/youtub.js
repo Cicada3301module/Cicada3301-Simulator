@@ -3,11 +3,11 @@ const canvas = document.getElementById('overlayCanvas');
 const overlayImage = document.getElementById('overlayImage');
 const ctx = canvas.getContext('2d');
 
-// Load face-api.js models
+// Load face-api.js models from CDN
 Promise.all([
-    faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-    faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-    faceapi.nets.faceRecognitionNet.loadFromUri('/models')
+    faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
+    faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
+    faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights')
 ]).then(startVideo);
 
 function startVideo() {
