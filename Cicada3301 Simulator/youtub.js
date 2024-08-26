@@ -1,5 +1,3 @@
-let isPaused = false; // Track the pause state manually
-
 document.addEventListener('DOMContentLoaded', () => {
     const video = document.getElementById('video');
     const canvas = document.getElementById('overlayCanvas');
@@ -21,41 +19,49 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.height = video.videoHeight;
             canvas.style.width = `${video.videoWidth}px`; // Ensure canvas matches video size
             canvas.style.height = `${video.videoHeight}px`;
+            console.log('Canvas size set to match video:', canvas.width, canvas.height);
         });
     });
 
+    // Play button event listener
     playButton.addEventListener('click', () => {
         if (video.paused) {
             video.play();
             playButton.style.display = 'none'; // Hide play button when video plays
-            isPaused = false;
+            console.log('Play button clicked - Video playing');
         }
     });
 
+    // Video event listeners
     video.addEventListener('play', () => {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         canvas.style.width = `${video.videoWidth}px`; // Ensure canvas matches video size
         canvas.style.height = `${video.videoHeight}px`;
         playButton.style.display = 'none'; // Hide play button when video plays
-        isPaused = false;
+        console.log('Video playing');
         detectFace();
     });
 
     video.addEventListener('pause', () => {
         drawOverlayImage();
         playButton.style.display = 'block'; // Show play button when video is paused
-        isPaused = true;
+        console.log('Video paused');
     });
 
+    // Toggle play/pause on video click
     video.addEventListener('click', () => {
-        if (!isPaused) {
+        if (video.paused) {
+            video.play();
+            console.log('Video clicked - Video playing');
+        } else {
             video.pause();
+            console.log('Video clicked - Video paused');
         }
     });
 
     async function detectFace() {
-        if (isPaused) return; // Skip detection if video is paused
+        if (video.paused) return; // Skip detection if video is paused
 
         // Detect faces and landmarks
         detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
