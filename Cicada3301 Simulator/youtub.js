@@ -50,7 +50,7 @@ function drawOverlayOnCanvas() {
 
     setInterval(async () => {
         try {
-            if (!videoLoaded) return; // Only proceed if video is loaded and ready
+            if (!videoLoaded || !imageLoaded) return; // Only proceed if both video and image are loaded
 
             const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
             console.log('Face detections:', detections);
@@ -85,6 +85,12 @@ function startDetection() {
 
         if (imageLoaded) {
             drawOverlayOnCanvas(); // Start overlay drawing only if image is loaded
+        }
+    });
+
+    video.addEventListener('play', () => {
+        if (imageLoaded) {
+            drawOverlayOnCanvas(); // Start overlay drawing when video starts playing
         }
     });
 }
