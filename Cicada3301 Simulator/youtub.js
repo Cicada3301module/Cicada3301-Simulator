@@ -1,41 +1,48 @@
-// youtub.js
-
 let overlayImage;
 
 async function loadModels() {
-    await Promise.all([
-        faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
-        faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
-        faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights')
-    ]);
+    try {
+        await Promise.all([
+            faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
+            faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
+            faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights')
+        ]);
+        console.log('Models loaded successfully.');
+    } catch (error) {
+        console.error('Error loading models:', error);
+    }
 }
 
 function loadOverlayImage() {
     return new Promise((resolve, reject) => {
         overlayImage = new Image();
         overlayImage.src = 'img/google.png';
-        overlayImage.onload = () => resolve();
-        overlayImage.onerror = reject;
+        overlayImage.onload = () => {
+            console.log('Overlay image loaded successfully.');
+            resolve();
+        };
+        overlayImage.onerror = (error) => {
+            console.error('Error loading overlay image:', error);
+            reject(error);
+        };
     });
 }
 
 async function detectAndOverlayFaces(video, canvas) {
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     try {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
         const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
-        console.log('Detections:', detections);  // Log detections to check if face detection works
+        console.log('Detections:', detections);
 
         if (detections.length > 0) {
             const resizedDetections = faceapi.resizeResults(detections, video);
-
             resizedDetections.forEach(detection => {
                 const { x, y, width, height } = detection.box;
                 ctx.drawImage(overlayImage, x - 100, y - 100, width + 100, height + 100);
             });
-
-            return true;  // Overlay applied successfully
+            return true;
         } else {
             console.warn('No faces detected.');
             return false;
@@ -56,7 +63,6 @@ function startDetection() {
             // Set canvas size to match the video
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-
             faceapi.matchDimensions(canvas, video);
 
             let overlayApplied = false;
@@ -80,30 +86,32 @@ function startDetection() {
             }
 
         } catch (error) {
-            console.error('Error setting up canvas:', error);
+            console.error('Error during detection setup:', error);
         }
     });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    await loadModels();
-    await loadOverlayImage();  // Ensure image is loaded before starting detection
+    try {
+        await loadModels();
+        await loadOverlayImage();
 
-    const video = document.getElementById('video');
-    const playButton = document.getElementById('playButton');
+        const video = document.getElementById('video');
+        const playButton = document.getElementById('playButton');
 
-    // Start detection when the video is ready to play
-    video.oncanplay = () => {
-        console.log('Video ready for face detection.');
-        startDetection();
-    };
+        video.oncanplay = () => {
+            console.log('Video ready for face detection.');
+            startDetection();
+        };
 
-    // Ensure video doesn't play automatically
-    video.pause();
+        video.pause();  // Ensure video doesn't play automatically
 
-    // Play the video when the play button is clicked
-    playButton.addEventListener('click', () => {
-        video.play();
-        playButton.style.display = 'none';  // Hide the button after playing
-    });
+        playButton.addEventListener('click', () => {
+            video.play();
+            playButton.style.display = 'none';  // Hide the button after playing
+        });
+
+    } catch (error) {
+        console.error('Error during initialization:', error);
+    }
 });
