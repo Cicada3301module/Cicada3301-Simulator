@@ -24,6 +24,13 @@
             height: 100%;
             pointer-events: none; /* Allows clicking through the canvas */
         }
+        #playButton {
+            display: none; /* Initially hidden */
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -35,5 +42,6 @@
         </video>
         <canvas id="canvas"></canvas>
     </div>
+    <button id="playButton">Play Video</button>
 </body>
 </html>

@@ -22,6 +22,7 @@ function loadOverlayImage() {
 function startDetection() {
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
+    const playButton = document.getElementById('playButton');
 
     video.addEventListener('playing', () => {
         try {
@@ -38,14 +39,17 @@ function startDetection() {
                     const ctx = canvas.getContext('2d');
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     
-                    // Draw face detections
-                    //faceapi.draw.drawDetections(canvas, resizedDetections);
-                    
                     // Draw overlay image on detected faces
                     resizedDetections.forEach(detection => {
                         const { x, y, width, height } = detection.box;
-                        ctx.drawImage(overlayImage, x-100, y-100, width+100, height+100);
+                        ctx.drawImage(overlayImage, x - 100, y - 100, width + 100, height + 100);
                     });
+
+                    // If detection is successful, show the play button
+                    if (resizedDetections.length > 0) {
+                        playButton.style.display = 'block';
+                    }
+
                 } catch (error) {
                     console.error('Error during face detection:', error);
                 }
@@ -61,8 +65,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadModels();
     await loadOverlayImage(); // Ensure image is loaded before starting detection
     const video = document.getElementById('video');
+    const playButton = document.getElementById('playButton');
     
+    // Start detection when the video is ready to play
     video.oncanplay = () => {
         startDetection();
     };
+
+    // Play the video when the play button is clicked
+    playButton.addEventListener('click', () => {
+        video.play();
+        playButton.style.display = 'none'; // Hide the button after playing
+    });
 });
