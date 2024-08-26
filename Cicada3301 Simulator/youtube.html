@@ -9,9 +9,9 @@
         /* Ensure video and canvas are the same size and positioned */
         #video {
             display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
+            position: relative; /* Changed to relative to center the play button */
+            width: 100%;
+            height: auto;
         }
         #overlayCanvas {
             position: absolute;
@@ -21,19 +21,22 @@
         }
         #playButton {
             position: absolute;
-            top: 10px;
-            left: 10px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             z-index: 10; /* Ensure play button is on top */
             background-color: rgba(0, 0, 0, 0.5);
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 10px 20px;
             cursor: pointer;
+            font-size: 16px;
+            display: block; /* Ensure play button is displayed initially */
         }
     </style>
 </head>
 <body>
-    <video id="video" width="640" height="360" controls>
+    <video id="video" controls>
         <source src="img/videos/test.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>

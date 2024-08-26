@@ -23,23 +23,26 @@ document.addEventListener('DOMContentLoaded', () => {
     playButton.addEventListener('click', () => {
         if (video.paused) {
             video.play();
-            playButton.textContent = 'Pause Video';
-        } else {
-            video.pause();
-            playButton.textContent = 'Play Video';
+            playButton.style.display = 'none'; // Hide play button when video plays
         }
     });
 
     video.addEventListener('play', () => {
-        // Ensure canvas is the same size as video
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
+        playButton.style.display = 'none'; // Hide play button when video plays
         detectFace();
     });
 
     video.addEventListener('pause', () => {
         drawOverlayImage();
-        playButton.style.display = 'block';
+        playButton.style.display = 'block'; // Show play button when video is paused
+    });
+
+    video.addEventListener('click', () => {
+        if (!video.paused) {
+            video.pause();
+        }
     });
 
     async function detectFace() {
@@ -71,9 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 x, y, width, height // Position and size of overlay image
             );
         });
-
-        // Show play button only when detections are visible
-        playButton.style.display = 'block';
 
         requestAnimationFrame(detectFace);
     }
