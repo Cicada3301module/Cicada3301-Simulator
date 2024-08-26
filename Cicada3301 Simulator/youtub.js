@@ -17,6 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Set canvas size to match the video
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
+            canvas.style.width = `${video.videoWidth}px`; // Ensure canvas matches video size
+            canvas.style.height = `${video.videoHeight}px`;
         });
     });
 
@@ -30,6 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
     video.addEventListener('play', () => {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
+        canvas.style.width = `${video.videoWidth}px`; // Ensure canvas matches video size
+        canvas.style.height = `${video.videoHeight}px`;
         playButton.style.display = 'none'; // Hide play button when video plays
         detectFace();
     });
@@ -56,8 +60,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Draw detections and overlay image
         detections.forEach(detection => {
-            // Draw face box
             const { x, y, width, height } = detection.detection.box;
+
+            // Ensure the coordinates are adjusted for canvas positioning
+            ctx.drawImage(
+                overlayImage,
+                x, y, width, height // Position and size of overlay image
+            );
+
+            // Draw face box
             ctx.beginPath();
             ctx.rect(x, y, width, height);
             ctx.lineWidth = 2;
@@ -67,12 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Draw landmarks
             faceapi.draw.drawFaceLandmarks(canvas, [detection]);
-
-            // Draw overlay image on top of face detection
-            ctx.drawImage(
-                overlayImage,
-                x, y, width, height // Position and size of overlay image
-            );
         });
 
         requestAnimationFrame(detectFace);
@@ -82,9 +87,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Clear canvas and redraw overlay image at the last detected face positions
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Draw detections and overlay image
         detections.forEach(detection => {
             const { x, y, width, height } = detection.detection.box;
+
+            // Ensure the coordinates are adjusted for canvas positioning
             ctx.drawImage(
                 overlayImage,
                 x, y, width, height // Position and size of overlay image
