@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Detect faces and landmarks
         detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
-        
+
         // Clear canvas before drawing
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
