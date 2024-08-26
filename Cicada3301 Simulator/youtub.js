@@ -1,5 +1,6 @@
 let overlayImage;
 let videoLoaded = false; // Flag to check if video is ready
+let imageLoaded = false; // Flag to check if the image is loaded
 
 async function loadModels() {
     console.log('Loading face API models...');
@@ -23,6 +24,7 @@ function loadOverlayImage() {
 
         overlayImage.onload = () => {
             console.log('Overlay image loaded successfully:', overlayImage);
+            imageLoaded = true; // Set flag to true when the image is loaded
             resolve();
         };
         overlayImage.onerror = (error) => {
@@ -80,7 +82,10 @@ function startDetection() {
         console.log('Video loaded');
         videoLoaded = true; // Set flag to indicate video is loaded
         setupCanvas(video); // Setup canvas when video is loaded
-        drawOverlayOnCanvas(); // Start overlay drawing
+
+        if (imageLoaded) {
+            drawOverlayOnCanvas(); // Start overlay drawing only if image is loaded
+        }
     });
 }
 
@@ -97,6 +102,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Add a play button
         const playButton = document.createElement('button');
         playButton.textContent = 'Play Video';
+        playButton.style.display = imageLoaded ? 'block' : 'none'; // Show button only if image is loaded
         playButton.addEventListener('click', () => {
             console.log('Playing video');
             video.play();
