@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const playButton = document.getElementById('playButton');
 
     let detections = []; // Store face detections
-    let isProcessingClick = false; // Flag to prevent rapid state changes
 
     // Load face-api.js models from CDN
     Promise.all([
@@ -18,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Set canvas size to match the video
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            canvas.style.width = `${video.videoWidth}px`; // Ensure canvas matches video size
+            canvas.style.width = `${video.videoWidth}px`;
             canvas.style.height = `${video.videoHeight}px`;
             console.log('Canvas size set to match video:', canvas.width, canvas.height);
         });
@@ -26,55 +25,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Play button event listener
     playButton.addEventListener('click', () => {
-        if (video.paused && !isProcessingClick) {
-            isProcessingClick = true;
+        if (video.paused) {
             video.play().then(() => {
                 playButton.style.display = 'none'; // Hide play button when video plays
                 console.log('Play button clicked - Video playing');
-                isProcessingClick = false;
             }).catch(error => {
                 console.error('Error playing video:', error);
-                isProcessingClick = false;
             });
         }
     });
 
-    // Video event listeners
+    // Toggle play/pause on video click with no overlap
+    video.addEventListener('click', () => {
+        if (video.paused) {
+            video.play().then(() => {
+                console.log('Video clicked - Video playing');
+            }).catch(error => {
+                console.error('Error playing video:', error);
+            });
+        } else {
+            video.pause();
+            console.log('Video clicked - Video paused');
+        }
+    });
+
     video.addEventListener('play', () => {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-        canvas.style.width = `${video.videoWidth}px`; // Ensure canvas matches video size
-        canvas.style.height = `${video.videoHeight}px`;
         playButton.style.display = 'none'; // Hide play button when video plays
-        console.log('Video playing');
         detectFace();
     });
 
     video.addEventListener('pause', () => {
         drawOverlayImage();
         playButton.style.display = 'block'; // Show play button when video is paused
-        console.log('Video paused');
-    });
-
-    // Toggle play/pause on video click with debounce logic
-    video.addEventListener('click', () => {
-        if (!isProcessingClick) {
-            isProcessingClick = true;
-
-            if (video.paused) {
-                video.play().then(() => {
-                    console.log('Video clicked - Video playing');
-                    isProcessingClick = false;
-                }).catch(error => {
-                    console.error('Error playing video:', error);
-                    isProcessingClick = false;
-                });
-            } else {
-                video.pause();
-                console.log('Video clicked - Video paused');
-                isProcessingClick = false;
-            }
-        }
     });
 
     async function detectFace() {
