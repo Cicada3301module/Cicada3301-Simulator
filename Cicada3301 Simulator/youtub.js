@@ -53,24 +53,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     video.addEventListener('play', () => {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        playButton.style.display = 'none'; // Hide play button when video plays
         if (!videoEnded) {
-            detectFace();
+            detectFace(); // Start or resume face detection
         }
+        playButton.style.display = 'none'; // Hide play button when video plays
     });
 
     video.addEventListener('pause', () => {
-        drawOverlayImage();
+        drawOverlayImage(); // Maintain overlay when paused
         playButton.style.display = 'block'; // Show play button when video is paused
     });
 
     video.addEventListener('ended', () => {
         console.log('Video ended');
         videoEnded = true;
-        playButton.style.display = 'block'; // Show play button when video ends
         drawOverlayImage(); // Keep the last detection and overlay visible
+        playButton.style.display = 'block'; // Show play button when video ends
     });
 
     async function detectFace() {
