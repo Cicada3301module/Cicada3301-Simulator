@@ -20,8 +20,11 @@ function loadOverlayImage() {
         console.log('Loading overlay image...');
         overlayImage = new Image();
         overlayImage.src = 'img/google.png'; // Ensure the path is correct
+
         overlayImage.onload = () => {
             console.log('Overlay image loaded successfully:', overlayImage);
+            // For debugging, append the image to the body to confirm it loads
+            document.body.appendChild(overlayImage);
             resolve();
         };
         overlayImage.onerror = (error) => {
