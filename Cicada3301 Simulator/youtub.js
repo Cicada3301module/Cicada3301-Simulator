@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d');
     const playButton = document.getElementById('playButton');
 
+    let detections = []; // Store face detections
+
     // Load face-api.js models from CDN
     Promise.all([
         faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
@@ -32,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     video.addEventListener('pause', () => {
-        // Show overlay image when video is paused
         drawOverlayImage();
         playButton.style.display = 'block';
     });
@@ -41,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (video.paused) return; // Skip detection if video is paused
 
         // Detect faces and landmarks
-        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
+        detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
         
         // Clear canvas before drawing
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -74,20 +75,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function drawOverlayImage() {
-        // Clear canvas and draw overlay image at the last detected face position
+        // Clear canvas and redraw overlay image at the last detected face positions
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (overlayImage.complete) {
-            // Reapply the last known face detection data
-            // This part assumes you have the last detection stored
-            // You should implement logic to store and reapply the last detection
-            // For demonstration, we're using placeholders here
-            detections.forEach(detection => {
-                const { x, y, width, height } = detection.detection.box;
-                ctx.drawImage(
-                    overlayImage,
-                    x, y, width, height // Position and size of overlay image
-                );
-            });
-        }
+
+        // Draw detections and overlay image
+        detections.forEach(detection => {
+            const { x, y, width, height } = detection.detection.box;
+            ctx.drawImage(
+                overlayImage,
+                x, y, width, height // Position and size of overlay image
+            );
+        });
     }
 });
