@@ -1,4 +1,5 @@
 let overlayImage;
+let videoLoaded = false; // Flag to check if video is ready
 
 async function loadModels() {
     console.log('Loading face API models...');
@@ -30,53 +31,54 @@ function loadOverlayImage() {
     });
 }
 
-function startDetection() {
+function setupCanvas(video) {
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    faceapi.matchDimensions(canvas, video);
+}
+
+function drawOverlayOnCanvas() {
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
 
-    video.addEventListener('playing', () => {
-        console.log('Video is playing');
+    setInterval(async () => {
         try {
-            // Set canvas size to match the video
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            console.log('Canvas dimensions set:', canvas.width, canvas.height);
+            if (!videoLoaded) return; // Only proceed if video is loaded and ready
 
-            faceapi.matchDimensions(canvas, video);
+            const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
+            console.log('Face detections:', detections);
 
-            setInterval(async () => {
-                try {
-                    const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
-                    console.log('Face detections:', detections);
+            if (detections.length === 0) {
+                console.warn('No faces detected');
+                return; // Skip drawing if no faces are detected
+            }
 
-                    if (detections.length === 0) {
-                        console.warn('No faces detected');
-                        return; // Skip drawing if no faces are detected
-                    }
+            const resizedDetections = faceapi.resizeResults(detections, video);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                    const resizedDetections = faceapi.resizeResults(detections, video);
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                    // Draw overlay image on detected faces
-                    resizedDetections.forEach(detection => {
-                        const { x, y, width, height } = detection.box;
-                        console.log('Drawing image at:', x, y, 'with size:', width, height);
-                        ctx.drawImage(overlayImage, x - 100, y - 100, width + 100, height + 100);
-                    });
-                } catch (error) {
-                    console.error('Error during face detection:', error);
-                }
-            }, 100);
+            // Draw overlay image on detected faces
+            resizedDetections.forEach(detection => {
+                const { x, y, width, height } = detection.box;
+                console.log('Drawing image at:', x, y, 'with size:', width, height);
+                ctx.drawImage(overlayImage, x - 100, y - 100, width + 100, height + 100);
+            });
         } catch (error) {
-            console.error('Error setting up canvas:', error);
+            console.error('Error during face detection:', error);
         }
-    });
+    }, 100);
+}
 
-    video.addEventListener('canplay', () => {
-        console.log('Video can play, ready for detection.');
-        // Only start detection when the video can actually play
-        startDetection();
+function startDetection() {
+    const video = document.getElementById('video');
+
+    video.addEventListener('loadeddata', () => {
+        console.log('Video loaded');
+        videoLoaded = true; // Set flag to indicate video is loaded
+        setupCanvas(video); // Setup canvas when video is loaded
+        drawOverlayOnCanvas(); // Start overlay drawing
     });
 }
 
@@ -88,10 +90,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log('Models and overlay image are loaded.');
 
         const video = document.getElementById('video');
-        video.pause();  // Ensure the video doesn't play automatically
+        video.pause(); // Ensure the video doesn't play automatically
+
+        // Add a play button
+        const playButton = document.createElement('button');
+        playButton.textContent = 'Play Video';
+        playButton.addEventListener('click', () => {
+            console.log('Playing video');
+            video.play();
+        });
+        document.body.append(playButton);
 
         video.addEventListener('canplay', () => {
-            console.log('Video is ready to start detection.');
+            console.log('Video can play');
             startDetection();
         });
     } catch (error) {
