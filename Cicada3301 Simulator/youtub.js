@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const playButton = document.getElementById('playButton');
 
     let detections = []; // Store face detections
-    let videoEnded = false; // Track if the video has ended
     let requestId; // Store requestAnimationFrame ID
 
     // Load face-api.js models from CDN
@@ -27,9 +26,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Play button event listener
     playButton.addEventListener('click', () => {
-        if (video.paused || videoEnded) {
+        if (video.paused) {
             video.play().then(() => {
-                videoEnded = false;
                 playButton.style.display = 'none'; // Hide play button when video plays
                 console.log('Play button clicked - Video playing');
             }).catch(error => {
@@ -38,11 +36,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Toggle play/pause on video click with no overlap
+    // Toggle play/pause on video click
     video.addEventListener('click', () => {
-        if (video.paused || videoEnded) {
+        if (video.paused) {
             video.play().then(() => {
-                videoEnded = false;
+                playButton.style.display = 'none'; // Hide play button when video plays
                 console.log('Video clicked - Video playing');
             }).catch(error => {
                 console.error('Error playing video:', error);
@@ -55,9 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     video.addEventListener('play', () => {
         playButton.style.display = 'none'; // Hide play button when video plays
-        if (!videoEnded) {
-            startFaceDetection(); // Start or resume face detection
-        }
+        requestId = requestAnimationFrame(detectFace); // Start face detection loop
     });
 
     video.addEventListener('pause', () => {
@@ -68,15 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     video.addEventListener('ended', () => {
         console.log('Video ended');
-        videoEnded = true;
         cancelAnimationFrame(requestId); // Stop face detection when the video ends
         drawOverlayImage(); // Keep the last detection and overlay visible
         playButton.style.display = 'block'; // Show play button when video ends
     });
-
-    function startFaceDetection() {
-        detectFace(); // Start face detection loop
-    }
 
     async function detectFace() {
         if (video.paused || video.ended) return; // Skip detection if video is paused or ended
@@ -109,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
             );
         });
 
-        requestId = requestAnimationFrame(detectFace); // Keep detecting faces as the video plays
+        requestId = requestAnimationFrame(detectFace); // Continue detecting faces as the video plays
     }
 
     function drawOverlayImage() {

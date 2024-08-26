@@ -1594,8 +1594,8 @@ async function generateKeyPair(message, pgpPassphrase) {
 	console.log("generateKeyPair");
 	var pgpHTML = document.getElementById('pgpHTML');
 	const options = {
-        userIDs: [{ name: 'John Doe', email: 'john.doe@example.com' }], // you can add multiple user IDs
-        curve: 'ed25519', // elliptic curve algorithm to use, ed25519 is commonly used
+        userIDs: [{ name: 'John Doe', email: 'john.doe@example.com' }],
+        curve: 'ed25519',
         passphrase:  pgpPassphrase
     };
 	
@@ -1626,7 +1626,7 @@ async function encryptMessage(message, publicKey) {
     try {
         const pK = await openpgp.readKey({ armoredKey: publicKey });
         encryptedMessage = await openpgp.encrypt({
-            message: await openpgp.createMessage({ text: message }), // input as Message object
+            message: await openpgp.createMessage({ text: message }),
             encryptionKeys: pK
         });
 		
@@ -1641,16 +1641,12 @@ async function encryptMessage(message, publicKey) {
 async function decryptMessage(encryptedMessage, privateKeyArmored, passphrase) {
 	var decryptedMessage = null;
 	try {
-        // Decrypt the private key
         const privateKey = await openpgp.decryptKey({
             privateKey: await openpgp.readPrivateKey({ armoredKey: privateKeyArmored }),
             passphrase
         });
-
-        // Read the encrypted message
         const message = await openpgp.readMessage({ armoredMessage: encryptedMessage });
 
-        // Decrypt the message
         decryptedMessage = await openpgp.decrypt({
             message,
             decryptionKeys: privateKey
@@ -2348,7 +2344,6 @@ async function pizza(message)
 	var sentences = message.split("/");
 	for(var i = 0; i < sentences.length; i++)
 	{
-		//while()
 		console.log(sentences[i]);
 		const utterThis = new SpeechSynthesisUtterance(sentences[i]);
 		utterThis.voice = voices[0];
@@ -2790,22 +2785,22 @@ function generateMIDIFile(ruleseed)
 }
 
 
-const baseMIDINote = 60; // C4 (middle C)
-const noteRange = 24; // Range for pitch variation
-const baseLength = 480; // Base length in ticks for maximum length
-const lengthRange = [30, 60, 90, 120, 150, 180]; // Range of lengths (in ticks)
-const velocity = 100; // Constant velocity
-const minTimeBetweenSameNote = 0.5; // Minimum time in beats between notes of the same pitch
+const baseMIDINote = 60;
+const noteRange = 24;
+const baseLength = 480;
+const lengthRange = [30, 60, 90, 120, 150, 180];
+const velocity = 100;
+const minTimeBetweenSameNote = 0.5;
 
 function getUniqueLength(index) {
-    const quotients = [4, 3, 2.5, 2, 1.5, 1.25, 1.2]; // Various quotients to divide base length
+    const quotients = [4, 3, 2.5, 2, 1.5, 1.25, 1.2];
     const quotient = quotients[index % quotients.length];
-    return Math.min(Math.max(Math.floor(baseLength / quotient), 30), 480); // Ensure length is within range
+    return Math.min(Math.max(Math.floor(baseLength / quotient), 30), 480);
 }
 
 function getRandomPitch(base, range) {
     const pitch = base + Math.floor(Math.random() * range) - Math.floor(range / 2);
-    return Math.min(127, Math.max(0, pitch)); // Ensure pitch is within 0-127
+    return Math.min(127, Math.max(0, pitch));
 }
 
 const notesList = [];
@@ -2814,13 +2809,13 @@ const lengthsList = [];
 for (let i = 0; i < noteRange; i++) {
     const note = getRandomPitch(baseMIDINote - Math.floor(noteRange / 2), noteRange);
     if (!notesList.includes(note)) {
-        notesList.push(note); // Unique note
+        notesList.push(note);
     }
 }
 for (let i = 0; i < lengthRange.length; i++) {
     const length = getUniqueLength(i);
     if (!lengthsList.includes(length)) {
-        lengthsList.push(length); // Unique length
+        lengthsList.push(length);
     }
 }
 
@@ -2869,9 +2864,9 @@ function generateMIDI(text) {
     const midi = new Midi();
     const track = midi.addTrack();
 
-    const ticksPerBeat = 480; // Standard ticks per beat
-    const noteSpacing = 0.1; // Amount of overlap between notes (in beats)
-    const noteEndTimes = {}; // To track end times for each pitch
+    const ticksPerBeat = 480;
+    const noteSpacing = 0.1;
+    const noteEndTimes = {};
 
     let currentTime = 0;
 
@@ -2885,14 +2880,14 @@ function generateMIDI(text) {
 
             track.addNote({
                 midi: note,
-                time: currentTime, // Time in beats
-                duration: duration, // Duration in beats
-                velocity: velocity / 127 // Normalize velocity
+                time: currentTime,
+                duration: duration,
+                velocity: velocity / 127
             });
 
             noteEndTimes[note] = currentTime + duration + minTimeBetweenSameNote;
 
-            currentTime += duration - noteSpacing; // Introduce overlap by reducing the time step
+            currentTime += duration - noteSpacing;
         }
     });
 
