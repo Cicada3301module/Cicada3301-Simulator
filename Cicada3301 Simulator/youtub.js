@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const playButton = document.getElementById('playButton');
 
     let detections = []; // Store face detections
+    let isProcessingClick = false; // Flag to prevent rapid state changes
 
     // Load face-api.js models from CDN
     Promise.all([
@@ -25,10 +26,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Play button event listener
     playButton.addEventListener('click', () => {
-        if (video.paused) {
-            video.play();
-            playButton.style.display = 'none'; // Hide play button when video plays
-            console.log('Play button clicked - Video playing');
+        if (video.paused && !isProcessingClick) {
+            isProcessingClick = true;
+            video.play().then(() => {
+                playButton.style.display = 'none'; // Hide play button when video plays
+                console.log('Play button clicked - Video playing');
+                isProcessingClick = false;
+            }).catch(error => {
+                console.error('Error playing video:', error);
+                isProcessingClick = false;
+            });
         }
     });
 
@@ -49,14 +56,24 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Video paused');
     });
 
-    // Toggle play/pause on video click
+    // Toggle play/pause on video click with debounce logic
     video.addEventListener('click', () => {
-        if (video.paused) {
-            video.play();
-            console.log('Video clicked - Video playing');
-        } else {
-            video.pause();
-            console.log('Video clicked - Video paused');
+        if (!isProcessingClick) {
+            isProcessingClick = true;
+
+            if (video.paused) {
+                video.play().then(() => {
+                    console.log('Video clicked - Video playing');
+                    isProcessingClick = false;
+                }).catch(error => {
+                    console.error('Error playing video:', error);
+                    isProcessingClick = false;
+                });
+            } else {
+                video.pause();
+                console.log('Video clicked - Video paused');
+                isProcessingClick = false;
+            }
         }
     });
 
