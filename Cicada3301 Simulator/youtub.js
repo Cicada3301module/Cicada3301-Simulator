@@ -32,14 +32,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     video.addEventListener('pause', () => {
-        // Clear canvas and show overlay image when video is paused
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Show overlay image when video is paused
+        drawOverlayImage();
         playButton.style.display = 'block';
     });
 
     async function detectFace() {
         if (video.paused) return; // Skip detection if video is paused
-        
+
         // Detect faces and landmarks
         const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
         
@@ -71,5 +71,23 @@ document.addEventListener('DOMContentLoaded', () => {
         playButton.style.display = 'block';
 
         requestAnimationFrame(detectFace);
+    }
+
+    function drawOverlayImage() {
+        // Clear canvas and draw overlay image at the last detected face position
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (overlayImage.complete) {
+            // Reapply the last known face detection data
+            // This part assumes you have the last detection stored
+            // You should implement logic to store and reapply the last detection
+            // For demonstration, we're using placeholders here
+            detections.forEach(detection => {
+                const { x, y, width, height } = detection.detection.box;
+                ctx.drawImage(
+                    overlayImage,
+                    x, y, width, height // Position and size of overlay image
+                );
+            });
+        }
     }
 });
