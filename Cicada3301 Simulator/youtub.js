@@ -23,8 +23,6 @@ function loadOverlayImage() {
 
         overlayImage.onload = () => {
             console.log('Overlay image loaded successfully:', overlayImage);
-            // For debugging, append the image to the body to confirm it loads
-            document.body.appendChild(overlayImage);
             resolve();
         };
         overlayImage.onerror = (error) => {
@@ -66,8 +64,8 @@ function drawOverlayOnCanvas() {
             // Draw overlay image on detected faces
             resizedDetections.forEach(detection => {
                 const { x, y, width, height } = detection.box;
-                console.log('Drawing image at:', x - 100, y - 100, 'with size:', width + 100, height + 100);
-                ctx.drawImage(overlayImage, x - 100, y - 100, width + 100, height + 100);
+                console.log('Drawing image at:', x, y, 'with size:', width, height);
+                ctx.drawImage(overlayImage, x, y, width, height);
             });
         } catch (error) {
             console.error('Error during face detection:', error);
