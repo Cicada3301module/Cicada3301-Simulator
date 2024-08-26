@@ -3,60 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Face Tracking with Overlay</title>
+    <title>Face Detection with Overlay</title>
     <link rel="icon" href="img/favicon.png" type="image/png">
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #000; /* Optional: To make the video stand out */
-        }
-
-        video {
-            position: relative;
-            width: 640px;
-            height: 480px;
-        }
-
-        canvas {
+        /* Ensure video and canvas are the same size and positioned */
+        #video {
+            display: block;
             position: absolute;
             top: 0;
             left: 0;
-            pointer-events: none;
         }
-
+        #overlayCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none; /* Allows clicks to pass through the canvas */
+        }
         #playButton {
-            margin-top: 10px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #007bff;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10; /* Ensure play button is on top */
+            background-color: rgba(0, 0, 0, 0.5);
             color: white;
             border: none;
-            border-radius: 5px;
-        }
-
-        #playButton:disabled {
-            background-color: #6c757d;
-            cursor: not-allowed;
+            padding: 5px 10px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <video id="video" width="640" height="480" muted>
+    <video id="video" width="640" height="360" controls>
         <source src="img/videos/test.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
+    <canvas id="overlayCanvas"></canvas>
+    <img id="overlayImage" src="img/google.png" style="display: none;">
     <button id="playButton">Play Video</button>
-    <canvas id="overlayCanvas" width="640" height="480"></canvas>
-    <img id="overlayImage" src="img/google.png" style="display: none;"/>
-
     <script src="js/face-api.min.js"></script>
     <script src="youtub.js"></script>
 </body>

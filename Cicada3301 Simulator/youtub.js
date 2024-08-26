@@ -31,6 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     video.addEventListener('play', () => {
+        // Ensure canvas is the same size as video
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
         detectFace();
     });
 
