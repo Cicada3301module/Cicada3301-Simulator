@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const playButton = document.getElementById('playButton');
 
     let detections = []; // Store face detections
-    let requestId; // Store requestAnimationFrame ID
 
     // Load face-api.js models from CDN
     Promise.all([
@@ -36,11 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Toggle play/pause on video click
+    // Toggle play/pause on video click with no overlap
     video.addEventListener('click', () => {
         if (video.paused) {
             video.play().then(() => {
-                playButton.style.display = 'none'; // Hide play button when video plays
                 console.log('Video clicked - Video playing');
             }).catch(error => {
                 console.error('Error playing video:', error);
@@ -52,21 +50,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     video.addEventListener('play', () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
         playButton.style.display = 'none'; // Hide play button when video plays
-        requestId = requestAnimationFrame(detectFace); // Start face detection loop
+        detectFace();
     });
 
     video.addEventListener('pause', () => {
-        cancelAnimationFrame(requestId); // Stop face detection when paused
-        drawOverlayImage(); // Maintain overlay when paused
+        drawOverlayImage();
         playButton.style.display = 'block'; // Show play button when video is paused
     });
 
     video.addEventListener('ended', () => {
         console.log('Video ended');
-        cancelAnimationFrame(requestId); // Stop face detection when the video ends
-        drawOverlayImage(); // Keep the last detection and overlay visible
         playButton.style.display = 'block'; // Show play button when video ends
+        detections = []; // Clear detections
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
     });
 
     async function detectFace() {
@@ -100,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
             );
         });
 
-        requestId = requestAnimationFrame(detectFace); // Continue detecting faces as the video plays
+        requestAnimationFrame(detectFace);
     }
 
     function drawOverlayImage() {
