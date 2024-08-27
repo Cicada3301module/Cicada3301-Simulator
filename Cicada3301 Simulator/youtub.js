@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const playButton = document.getElementById('playButton');
 
     let detections = []; // Store face detections
-    let requestId; // Store requestAnimationFrame ID
 
     // Load face-api.js models from CDN
     Promise.all([
@@ -14,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
         faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
         faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights')
     ]).then(() => {
+        console.log('Face-api.js models loaded');
         video.addEventListener('loadeddata', () => {
             // Set canvas size to match the video
             canvas.width = video.videoWidth;
@@ -30,18 +30,19 @@ document.addEventListener('DOMContentLoaded', () => {
             video.play().then(() => {
                 playButton.style.display = 'none'; // Hide play button when video plays
                 console.log('Play button clicked - Video playing');
+                detectFace(); // Start detection when the video starts
             }).catch(error => {
                 console.error('Error playing video:', error);
             });
         }
     });
 
-    // Toggle play/pause on video click
+    // Toggle play/pause on video click with no overlap
     video.addEventListener('click', () => {
         if (video.paused) {
             video.play().then(() => {
-                playButton.style.display = 'none'; // Hide play button when video plays
                 console.log('Video clicked - Video playing');
+                detectFace(); // Continue detection when the video plays
             }).catch(error => {
                 console.error('Error playing video:', error);
             });
@@ -52,28 +53,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     video.addEventListener('play', () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
         playButton.style.display = 'none'; // Hide play button when video plays
-        requestId = requestAnimationFrame(detectFace); // Start face detection loop
+        detectFace(); // Start face detection when the video starts
     });
 
     video.addEventListener('pause', () => {
-        cancelAnimationFrame(requestId); // Stop face detection when paused
-        drawOverlayImage(); // Maintain overlay when paused
+        drawOverlayImage(); // Redraw the overlay image when the video is paused
         playButton.style.display = 'block'; // Show play button when video is paused
     });
 
     video.addEventListener('ended', () => {
-        console.log('Video ended');
-        cancelAnimationFrame(requestId); // Stop face detection when the video ends
-        drawOverlayImage(); // Keep the last detection and overlay visible
-        playButton.style.display = 'block'; // Show play button when video ends
+        console.log('Video ended - Redrawing overlay image');
+        drawOverlayImage(); // Redraw overlay image when the video ends
     });
 
     async function detectFace() {
         if (video.paused || video.ended) return; // Skip detection if video is paused or ended
 
+        console.log('Detecting face...');
         // Detect faces and landmarks
         detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
+        console.log('Detections:', detections);
 
         // Clear canvas before drawing
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -100,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
             );
         });
 
-        requestId = requestAnimationFrame(detectFace); // Continue detecting faces as the video plays
+        requestAnimationFrame(detectFace); // Continue detection
     }
 
     function drawOverlayImage() {
