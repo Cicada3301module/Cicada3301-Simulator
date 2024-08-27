@@ -14,17 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
         faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights'),
         faceapi.nets.faceRecognitionNet.loadFromUri('https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js/weights')
     ]).then(() => {
-        video.addEventListener('loadeddata', async () => {
+        video.addEventListener('loadeddata', () => {
             // Set canvas size to match the video
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            canvas.style.width = `${video.videoWidth}px`;
-            canvas.style.height = `${video.videoHeight}px`;
+            canvas.style.width = ${video.videoWidth}px;
+            canvas.style.height = ${video.videoHeight}px;
             console.log('Canvas size set to match video:', canvas.width, canvas.height);
-
-            // Detect face as soon as the video is loaded
-            await detectFaceOnce();
-            drawOverlayImage();
         });
     });
 
@@ -105,11 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         requestId = requestAnimationFrame(detectFace); // Continue detecting faces as the video plays
-    }
-
-    async function detectFaceOnce() {
-        // Detect faces and landmarks
-        detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
     }
 
     function drawOverlayImage() {
