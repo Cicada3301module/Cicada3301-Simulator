@@ -18,8 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Set canvas size to match the video
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            canvas.style.width = ${video.videoWidth}px;
-            canvas.style.height = ${video.videoHeight}px;
+            canvas.style.width = `${video.videoWidth}px`;
+            canvas.style.height = `${video.videoHeight}px`;
             console.log('Canvas size set to match video:', canvas.width, canvas.height);
         });
     });
