@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.style.width = `${video.videoWidth}px`;
             canvas.style.height = `${video.videoHeight}px`;
             console.log('Canvas size set to match video:', canvas.width, canvas.height);
+
+            detectFace(); // Start detection immediately after video and models are loaded
         });
     });
 
