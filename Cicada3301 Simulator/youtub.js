@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const playButton = document.getElementById('playButton');
 
     let detections = []; // Store face detections
+    let videoEnded = false; // Flag to track if video has ended
 
     // Load face-api.js models from CDN
     Promise.all([
@@ -29,6 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
             video.play().then(() => {
                 playButton.style.display = 'none'; // Hide play button when video plays
                 console.log('Play button clicked - Video playing');
+                if (videoEnded) {
+                    console.log('Video is being replayed');
+                    videoEnded = false; // Reset flag for future replays
+                }
             }).catch(error => {
                 console.error('Error playing video:', error);
             });
@@ -40,6 +45,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (video.paused) {
             video.play().then(() => {
                 console.log('Video clicked - Video playing');
+                if (videoEnded) {
+                    console.log('Video is being replayed');
+                    videoEnded = false; // Reset flag for future replays
+                }
             }).catch(error => {
                 console.error('Error playing video:', error);
             });
@@ -66,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         playButton.style.display = 'block'; // Show play button when video ends
         detections = []; // Clear detections
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+        videoEnded = true; // Set flag when video ends
     });
 
     async function detectFace() {
