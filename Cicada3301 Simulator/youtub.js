@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
     video.addEventListener('ended', () => {
         console.log('Video ended');
         playButton.style.display = 'block'; // Show play button when video ends
-        detections = []; // Clear detections
+        //detections = []; // Clear detections
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
         videoEnded = true; // Set flag when video ends
     });
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Draw overlay image on top of face detection
             ctx.drawImage(
                 overlayImage,
-                x, y, width, height // Position and size of overlay image
+                x-50, y-50, width+50, height+50 // Position and size of overlay image
             );
         });
     }
