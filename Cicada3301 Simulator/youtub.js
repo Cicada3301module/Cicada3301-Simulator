@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Video clicked - Video playing');
                 if (videoEnded) {
                     console.log('Video is being replayed');
+					
                     videoEnded = false; // Reset flag for future replays
                 }
             }).catch(error => {
@@ -73,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
     video.addEventListener('ended', () => {
         console.log('Video ended');
         playButton.style.display = 'block'; // Show play button when video ends
-        detections = []; // Clear detections
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
         videoEnded = true; // Set flag when video ends
     });
