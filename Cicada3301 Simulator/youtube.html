@@ -9,7 +9,7 @@
         /* Ensure video and canvas are the same size and positioned */
         #video {
             display: block;
-            position: relative; /* Changed to relative to center the play button */
+            position: relative;
             height: auto;
         }
         #overlayCanvas {
@@ -25,13 +25,12 @@
             transform: translate(-50%, -50%);
             z-index: 10; /* Ensure play button is on top */
             background-color: rgba(0, 0, 0, 0);
-            color: white;
             border: none;
             padding: 10px 20px;
             cursor: pointer;
-            font-size: 16px;
-            display: block; /* Ensure play button is displayed initially */
+            display: none; /* Hide play button initially */
         }
+		
     </style>
 </head>
 <body>
