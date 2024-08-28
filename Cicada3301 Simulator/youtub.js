@@ -41,6 +41,23 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Video clicked - Video paused');
         }
     });
+	
+	playButton.addEventListener('click', () => {
+        if (video.paused) {
+            video.play().then(() => {
+                console.log('Video clicked - Video playing');
+                if (videoEnded) {
+                    console.log('Video is being replayed');
+                    videoEnded = false; // Reset flag for future replays
+                }
+            }).catch(error => {
+                console.error('Error playing video:', error);
+            });
+        } else {
+            video.pause();
+            console.log('Video clicked - Video paused');
+        }
+    });
 
     video.addEventListener('playing', () => {
         videoEnded = false;
