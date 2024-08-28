@@ -80,8 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     async function detectFace() {
-        if (video.paused || video.ended) return; // Skip detection if video is paused or ended
-		if(video.ended) console.log("PP");
+        if (video.paused || videoEnded) return; // Skip detection if video is paused or ended
         // Detect faces and landmarks
         detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
 
