@@ -23,23 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('Canvas size set to match video:', canvas.width, canvas.height);
         });
     });
-
-    // Play button event listener
-    playButton.addEventListener('click', () => {
-        if (video.paused) {
-            video.play().then(() => {
-                playButton.style.display = 'none'; // Hide play button when video plays
-                console.log('Play button clicked - Video playing');
-                if (videoEnded) {
-                    console.log('Video is being replayed');
-                    videoEnded = false; // Reset flag for future replays
-                }
-            }).catch(error => {
-                console.error('Error playing video:', error);
-            });
-        }
-    });
-
+	
     // Toggle play/pause on video click with no overlap
     video.addEventListener('click', () => {
         if (video.paused) {
