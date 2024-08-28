@@ -42,8 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    video.addEventListener('play', () => {
-        video.ended = false;
+    video.addEventListener('playing', () => {
+        videoEnded = false;
 		canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         playButton.style.display = 'none'; // Hide play button when video plays
