@@ -21,8 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.style.width = `${video.videoWidth}px`;
             canvas.style.height = `${video.videoHeight}px`;
             console.log('Canvas size set to match video:', canvas.width, canvas.height);
-			playButton.style.display = 'block';
         });
+		playButton.style.display = 'block';
     });
 	
     // Toggle play/pause on video click with no overlap
