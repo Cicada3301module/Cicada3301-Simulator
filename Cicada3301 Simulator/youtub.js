@@ -75,6 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     video.addEventListener('ended', () => {
         console.log('Video ended');
         playButton.style.display = 'block'; // Show play button when video ends
+		drawOverlayImage();
         //detections = []; // Clear detections
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
         videoEnded = true; // Set flag when video ends
