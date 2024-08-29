@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
             canvas.style.width = `${video.videoWidth}px`;
             canvas.style.height = `${video.videoHeight}px`;
             console.log('Canvas size set to match video:', canvas.width, canvas.height);
+			playButton.style.display = 'block';
         });
     });
 	
@@ -38,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } else {
             video.pause();
+			playButton.style.display = 'block';
             console.log('Video clicked - Video paused');
         }
     });
