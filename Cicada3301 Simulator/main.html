@@ -1,20 +1,74 @@
-<!DOCTYPE html>
 <html>
     <head>
-		<link rel="icon" href="img/favicon.png">
-	    <link rel="stylesheet" type="text/css" href="css/main.css">
-		<script src="js/repo.js"></script>
-		<script src="js/wordlist.js"></script>
-		<script src="js/jquery.min.js"></script>
-		<script src="js/jquery.3.7.0.min.js"></script>
-		<script src="js/qrcode.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/@tonejs/midi"></script>
-		<script src="https://unpkg.com/openpgp@5.11.2/dist/openpgp.min.js"></script>
-		<meta charset="utf-8" />
-	    <title>Cicada3301 Simulator</title>
-	</head>
-	<body>
-	    <p class="header">Cicada3301 Simulator</p>
-	    <div class="monitor", height="400px"></div>
-	</body>
+        <link rel="icon" href="img/favicon.png">
+        <link rel="stylesheet" type="text/css" href="css/main.css">
+        <link rel="preload" href="css/fonts/asciipigpen.ttf" as="font" type="font/ttf" crossorigin>
+        <script src="js/main.js"></script>
+        <script src="js/constants.js"></script>
+        <script src="js/state.js"></script>
+        <script src="js/rng.js"></script>
+        <script src="js/utilities.js"></script>
+        <script src="js/ui.js"></script>
+        <script src="js/masyu.js"></script>
+        <script src="js/puzzles.js"></script>
+        <script src="js/wordlist.js"></script>
+        <script src="js/jquery.min.js"></script>
+        <script src="js/jquery.3.7.0.min.js"></script>
+        <script src="js/qrcode.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@tonejs/midi"></script>
+        <script src="https://unpkg.com/openpgp@5.11.2/dist/openpgp.min.js"></script>
+        <meta charset="utf-8" />
+        <title>Cicada3301 Simulator</title>
+    </head>
+    <body>
+        <div class="cicada-bg-logo" id="cicada-bg-logo"></div>
+        <p class="header">// CICADA3301 SIMULATOR //</p>
+        <div class="vm-shell">
+            <div class="vm-topbar">
+                <div class="vm-topbar-left">
+                    <span class="vm-topbar-dot vm-dot-red"></span>
+                    <span class="vm-topbar-dot vm-dot-yellow"></span>
+                    <span class="vm-topbar-dot vm-dot-green"></span>
+                </div>
+                <div class="vm-topbar-title">SECURE_VM — CICADA_OS v3.3.01</div>
+                <div class="vm-topbar-right">
+                    <span class="vm-topbar-badge">&#128274; ENCRYPTED</span>
+                </div>
+            </div>
+            <div class="vm-screen">
+                <div class="monitor"></div>
+            </div>
+            <div class="vm-statusbar">
+                <span><span class="vm-statusbar-dot"></span>CONNECTED</span>
+                <span id="vm-clock"></span>
+                <span>TOR NETWORK &#9679; ANONYMOUS</span>
+            </div>
+        </div>
+        <script>
+            function vmClock() {
+                const now = new Date();
+                document.getElementById("vm-clock").textContent =
+                    now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+            }
+            vmClock();
+            setInterval(vmClock, 1000);
+
+            // Faint, irregular "breathing" pulse on the background logo —
+            // deliberately NOT a fixed CSS @keyframes loop, since a perfectly
+            // periodic glow reads as mechanical. Instead: wait a random
+            // interval, fade the logo up, hold briefly, fade it back down,
+            // then pick a new random interval and repeat.
+            (function scheduleBgLogoPulse() {
+                const logo = document.getElementById("cicada-bg-logo");
+                if (!logo) return;
+                function pulseOnce() {
+                    logo.classList.add("pulse");
+                    setTimeout(() => logo.classList.remove("pulse"), 2600 + Math.random() * 1400);
+                    const nextDelay = 6000 + Math.random() * 16000; // 6–22s until the next pulse
+                    setTimeout(pulseOnce, nextDelay);
+                }
+                setTimeout(pulseOnce, 3000 + Math.random() * 6000); // first pulse a few seconds after load
+            })();
+        </script>
+    </body>
 </html>

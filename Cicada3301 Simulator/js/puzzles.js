@@ -1,3709 +1,4 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// CONSTANTS & STATIC DATA
-// ─────────────────────────────────────────────────────────────────────────────
-
-const USERS = ["Asew54321","Axodeau","Crazycaleb","Diffuse","Ghastly","Jacobo","redpenguin","TylerY2992"];
-const WEBSITE_CHARS  = "abcdefghijklmnopqrstuvwxyz0123456789";
-const RULESEED_CHARS = "abcdefghijklmnopqrstuvwxyz234567";
-const PI_DIGITS       = "314159265358979323846264338327950288419716939937510582097494";
-const PANGRAM         = "In the quiet village of Zenith, the quick brown fox jumps over a lazy dog near the edge of the woods. Meanwhile, a wizard with a quirky sense of humor conjures a dazzling array of multicolored lights, amusing the bystanders. Across the meadow, a zebra and an exotic bird exchange curious glances, each marveling at the other's striking appearance.";
-const MESSAGE_CHARS   = ["1","2","3","4","5","6","7","8","9","0","q","w","e","r","t","y","u","i","o","p","a","s","d","f","g","h","j","k","l","z","x","c","v","b","n","m","dot","slash","-"];
-const MORSE_ALPHA     = [".----","..---","...--","....-",".....","-....","--...","---..","----.","-----","--.-",".--",".",".-.","-","-.--","..-","..","---",".--.",".-","...","-..","..-.","--.","....",".---","-.-",".-..","--..","-..-","-.-.","...-","-...","-.","--",".-.-.-","-..-.","-....-"];
-const TAP_CODES       = [["a","b","c","d","e","f","g"],["h","i","j","k","l","m","n"],["o","p","q","r","s","t","u"],["v","w","x","y","z","0","1"],["2","3","4","5","6","7","8"],["9","dot","slash","-"]];
-const GEMATRIA_PRIMUS = ['ᚠ','ᚢ','ᚦ','ᚩ','ᚱ','ᚳ','ᚷ','ᚹ','ᚻ','ᚾ','ᛁ','ᛄ','ᛇ','ᛈ','ᛉ','ᛋ','ᛏ','ᛒ','ᛖ','ᛗ','ᚪ','ᚫ','ᚣ','ᛡ','ᛠ','ᛚ','ᛝ','ᛟ','ᛞ'];
-const LIBER_LETTERS   = ["F","V","TH","O","R","C","G","W","H","N","I","J","EO","P","X","S","T","B","E","M","L","NG","OE","D","A","AE","Y","IA","EA"];
-const GOOGLE_SITE     = ["reddit","4chan","imgur","pastebin","twitter","x","dropbox","nytimes","quizzington"];
-const PIZZA_TOPPINGS = ["pepperoni","sausage","canadian bacon","bacon","chicken","beef","meatball","salami","anchovies","mushroom","onion","pineapple","olive","jalapeno","banana pepper","green pepper","tomato","spinach","garlic","artichoke hearts","zucchini","turkey","corn","cranberries","blueberries","kimchi","sauerkraut","apricot","clam","potato","peach","brussel sprouts","crab","Skittles","cicadas"];
-const PIZZA_SIZES    = ["small","medium","large","extra-large"];
-const PIZZA_PRICES   = [9.99, 12.99, 15.99, 21.99];
-const DRINKS         = ["Coke","Pepsi","Starry","Sprite","Water","Doctor Pepper","Mister Pibb","Mountain Dew","Mello Yellow","Bleach","Bacon Grease","Pickle Juice","Beverly"];
-const DRINK_IDS      = ["coke","pepsi","starry","sprite","water","drpepper","mrpibb","mountaindew","melloyello","bleach","bacongrease","picklejuice","beverly"];
-const SIZE_IDS       = ["small","medium","large","extralarge"];
-const TOPPING_IDS    = ["pepperoni","sausage","canadianbacon","bacon","chicken","beef","meatball","salami","anchovies","mushroom","onion","pineapple","olive","jalapeno","bananapepper","greenpepper","tomato","spinach","garlic","artichokehearts","zucchini","turkey","corn","cranberries","blueberries","kimchi","sauerkraut","apricot","clam","potato","peach","brusselsprouts","crab","skittles","cicadas"];
-const LEADS = {
-  onion:    ["messageInImageFile","qrCode","imageProductWebsite","pizzaOrder","catOutguess","rpgBattleLog","messageHiddenInImage"],
-  reddit:   ["messageInImageFile","asciiCaesarCipher","imageProductWebsite","asciiPigpen","asciiPlayfairCipher","catOutguess","rpgBattleLog","messageHiddenInImage"],
-  fourChan: ["imageProductWebsite","imageProductWebsite","asciiPigpen","hexToASCII","hexToASCII","pizzaOrder","catOutguess"],
-  imgur:    ["messageInImageFile","qrCode","imageProductWebsite","imgurPage","messageHiddenInImage"],
-  pastebin: ["asciiCaesarCipher","asciiCaesarCipher","hexToASCII","hexToASCII","asciiPlayfairCipher","asciiPlayfairCipher","pizzaOrder","rpgBattleLog"],
-  twitter:  ["imageProductWebsite","imageProductWebsite","hexToASCII","hexToASCII","pizzaOrder","catOutguess"],
-  dropbox:  ["imageProductWebsite","asciiCaesarCipher","messageInImageFile","qrCode","midiSubstitution","pgp","rpgBattleLog","messageHiddenInImage"],
-};
-
-
-const SKYPE_CONTACTS = [
-  { name: "Asew54321",    number: "5554190022" },
-  { name: "Axodeau",      number: "5554830147" },
-  { name: "Crazycaleb",   number: "5550639284" },
-  { name: "Diffuse",      number: "5557412093" },
-  { name: "Ghastly",      number: "5553870561" },
-  { name: "Jacobo",       number: "5558134729" },
-  { name: "redpenguin",   number: "5551029384" },
-  { name: "TylerY2992",   number: "5556283047" },
-];
-
-const PRIMES = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,503,509,521,523,541];
-const DIMENSION_PRIMES = [503,509,521,523,541,547,557,563,569,571,577,587,593,599,601,607,613,617,619,631,641,643,647,653,659,661,673,677,683,691,701,709,719,727,733,739,743,751,757,761,769,773,787,797,809,811,821,823,827,829,839,853,857,859,863,877,881,883,887,907,911,919,929,937,941,947,953,967,971,977,983,991,997];
-
-// ─────────────────────────────────────────────────────────────────────────────
-// STATE
-// ─────────────────────────────────────────────────────────────────────────────
-
-const state = {
-  userID: 0,
-  traversals: 0,
-  play: false,
-  typable: false,
-  isWordle: false,
-  phoneDigits: 0,
-  callerID: "",
-  attempt: 0,
-  wordleCounter: 0,
-  wordle1: 0,
-  wordle2: 0,
-  linkLength: 0,
-  eventLink: "",
-  eventIterate: "",
-  eventCount: "",
-  currentPizza: [],
-  pizzaOrders: [],
-  downloads: [],
-  downloadRules: [],
-  downloadNames: [],
-  emails: [],
-  selectDrink: false,
-  editingSlot: -1,
-  staticWord: "",
-  frameCount: 0,
-  staticTextCanvas: null,
-  callLog: [],
-  history: [],
-  loginTime: null,
-  leadTarget: null,
-};
-
-const passwords = new Array(USERS.length).fill("");
-let html, initialHTML, audio = {};
-const synth = window.speechSynthesis;
-let voices = [];
-if ("onvoiceschanged" in synth) synth.onvoiceschanged = () => { voices = synth.getVoices(); };
-else voices = synth.getVoices();
-
-// ─────────────────────────────────────────────────────────────────────────────
-// MONO RANDOM  (exact port of C# System.Random)
-// ─────────────────────────────────────────────────────────────────────────────
-
-class MonoRandom {
-  constructor(seed) {
-    this.seed = seed;
-    this._seedArray = new Array(56).fill(0);
-    let num = (161803398 - Math.abs(seed)) | 0;
-    this._seedArray[55] = num;
-    let num2 = 1;
-    for (let i = 1; i < 55; i++) {
-      const idx = (21 * i) % 55;
-      this._seedArray[idx] = num2;
-      num2 = (num - num2) | 0;
-      if (num2 < 0) num2 = (num2 + 2147483647) | 0;
-      num = this._seedArray[idx];
-    }
-    for (let j = 1; j < 5; j++)
-      for (let k = 1; k < 56; k++) {
-        this._seedArray[k] = (this._seedArray[k] - this._seedArray[1 + (k + 30) % 55]) | 0;
-        if (this._seedArray[k] < 0) this._seedArray[k] = (this._seedArray[k] + 2147483647) | 0;
-      }
-    this._inext  = 0;
-    this._inextp = 31;
-  }
-
-  nextDouble() {
-    if (++this._inext  >= 56) this._inext  = 1;
-    if (++this._inextp >= 56) this._inextp = 1;
-    let num = (this._seedArray[this._inext] - this._seedArray[this._inextp]) | 0;
-    if (num < 0) num = (num + 2147483647) | 0;
-    this._seedArray[this._inext] = num;
-    return num * 4.6566128752457969e-10;
-  }
-
-  nextMax(max)           { return (this.nextDouble() * max) | 0; }
-  nextInt()              { return (this.nextDouble() * 2147483647) | 0; }
-  next(min, max)         { return max - min <= 1 ? min : this.nextMax(max - min) + min; }
-
-  shuffleArray(arr) {
-    return arr.map(v => ({ r: this.nextDouble(), v }))
-              .sort((a, b) => a.r - b.r)
-              .map(x => x.v);
-  }
-
-  shuffleFisherYates(list) {
-    let i = list.length;
-    while (i > 1) {
-      const idx = this.next(0, i--);
-      [list[idx], list[i]] = [list[i], list[idx]];
-    }
-    return list;
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// UTILITIES
-// ─────────────────────────────────────────────────────────────────────────────
-
-const delay = ms => new Promise(res => setTimeout(res, ms));
-
-function setCharAt(str, index, chr) {
-  return index > str.length - 1 ? str : str.substring(0, index) + chr + str.substring(index + 1);
-}
-
-function combinedSeed(ruleseedNumber) {
-  return (ruleseedNumber * state.userID) % 2147483647;
-}
-
-async function showInputError(input, message) {
-  state.play = true;
-  input.value    = message;
-  input.disabled = true;
-  await delay(1000);
-  input.value    = "";
-  input.disabled = false;
-  state.play     = false;
-}
-
-function windowBar(closeFunc = "closeApp") {
-  const ua = navigator.userAgent;
-  const isMac   = /Mac/.test(ua) && !/iPhone|iPad/.test(ua);
-  const isLinux = /Linux/.test(ua) && !/Android/.test(ua);
-  const hasBack = state.history.length > 0;
-  const backBtn = hasBack
-    ? `<button class="win-back-btn" onclick="historyBack()" title="Back">&#8592;</button>`
-    : `<button class="win-back-btn" style="opacity:0.25;cursor:default" disabled title="No history">&#8592;</button>`;
-
-  if (isMac) {
-    return `<div class="win-titlebar win-titlebar-mac">
-      <div class="win-traffic-lights">
-        <button class="win-tl win-tl-close"   onclick="${closeFunc}()" title="Close"></button>
-        <button class="win-tl win-tl-minimize" title="Minimize"></button>
-        <button class="win-tl win-tl-maximize" title="Maximize"></button>
-      </div>
-      ${backBtn}
-      <div class="win-titlebar-title" id="win-title">CICADA_OS</div>
-      <div style="width:52px"></div>
-    </div>`;
-  }
-
-  if (isLinux) {
-    return `<div class="win-titlebar win-titlebar-linux">
-      ${backBtn}
-      <div class="win-titlebar-title" id="win-title">CICADA_OS</div>
-      <div class="win-linux-controls">
-        <button class="win-linux-btn win-linux-close" onclick="${closeFunc}()" title="Close">&#10005;</button>
-      </div>
-    </div>`;
-  }
-
-  // Windows style (default)
-  return `<div class="win-titlebar win-titlebar-win">
-    <div class="win-titlebar-icon">&#128187;</div>
-    ${backBtn}
-    <div class="win-titlebar-title" id="win-title">CICADA_OS</div>
-    <div class="win-controls">
-      <button class="win-ctrl-btn win-ctrl-min"   title="Minimize">&#8211;</button>
-      <button class="win-ctrl-btn win-ctrl-max"   title="Maximize">&#9633;</button>
-      <button class="win-ctrl-btn win-ctrl-close" onclick="${closeFunc}()" title="Close">&#10005;</button>
-    </div>
-  </div>`;
-}
-
-// ── History helpers ───────────────────────────────────────────────────────────
-
-function pushHistory(title, restoreFn) {
-  state.history.push({ title, restore: restoreFn, traversals: state.traversals });
-}
-
-function historyBack() {
-  if (!state.history.length) return;
-  const entry = state.history.pop();
-  state.traversals = entry.traversals;
-  state.leadTarget = null;
-  state.typable    = false;
-  state.isWordle   = false;
-  if (netMonInterval) { clearInterval(netMonInterval); netMonInterval = null; }
-  if (desktopClockInterval) { clearInterval(desktopClockInterval); desktopClockInterval = null; }
-  entry.restore();
-}
-
-function setWinTitle(title) {
-  const el = document.getElementById("win-title");
-  if (el) el.textContent = title;
-}
-
-function getLeadTarget() {
-  if (state.leadTarget) {
-    const el = document.getElementById(state.leadTarget);
-    if (el) return el;
-  }
-  return document.getElementById("webApp") || html;
-}
-
-function fileTypeIcon(type) {
-  switch (type) {
-    case "midiSubstitution":    return "🎵";
-    case "pgp":                 return "🔐";
-    case "imageProductWebsite":
-    case "messageInImageFile":
-    case "messageHiddenInImage":
-    case "qrCode":              return "🖼️";
-    case "asciiCaesarCipher":
-    case "asciiPlayfairCipher":
-    case "hexToASCII":          return "📄";
-    default:                    return "📦";
-  }
-}
-
-function showNotification(message, icon = "📥", title = "Download Complete") {
-  const existing = document.getElementById("dl-notification");
-  if (existing) existing.remove();
-  const n = document.createElement("div");
-  n.id = "dl-notification";
-  n.style.cssText = `
-    position: fixed;
-    bottom: 24px;
-    right: 16px;
-    background: #1a1a2e;
-    border: 1px solid rgba(0,255,159,0.3);
-    box-shadow: 0 0 16px rgba(0,255,159,0.15), 0 4px 20px rgba(0,0,0,0.6);
-    color: #e0e0ff;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    font-size: 10px;
-    padding: 8px 12px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    z-index: 99999;
-    max-width: 240px;
-    animation: notif-in 0.25s ease;
-    letter-spacing: 0.3px;
-    cursor: pointer;
-  `;
-  n.innerHTML = `
-    <span style="font-size:16px;flex-shrink:0">${icon}</span>
-    <div style="min-width:0">
-      <div style="color:#00ff9f;font-size:8px;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px">${title}</div>
-      <div style="word-break:break-all;opacity:0.8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${message}</div>
-    </div>
-  `;
-  n.onclick = () => n.remove();
-  if (!document.getElementById("notif-style")) {
-    const s = document.createElement("style");
-    s.id = "notif-style";
-    s.textContent = `
-      @keyframes notif-in  { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-      @keyframes notif-out { from { opacity:1; transform:translateY(0); }    to { opacity:0; transform:translateY(12px); } }
-    `;
-    document.head.appendChild(s);
-  }
-  document.body.appendChild(n);
-  setTimeout(() => {
-    if (!n.isConnected) return;
-    n.style.animation = "notif-out 0.3s ease forwards";
-    setTimeout(() => n.remove(), 320);
-  }, 4000);
-}
-
-function setButtons(ids, disabled) {
-  ids.forEach(id => { const el = document.getElementById(id); if (el) el.disabled = disabled; });
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// LINK GENERATORS
-// ─────────────────────────────────────────────────────────────────────────────
-
-const LINK_GENERATORS = {
-  onion:        r => { const rng = new MonoRandom(r.seed); return Array.from({length:16}, ()=>RULESEED_CHARS[rng.nextMax(RULESEED_CHARS.length)]).join("") + ".onion"; },
-  liber:        r => { const rng = new MonoRandom(r.seed); return Array.from({length:56}, ()=>RULESEED_CHARS[rng.nextMax(RULESEED_CHARS.length)]).join("") + ".onion"; },
-  phoneNumber:  r => { const rng = new MonoRandom(r.seed); let p = "("; for (let i=0;i<10;i++){p+="0123456789"[rng.nextMax(10)];if(i===2)p+=") ";if(i===5)p+="-";}return p; },
-  coordinate:   r => { const rng = new MonoRandom(r.seed); const coord = (range,offset)=>{const to=rng.nextMax(range)-offset,from=rng.nextMax(range)-offset,fx=rng.nextMax(5),rand=rng.nextMax(1000); if(rand===0) return 0; return +((1/rand)*(to-from)+from).toFixed(fx);}; return coord(181,90)+"\n"+coord(361,180); },
-  reddit:       r => { const rng = new MonoRandom(r.seed); return "www.reddit.com/r/"    + randChars(rng, WEBSITE_CHARS, rng.next(6,12)); },
-  "4chan":       r => { const rng = new MonoRandom(r.seed); return "boards.4chan.org/"    + randChars(rng, WEBSITE_CHARS, rng.next(1,4)); },
-  imgur:        r => { const rng = new MonoRandom(r.seed); return "imgur.com/gallery/"   + randChars(rng, WEBSITE_CHARS, rng.next(5,15)); },
-  pastebin:     r => { const rng = new MonoRandom(r.seed); return "www.pastebin.com/"    + randChars(rng, WEBSITE_CHARS, 8); },
-  twitter:      r => { const rng = new MonoRandom(r.seed); return "www.twitter.com/"     + randChars(rng, WEBSITE_CHARS, rng.next(5,15)); },
-  x:            r => { const rng = new MonoRandom(r.seed); return "www.x.com/"           + randChars(rng, WEBSITE_CHARS, rng.next(5,15)); },
-  dropbox:      r => { const rng = new MonoRandom(r.seed); return "www.dropbox.com/sh/"  + randChars(rng, WEBSITE_CHARS, rng.next(5,10)); },
-  nytimes:       r => { const rng = new MonoRandom(r.seed); const types=["wordle/","crossword/","masyu/"]; return "www.nytimes.com/games/" + types[rng.next(0,3)] + randChars(rng, WEBSITE_CHARS, rng.next(8,12)); },
-  quizzington:  r => { const rng = new MonoRandom(r.seed); const types=["sequence/","find8/","numbers/","static/"]; return "www.quizzington.org/fliers/" + types[rng.next(0,4)] + randChars(rng, WEBSITE_CHARS, rng.next(8,12)); },
-};
-
-function randChars(rng, chars, len) {
-  return Array.from({length: len}, () => chars[rng.nextMax(chars.length)]).join("");
-}
-
-const NEXT_STEP_KEYS = [null,"onion","phoneNumber","coordinate","reddit","4chan","imgur","pastebin","twitter","x","dropbox","nytimes","quizzington"];
-
-function nextStep(ruleseed) {
-  let method = ruleseed.nextMax(13);
-  if (method === 0) method = 1;
-  if (state.traversals >= 20) method = 10;
-  return LINK_GENERATORS[NEXT_STEP_KEYS[method]](ruleseed);
-}
-
-const NEXT_LINK_KEYS = [null,"reddit","4chan","imgur","pastebin","twitter","x","dropbox","nytimes","quizzington"];
-
-function nextLink(ruleseed) {
-  let method = ruleseed.nextMax(9);
-  if (method === 0) method = 1;
-  if (state.traversals >= 20) method = 6;
-  return LINK_GENERATORS[NEXT_LINK_KEYS[method]](ruleseed);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// URL ROUTING
-// ─────────────────────────────────────────────────────────────────────────────
-
-const URL_ROUTES = [
-  { prefix: "www.reddit.com/r/",              start: 17,  captureR: true,  handler: (n, r) => prepReddit(n, r) },
-  { prefix: "www.dropbox.com/sh/",            start: 19,  handler: (n)    => prepDropbox(n) },
-  { prefix: "www.twitter.com/",               start: 16,  captureR: true,  handler: (n, r) => prepTwitter(n, r) },
-  { prefix: "www.x.com/",                     start: 10,  captureR: true,  handler: (n, r) => prepX(n, r) },
-  { prefix: "www.pastebin.com/",              start: 17,  handler: (n)    => prepPastebin(n) },
-  { prefix: "boards.4chan.org/",              start: 17, captureR: true, handler: (n, r) => prep4Chan(n, r) },
-  { prefix: "imgur.com/gallery/",             start: 18,  captureR: true,  handler: (n, r) => prepImgur(n, r) },
-  { prefix: "www.nytimes.com/games/wordle/",  start: 29,  handler: (n)    => prepWordle(n) },
-  { prefix: "www.nytimes.com/games/crossword/",start:34,  handler: (n)    => prepCrossword(n) },
-  { prefix: "www.nytimes.com/games/masyu/",    start: 28,  handler: (n)    => prepMasyu(n) },
-  { prefix: "www.quizzington.org/fliers/sequence/", start: 36, captureR: true, handler: (n, r) => prepQuizzington(n, r, "sequence") },
-  { prefix: "www.quizzington.org/fliers/find8/",    start: 33, captureR: true, handler: (n, r) => prepQuizzington(n, r, "find8") },
-  { prefix: "www.quizzington.org/fliers/numbers/",  start: 35, captureR: true, handler: (n, r) => prepQuizzington(n, r, "numbers") },
-  { prefix: "www.quizzington.org/fliers/static/",   start: 35, captureR: true, handler: (n, r) => prepQuizzington(n, r, "static") },
-];
-
-async function parseURL(val, chars, routes, input) {
-  if (state.play) return;
-
-  const exactRoutes = {
-    "www.cicada3301solved.com": toolTips,
-    "www.asciicaesarcipher.com": prepCaesar,
-    "pizza.net": prepPizza,
-    "decryptpgp.com": prepDecryptPGP,
-    "midi.helper": prepMidiHelper,
-    "outguess.helper": prepOutguessHelper,
-  };
-  if (exactRoutes[val]) { exactRoutes[val](); return; }
-
-  for (const { prefix, start, captureR, handler } of routes) {
-    if (!val.startsWith(prefix)) continue;
-    let seed = 0, r = "", valid = false;
-    for (let i = start; i < val.length; i++) {
-      if (chars.indexOf(val[i]) === -1) break;
-      seed += chars.indexOf(val[i]);
-      if (captureR) r += val[i];
-      if (i === val.length - 1) valid = true;
-    }
-    if (valid) {
-      const snap = html.innerHTML;
-      const snapTitle = document.getElementById("win-title")?.textContent || "Back";
-      pushHistory(snapTitle, () => { html.innerHTML = snap; });
-      state.traversals++;
-      handler(seed % 2147483647, r);
-    }
-    else await showInputError(input, "Link contains invalid character.");
-    return;
-  }
-
-  const isNumCom = val.endsWith(".com") && /^\d+$/.test(val.slice(0, -4));
-  if (isNumCom) {
-    let seed = 0, valid = false;
-    for (let i = 0; i < val.length - 4; i++) { seed += parseInt(val[i]); if (i === val.length - 5) valid = true; }
-    if (valid) {
-      const snap = html.innerHTML;
-      const snapTitle = document.getElementById("win-title")?.textContent || "Back";
-      pushHistory(snapTitle, () => { html.innerHTML = snap; });
-      state.traversals++;
-      prepProductWebsite(seed % 2147483647);
-    }
-    else await showInputError(input, "Link contains invalid character.");
-    return;
-  }
-
-  await showInputError(input, "Not a valid link.");
-}
-
-async function searchGoogle() {
-  if (state.play) return;
-  const input = document.getElementById("googleLink");
-  const val = input?.value.trim();
-  if (!val) return;
-  const app = document.getElementById("webApp");
-  if (!app) return;
-
-  // Validate the link before touching the DOM, so errors can be shown in the input field
-  const isExact   = !!({
-    "www.cicada3301solved.com": 1, "www.asciicaesarcipher.com": 1,
-    "pizza.net": 1, "decryptpgp.com": 1, "midi.helper": 1, "outguess.helper": 1,
-  }[val]);
-  const isRoute   = URL_ROUTES.some(({ prefix }) => val.startsWith(prefix));
-  const isNumCom  = val.endsWith(".com") && /^\d+$/.test(val.slice(0, -4));
-  const isKnown   = isExact || isRoute || isNumCom;
-
-  if (!isKnown) {
-    await showInputError(input, "Not a valid link.");
-    return;
-  }
-
-  // Link is navigable — show the SERP animation then route
-  const serpSnippets = googleFakeSERP(val);
-  app.innerHTML = `
-    <div class="goog-serp-wrap">
-      <div class="goog-serp-query">
-        <span class="goog-search-icon" style="margin-right:6px">&#128269;</span>
-        <span style="font-size:11px;color:#202124">${val}</span>
-      </div>
-      <div style="font-size:8px;color:#70757a;padding:4px 0 6px">About ${(Math.floor(Math.random()*900)+100).toLocaleString()},000 results (${(Math.random()*0.8+0.2).toFixed(2)} seconds)</div>
-      ${serpSnippets}
-    </div>`;
-
-  await delay(1000);
-
-  const snap = html.innerHTML;
-  pushHistory("Google", () => { html.innerHTML = snap; });
-  await parseURL(val, WEBSITE_CHARS, URL_ROUTES, input);
-}
-
-function googleFakeSERP(val) {
-  // Derive a platform label and fake results from the URL
-  const platform =
-    val.includes("reddit.com")      ? { name: "Reddit",    color: "#ff4500" } :
-    val.includes("4chan.org")        ? { name: "4chan",      color: "#006600" } :
-    val.includes("imgur.com")        ? { name: "Imgur",     color: "#1bb76e" } :
-    val.includes("pastebin.com")     ? { name: "Pastebin",  color: "#02a5e0" } :
-    val.includes("twitter.com")      ? { name: "Twitter",   color: "#1d9bf0" } :
-    val.includes("x.com")            ? { name: "X",         color: "#000"    } :
-    val.includes("dropbox.com")      ? { name: "Dropbox",   color: "#0061ff" } :
-    val.includes("nytimes.com")      ? { name: "NYT Games", color: "#000"    } :
-    val.includes("quizzington.org")  ? { name: "Quizzington", color: "#4a6cf7" } :
-    val.includes("pizza.net")        ? { name: "Pizza.NET", color: "#c0392b" } :
-    val.includes("cicada3301solved") ? { name: "Cicada3301Solved", color: "#4aff4a" } :
-    val.includes("asciicaesarcipher")? { name: "ASCIICaesarCipher", color: "#333" } :
-    val.includes("decryptpgp")       ? { name: "DecryptPGP", color: "#333"   } :
-    val.includes("midi.helper")      ? { name: "MIDI Helper", color: "#e74c3c" } :
-    val.includes("outguess.helper")  ? { name: "Outguess Helper", color: "#8e44ad" } :
-                                       { name: val.split("/")[0], color: "#333" };
-
-  const snippets = [
-    { title: `${platform.name} — ${val}`, url: val, desc: `Visit the page at ${val}. Community-verified link shared across multiple ARG forums.` },
-    { title: `${platform.name} ARG Discussion — cicada3301solved.com`, url: "www.cicada3301solved.com", desc: `Users have been tracking this link. See the wiki for known cipher methods and decoding tips.` },
-    { title: `[Archived] ${val} — web.archive.org`, url: `web.archive.org/web/*/${val}`, desc: `Archived snapshots of this URL. Last crawled recently. May contain earlier versions of the content.` },
-  ];
-
-  return snippets.map(s => `
-    <div class="goog-serp-result">
-      <div class="goog-serp-site">
-        <div class="goog-serp-favicon" style="background:${platform.color}">${platform.name[0]}</div>
-        <div>
-          <div class="goog-serp-domain">${s.url.split("/")[0]}</div>
-          <div class="goog-serp-url">${s.url.length > 50 ? s.url.slice(0,50)+"…" : s.url}</div>
-        </div>
-      </div>
-      <div class="goog-serp-title">${s.title}</div>
-      <div class="goog-serp-desc">${s.desc}</div>
-    </div>`).join("");
-}
-
-async function searchOnion() {
-  const val   = document.getElementById("onionLink").value;
-  const input = document.getElementById("onionLink");
-  if (state.play || !val.endsWith(".onion")) { if (!state.play) await showInputError(input, "Not a valid link."); return; }
-
-  if (val === "liberprimus.onion") {
-    const snap = html.innerHTML;
-    pushHistory("Tor Browser", () => { html.innerHTML = snap; });
-    prepLiberHelp();
-    return;
-  }
-  if (val === "tormail.onion") {
-    const snap = html.innerHTML;
-    pushHistory("Tor Browser", () => { html.innerHTML = snap; });
-    prepTormail();
-    return;
-  }
-
-  const slug = val.slice(0, -6);
-  const chars = RULESEED_CHARS;
-  const validLen = slug.length === 16 || slug.length === 56;
-  if (!validLen) { await showInputError(input, "Not a valid .onion link."); return; }
-
-  let seed = 0;
-  for (let i = 0; i < slug.length; i++) {
-    if (chars.indexOf(slug[i]) === -1) { await showInputError(input, "Link contains invalid character."); return; }
-    seed += chars.indexOf(slug[i]);
-  }
-  seed %= 2147483647;
-
-  // Read the slug value NOW before torCircuitAnimation wipes the DOM
-  const displaySlug = val;
-
-  // Tor circuit animation
-  const snap = html.innerHTML;
-  pushHistory("Tor Browser", () => { html.innerHTML = snap; });
-  await torCircuitAnimation(val);
-
-  if (slug.length === 16) { state.traversals++; prepOnion(seed, displaySlug); }
-  else prepPrimus(seed);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// TOR CIRCUIT ANIMATION
-// ─────────────────────────────────────────────────────────────────────────────
-
-async function torCircuitAnimation(destination) {
-  const circuitHTML = `
-    <div style="background:#0d0020;padding:14px;font-family:'Courier New',monospace;color:#c090ff;min-height:200px">
-      <div style="font-size:9px;color:#9060d0;letter-spacing:2px;margin-bottom:12px">&#127376; ESTABLISHING TOR CIRCUIT...</div>
-      <div id="tor-circuit-nodes" style="display:flex;flex-direction:column;gap:10px"></div>
-      <div id="tor-circuit-dest" style="margin-top:12px;font-size:8px;color:#5a3080;letter-spacing:1px;word-break:break-all"></div>
-    </div>`;
-  const webApp = document.getElementById("webApp");
-  if (webApp) {
-    webApp.innerHTML = circuitHTML;
-  } else {
-    // Tor browser writes directly to html — preserve the titlebar, replace the body
-    html.innerHTML = `${windowBar()}<div id="webApp" style="background:#0d0020">${circuitHTML}</div>`;
-  }
-  const relays = [
-    { label: "Guard Node",  ip: fakeIP() },
-    { label: "Middle Node", ip: fakeIP() },
-    { label: "Exit Node",   ip: fakeIP() },
-  ];
-  const nodesEl = document.getElementById("tor-circuit-nodes");
-  const destEl  = document.getElementById("tor-circuit-dest");
-  for (let i = 0; i < relays.length; i++) {
-    await delay(550);
-    if (!nodesEl) break;
-    nodesEl.innerHTML += `
-      <div style="display:flex;align-items:center;gap:8px;animation:notif-in 0.2s ease">
-        ${i > 0 ? `<div style="width:2px;height:10px;background:#5a3080;margin-left:10px;margin-top:-12px;margin-bottom:-2px"></div>` : ""}
-        <div style="width:10px;height:10px;border-radius:50%;background:#7d00c8;box-shadow:0 0 6px #7d00c8;flex-shrink:0"></div>
-        <div>
-          <div style="font-size:9px;color:#c090ff">${relays[i].label}</div>
-          <div style="font-size:8px;color:#5a3080">${relays[i].ip}</div>
-        </div>
-        <div style="margin-left:auto;font-size:8px;color:#4aaa4a">&#10003; encrypted</div>
-      </div>`;
-  }
-  await delay(400);
-  if (destEl) destEl.textContent = `\u2192 ${destination}`;
-  await delay(300);
-}
-
-function fakeIP() {
-  return Array.from({length:4}, () => Math.floor(Math.random()*255)+1).join(".");
-}
-
-function loadProgram(closeFunc = "closeApp") {
-  html.innerHTML = `${windowBar(closeFunc)}<div id="webApp" style="background-color:#000000;"></div>`;
-}
-
-function startDesktopClock() {
-  if (desktopClockInterval) { clearInterval(desktopClockInterval); desktopClockInterval = null; }
-  desktopClockInterval = setInterval(() => {
-    const el = document.getElementById("desktop-clock-time");
-    if (!el) { clearInterval(desktopClockInterval); desktopClockInterval = null; return; }
-    el.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-  }, 1000);
-
-  // Attach right-click context menu to wallpaper
-  const wallpaper = document.querySelector(".dt-wallpaper");
-  if (wallpaper) {
-    wallpaper.addEventListener("contextmenu", e => {
-      e.preventDefault();
-      showDesktopContextMenu(e, wallpaper);
-    });
-  }
-  // Dismiss context menu on any click
-  document.addEventListener("click", dismissDesktopContextMenu, { once: false });
-}
-
-function showDesktopContextMenu(e, wallpaper) {
-  dismissDesktopContextMenu();
-
-  const items = [
-    { label: "&#128260; Refresh Desktop",    action: "closeApp()" },
-    { label: "&#128202; Network Monitor",     action: "loadNetworkMonitor()" },
-    { label: "&#128193; Open Downloads",      action: "loadDownloads()" },
-    { divider: true },
-    { label: "&#8505;&#65039; About This PC", action: "showAboutPC()" },
-  ];
-
-  const ua     = navigator.userAgent;
-  const isMac  = /Mac/.test(ua) && !/iPhone|iPad/.test(ua);
-  const isLinux= /Linux/.test(ua) && !/Android/.test(ua);
-  const menuBg = isMac ? "rgba(40,40,40,0.97)" : isLinux ? "#1a2a2a" : "#1e1e2e";
-  const border = isMac ? "rgba(255,255,255,0.15)" : "rgba(0,255,159,0.2)";
-
-  const itemsHTML = items.map(item => {
-    if (item.divider) return `<div style="border-top:1px solid ${border};margin:3px 0"></div>`;
-    return `<div class="ctx-item" onclick="${item.action};dismissDesktopContextMenu()">${item.label}</div>`;
-  }).join("");
-
-  // Inject ctx-item style once
-  if (!document.getElementById("ctx-style")) {
-    const s = document.createElement("style");
-    s.id = "ctx-style";
-    s.textContent = `
-      .ctx-item { padding:5px 14px; cursor:pointer; color:#e0e0ff; white-space:nowrap; }
-      .ctx-item:hover { background:rgba(0,255,159,0.12); color:#00ff9f; }`;
-    document.head.appendChild(s);
-  }
-
-  const menu = document.createElement("div");
-  menu.id = "desktop-ctx-menu";
-  menu.style.cssText = `
-    position:absolute; z-index:999999;
-    background:${menuBg}; border:1px solid ${border};
-    border-radius:6px; padding:4px 0;
-    box-shadow:0 8px 24px rgba(0,0,0,0.5);
-    font-family:'Segoe UI',Arial,sans-serif; font-size:10px;
-    min-width:160px; user-select:none;
-    animation:notif-in 0.12s ease;
-  `;
-  menu.innerHTML = itemsHTML;
-
-  // Wallpaper must be positioned so absolute children are relative to it
-  wallpaper.style.position = "relative";
-  wallpaper.appendChild(menu);
-
-  // Calculate click position relative to wallpaper
-  const wrect = wallpaper.getBoundingClientRect();
-  const mw    = menu.offsetWidth;
-  const mh    = menu.offsetHeight;
-  let   left  = e.clientX - wrect.left;
-  let   top   = e.clientY - wrect.top;
-
-  // Clamp so menu stays inside wallpaper
-  if (left + mw > wrect.width)  left = wrect.width  - mw - 4;
-  if (top  + mh > wrect.height) top  = wrect.height - mh - 4;
-  if (left < 0) left = 4;
-  if (top  < 0) top  = 4;
-
-  menu.style.left = left + "px";
-  menu.style.top  = top  + "px";
-}
-
-function dismissDesktopContextMenu() {
-  const m = document.getElementById("desktop-ctx-menu");
-  if (m) m.remove();
-}
-
-function showAboutPC() {
-  dismissDesktopContextMenu();
-  const ua      = navigator.userAgent;
-  const isMac   = /Mac/.test(ua) && !/iPhone|iPad/.test(ua);
-  const isLinux = /Linux/.test(ua) && !/Android/.test(ua);
-  const osName  = isMac ? "CICADA_OS macOS Edition" : isLinux ? "CICADA_OS Linux Edition" : "CICADA_OS Windows Edition";
-  const upSecs  = Math.floor((Date.now() - (state.loginTime?.getTime() || Date.now())) / 1000);
-  const upMins  = Math.floor(upSecs / 60), upS = upSecs % 60;
-  const uptime  = `${upMins}m ${upS}s`;
-  const user    = state.userID > 0 ? USERS[state.userID - 1] : "unknown";
-
-  const overlay = document.createElement("div");
-  overlay.id = "about-overlay";
-  overlay.style.cssText = `
-    position:fixed; inset:0; z-index:999998;
-    background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center;
-  `;
-  overlay.innerHTML = `
-    <div style="background:#0d0d1a; border:1px solid rgba(0,255,159,0.3);
-                border-radius:8px; padding:16px 20px; min-width:220px;
-                font-family:'Courier New',monospace; color:#e0e0ff;
-                box-shadow:0 0 30px rgba(0,255,159,0.15)">
-      <div style="color:#00ff9f;font-size:12px;font-weight:700;letter-spacing:3px;margin-bottom:10px">&#128187; ABOUT THIS PC</div>
-      <div style="font-size:9px;line-height:2;color:#aaa">
-        <div><span style="color:#00ff9f;width:90px;display:inline-block">OS</span>${osName}</div>
-        <div><span style="color:#00ff9f;width:90px;display:inline-block">VERSION</span>V3.3.01</div>
-        <div><span style="color:#00ff9f;width:90px;display:inline-block">USER</span>${user}</div>
-        <div><span style="color:#00ff9f;width:90px;display:inline-block">UPTIME</span>${uptime}</div>
-        <div><span style="color:#00ff9f;width:90px;display:inline-block">TRAVERSALS</span>${state.traversals}</div>
-        <div><span style="color:#00ff9f;width:90px;display:inline-block">TOR STATUS</span><span style="color:#00ff9f">&#9679; ACTIVE</span></div>
-        <div><span style="color:#00ff9f;width:90px;display:inline-block">ENCRYPTION</span>AES-256 / PGP</div>
-      </div>
-      <div style="text-align:center;margin-top:12px">
-        <button onclick="document.getElementById('about-overlay').remove()"
-          style="background:transparent;border:1px solid rgba(0,255,159,0.3);color:#00ff9f;
-                 font-family:'Courier New',monospace;font-size:9px;padding:4px 16px;
-                 cursor:pointer;border-radius:3px;letter-spacing:1px">CLOSE</button>
-      </div>
-    </div>`;
-  overlay.addEventListener("click", e => { if (e.target === overlay) overlay.remove(); });
-  document.body.appendChild(overlay);
-}
-
-function closeApp() {
-  document.getElementsByClassName("monitor")[0].classList.remove("quizzingtonback");
-  html = document.getElementsByClassName("monitor")[0];
-  state.typable     = false;
-  state.isWordle    = false;
-  state.phoneDigits = 0;
-  state.history          = [];
-  state.leadTarget       = null;
-  if (netMonInterval) { clearInterval(netMonInterval); netMonInterval = null; }
-  if (desktopClockInterval) { clearInterval(desktopClockInterval); desktopClockInterval = null; }
-  dismissDesktopContextMenu();
-  html.innerHTML = appMenu(state.userID > 0 ? USERS[state.userID-1] : "");
-  startDesktopClock();
-}
-
-function appMenu(username = "") {
-  const now = new Date();
-  const time = now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-  const ua = navigator.userAgent;
-  const isMac   = /Mac/.test(ua) && !/iPhone|iPad/.test(ua);
-  const isLinux = /Linux/.test(ua) && !/Android/.test(ua);
-
-  const apps = [
-    { label: "Tor Browser",      icon: "🌐", color: "#7d00c8", onclick: "loadTor()" },
-    { label: "Google",           icon: "🔍", color: "#4285f4", onclick: "loadGoogle()" },
-    { label: "Skype",            icon: "📞", color: "#00aff0", onclick: "loadSkype()" },
-    { label: "Maps",             icon: "📍", color: "#34a853", onclick: "loadMap()" },
-    { label: "Downloads",        icon: "📁", color: "#f4a200", onclick: "loadDownloads()" },
-    { label: "Network Monitor",  icon: "📡", color: "#00c896", onclick: "loadNetworkMonitor()" },
-  ];
-
-  const desktopIcons = apps.map(a => `
-    <div class="dt-icon-wrap" ondblclick="${a.onclick}" title="${a.label}">
-      <div class="dt-icon" style="--icon-color:${a.color}">
-        <div class="dt-icon-gloss"></div>
-        <span class="dt-icon-glyph">${a.icon}</span>
-      </div>
-      <div class="dt-icon-label">${a.label}</div>
-    </div>`).join("");
-
-  if (isMac) {
-    const dockIcons = apps.map(a => `
-      <div class="dock-item" ondblclick="${a.onclick}" title="${a.label}">
-        <div class="dt-icon" style="--icon-color:${a.color}">
-          <div class="dt-icon-gloss"></div>
-          <span class="dt-icon-glyph">${a.icon}</span>
-        </div>
-        <span class="dock-label">${a.label}</span>
-      </div>`).join("");
-
-    return `<div class="desktop-wrap desktop-mac">
-      <div class="mac-menubar">
-        <span class="mac-apple">&#63743;</span>
-        <span class="mac-menu-item">Finder</span>
-        <span class="mac-menu-item">File</span>
-        <span class="mac-menu-item">Edit</span>
-        <span class="mac-menu-item">View</span>
-        <div class="mac-menubar-right">
-          <span class="mac-menu-item" id="desktop-clock-time">${time}</span>
-          ${username ? `<span class="mac-menu-item">&#128100; ${username}</span>` : ""}
-        </div>
-      </div>
-      <div class="dt-wallpaper dt-wallpaper-mac">
-        <div class="dt-icons-grid">${desktopIcons}</div>
-      </div>
-      <div class="mac-dock">
-        <div class="mac-dock-inner">${dockIcons}</div>
-      </div>
-    </div>`;
-  }
-
-  if (isLinux) {
-    return `<div class="desktop-wrap desktop-linux">
-      <div class="linux-panel">
-        <div class="linux-panel-left">
-          <button class="linux-panel-btn">Activities</button>
-        </div>
-        <div class="linux-panel-center" id="desktop-clock-time">${time}</div>
-        <div class="linux-panel-right">
-          ${username ? `<span class="linux-panel-user">&#128100; ${username}</span>` : ""}
-        </div>
-      </div>
-      <div class="dt-wallpaper dt-wallpaper-linux">
-        <div class="dt-icons-grid">${desktopIcons}</div>
-      </div>
-    </div>`;
-  }
-
-  // Windows style (default)
-  const taskbarIcons = apps.map(a => `
-    <button class="win-taskbar-app" ondblclick="${a.onclick}" title="${a.label}">
-      <span>${a.icon}</span>
-    </button>`).join("");
-
-  return `<div class="desktop-wrap desktop-win">
-    <div class="dt-wallpaper dt-wallpaper-win">
-      ${username ? `<div class="win-username-tag">&#128100; ${username}</div>` : ""}
-      <div class="dt-icons-grid">${desktopIcons}</div>
-    </div>
-    <div class="win-taskbar">
-      <button class="win-start-btn">&#10064; Start</button>
-      <div class="win-taskbar-apps">${taskbarIcons}</div>
-      <div class="win-taskbar-clock" id="desktop-clock">
-        <div id="desktop-clock-time">${time}</div>
-        <div style="font-size:7px;opacity:0.7">${new Date().toLocaleDateString([], {month:'2-digit',day:'2-digit',year:'2-digit'})}</div>
-      </div>
-    </div>
-  </div>`;
-}
-
-async function loadTor() {
-  const snap = html.innerHTML;
-  pushHistory("Desktop", () => { closeApp(); });
-  loadProgram();
-  await delay(100);
-  setWinTitle("Tor Browser");
-  document.getElementById("webApp").style.background = "#1a0a2e";
-  document.getElementById("webApp").innerHTML = `<div class="tor-wrap">
-    <div class="tor-header">
-      <span style="font-size:16px">&#127760;</span>
-      <div><div class="tor-logo">Tor Browser</div><div class="tor-sub">ANONYMOUS &amp; SECURE</div></div>
-    </div>
-    <div class="tor-body">
-      <span class="tor-shield">&#127376;</span>
-      <div class="tor-tagline">You're ready for the world's most private browsing.</div>
-      <div class="tor-input-row">
-        <input class="tor-input" id="onionLink" placeholder="enter .onion address...">
-        <button class="tor-btn" onclick="searchOnion()">Go</button>
-      </div>
-      <div class="tor-notice">All traffic is routed through the Tor network. Your identity is protected.</div>
-    </div>
-  </div>`;
-  document.getElementById("webApp").innerHTML += `<div align="center" id="qrCode"></div><div align="center" id="qrCode2"></div>`;
-  await delay(100);
-  initialHTML = document.getElementsByClassName("monitor")[0].innerHTML;
-}
-
-async function loadGoogle() {
-  pushHistory("Desktop", () => { closeApp(); });
-  loadProgram();
-  await delay(100);
-  setWinTitle("Google");
-  const app = document.getElementById("webApp");
-  app.style.background = "#fff";
-  app.innerHTML = `<div class="goog-wrap">
-    <div class="goog-header">
-      <span class="goog-header-link" onclick="window.open('http://www.youtube.com/watch?v=dQw4w9WgXcQ')">I\'m Feeling Lucky</span>
-    </div>
-    <div class="goog-body">
-      <div class="goog-logo">
-        <span class="goog-g">G</span><span class="goog-o1">o</span><span class="goog-o2">o</span><span class="goog-gl">g</span><span class="goog-e">l</span><span class="goog-o1">e</span>
-      </div>
-      <div class="goog-search-box">
-        <span class="goog-search-icon">&#128269;</span>
-        <input class="goog-input" id="googleLink" placeholder="Search or enter URL">
-      </div>
-      <div class="goog-btn-row">
-        <button class="goog-btn" onclick="searchGoogle()">Google Search</button>
-      </div>
-    </div>
-  </div>`;
-}
-
-async function loadSkype() {
-  pushHistory("Desktop", () => { closeApp(); });
-  loadProgram();
-  await delay(100);
-  setWinTitle("Skype");
-  const app = document.getElementById("webApp");
-  app.style.background = "#f5f5f5";
-  skypeRender(app, "dialpad");
-}
-
-function skypeRender(app, activeTab) {
-  const keys = [1,2,3,4,5,6,7,8,9,"*",0,"#"];
-  const logHTML = state.callLog.length === 0
-    ? `<div style="color:#aaa;font-size:9px;text-align:center;padding:8px 0">No recent calls</div>`
-    : [...state.callLog].reverse().map(entry => `
-        <div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #eee">
-          <span style="font-size:13px">${entry.connected ? "📞" : "❌"}</span>
-          <div style="flex:1">
-            <div style="font-size:10px;color:#333;font-weight:600">${entry.number}</div>
-            <div style="font-size:8px;color:#888">${entry.time}</div>
-          </div>
-          <div style="font-size:8px;color:${entry.connected ? "#00aff0" : "#c00"}">${entry.connected ? "Connected" : "Failed"}</div>
-        </div>`).join("");
-
-  const contactsHTML = SKYPE_CONTACTS.map(c => {
-    const fmt = `(${c.number.slice(0,3)}) ${c.number.slice(3,6)}-${c.number.slice(6)}`;
-    return `<div class="sky-contact" onclick="skyDial('${c.number}','${fmt}')">
-      <div class="sky-contact-avatar">${c.name[0].toUpperCase()}</div>
-      <div style="flex:1">
-        <div style="font-size:10px;color:#333;font-weight:600">${c.name}</div>
-        <div style="font-size:8px;color:#888">${fmt}</div>
-      </div>
-      <button class="sky-contact-call" onclick="event.stopPropagation();skyDial('${c.number}','${fmt}');callNumber()">&#128222;</button>
-    </div>`;
-  }).join("");
-
-  const tabStyle = (t) => `style="padding:5px 10px;font-size:9px;font-weight:600;border:none;background:${activeTab===t?'#fff':'transparent'};color:${activeTab===t?'#00aff0':'#888'};border-bottom:${activeTab===t?'2px solid #00aff0':'2px solid transparent'};cursor:pointer;letter-spacing:0.5px"`;
-
-  app.innerHTML = `<div class="sky-wrap">
-    <div class="sky-header">
-      <span style="font-size:16px">&#128222;</span>
-      <div class="sky-logo">Skype</div>
-    </div>
-    <div style="display:flex;border-bottom:1px solid #ddd;background:#f5f5f5">
-      <button ${tabStyle("dialpad")} onclick="skypeRender(document.getElementById('webApp'),'dialpad')">DIAL PAD</button>
-      <button ${tabStyle("contacts")} onclick="skypeRender(document.getElementById('webApp'),'contacts')">CONTACTS</button>
-      <button ${tabStyle("recent")} onclick="skypeRender(document.getElementById('webApp'),'recent')">RECENT</button>
-    </div>
-    ${activeTab === "dialpad" ? `
-    <div class="sky-body">
-      <div class="sky-display" id="phoneNumberDisplay">Enter Number</div>
-      <div class="sky-pad">
-        ${keys.map(k => typeof k === 'number' || (k !== "*" && k !== "#")
-          ? `<button class="sky-key" onclick="inputNumber(${k})">${k}</button>`
-          : `<button class="sky-key" style="color:#aaa">${k}</button>`
-        ).join("")}
-      </div>
-      <button class="sky-call-btn" onclick="callNumber()">&#128222;</button>
-    </div>` : ""}
-    ${activeTab === "contacts" ? `
-    <div style="padding:6px 8px;overflow-y:auto">
-      <div style="font-size:8px;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">All Contacts</div>
-      ${contactsHTML}
-    </div>` : ""}
-    ${activeTab === "recent" ? `
-    <div style="padding:6px 10px">
-      <div style="font-size:8px;color:#888;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Recent Calls</div>
-      <div>${logHTML}</div>
-    </div>` : ""}
-  </div>`;
-}
-
-function skyDial(number, formatted) {
-  skypeRender(document.getElementById("webApp"), "dialpad");
-  state.callerID    = number;
-  state.phoneDigits = 10;
-  const disp = document.getElementById("phoneNumberDisplay");
-  if (disp) disp.innerHTML = formatted;
-}
-
-async function loadMap() {
-  pushHistory("Desktop", () => { closeApp(); });
-  loadProgram();
-  await delay(100);
-  setWinTitle("Google Maps");
-  const app = document.getElementById("webApp");
-  app.style.background = "#fff";
-  app.innerHTML = `<div class="map-wrap">
-    <div class="map-header">
-      <span style="font-size:16px">&#128205;</span>
-      <div class="map-logo">Google Maps</div>
-    </div>
-    <div class="map-body">
-      <div class="map-field"><label class="map-label">LATITUDE</label><input class="map-input" id="latitude" placeholder="e.g. 40.7128"></div>
-      <div class="map-field"><label class="map-label">LONGITUDE</label><input class="map-input" id="longitude" placeholder="e.g. -74.0060"></div>
-      <button class="map-btn" onclick="geosearch()">&#128269; Search</button>
-    </div>
-  </div>`;
-}
-
-async function loadDownloads() {
-  pushHistory("Desktop", () => { closeApp(); });
-  loadProgram();
-  await delay(100);
-  setWinTitle("Downloads");
-  const app = document.getElementById("webApp");
-  app.style.background = "#f8f9fa";
-  const items = state.downloads.length === 0
-    ? `<div class="dl-empty">&#128194; No downloads yet</div>`
-    : state.downloads.map((type, i) => `<div class="dl-item" id="download${i}">
-        <div class="dl-item-icon">${fileTypeIcon(type)}</div>
-        <div style="flex:1;min-width:0">
-          <div class="dl-item-name">${state.downloadNames[i] || "unnamed.file"}</div>
-        </div>
-        <div class="dl-item-open">&#9654;</div>
-      </div>`).join("");
-  app.innerHTML = `<div class="dl-wrap">
-    <div class="dl-header"><span style="font-size:14px">&#128194;</span><div class="dl-logo">Downloads</div></div>
-    <div class="dl-body">${items}</div>
-  </div>`;
-  state.downloads.forEach((_, i) =>
-    document.getElementById(`download${i}`)?.addEventListener("click", () => loadFile(i))
-  );
-}
-
-function loadFileExplorer() {
-  html.innerHTML = `${windowBar("closeFile")}<div id="webApp" style="background-color:#000000;"></div>`;
-}
-
-let netMonInterval     = null;
-let desktopClockInterval = null;
-
-async function loadNetworkMonitor() {
-  pushHistory("Desktop", () => { closeApp(); });
-  loadProgram("closeNetworkMonitor");
-  await delay(100);
-  setWinTitle("Network Monitor");
-  const app = document.getElementById("webApp");
-  app.style.background = "#050a05";
-  app.style.padding = "0";
-
-  const ua = navigator.userAgent;
-  const isMac   = /Mac/.test(ua) && !/iPhone|iPad/.test(ua);
-  const isLinux = /Linux/.test(ua) && !/Android/.test(ua);
-  const headerColor = isMac ? "#3a3a3a" : isLinux ? "#1a3a3a" : "#1a1a2e";
-
-  app.innerHTML = `
-    <div style="background:${headerColor};padding:5px 10px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(0,255,159,0.2)">
-      <span style="font-size:14px">📡</span>
-      <div style="color:#00ff9f;font-family:'Courier New',monospace;font-size:11px;font-weight:700;letter-spacing:2px">NETWORK MONITOR</div>
-      <div style="margin-left:auto;display:flex;gap:12px;font-family:'Courier New',monospace;font-size:9px">
-        <div style="color:#aaa">TRAVERSALS: <span id="nm-traversals" style="color:#00ff9f">${state.traversals}</span></div>
-        <div style="color:#aaa">STATUS: <span style="color:#00ff9f">&#9679; ACTIVE</span></div>
-      </div>
-    </div>
-    <div id="nm-log" style="font-family:'Courier New',monospace;font-size:8px;padding:6px;overflow-y:auto;height:280px;display:flex;flex-direction:column;gap:1px"></div>`;
-
-  // Generate initial fake entries
-  for (let i = 0; i < 12; i++) nmAddPacket();
-  const log = document.getElementById("nm-log");
-  if (log) log.scrollTop = log.scrollHeight;
-
-  // Stream new packets
-  if (netMonInterval) clearInterval(netMonInterval);
-  netMonInterval = setInterval(() => {
-    const log = document.getElementById("nm-log");
-    if (!log) { clearInterval(netMonInterval); netMonInterval = null; return; }
-    const traversalEl = document.getElementById("nm-traversals");
-    if (traversalEl) traversalEl.textContent = state.traversals;
-    nmAddPacket();
-    log.scrollTop = log.scrollHeight;
-  }, 2200);
-}
-
-function nmAddPacket() {
-  const log = document.getElementById("nm-log");
-  if (!log) return;
-
-  // Read live history titles for real URL injection
-  const realUrls = state.history
-    .map(e => e.title)
-    .filter(t => t && t !== "Desktop" && t !== "Google" && t !== "Tor Browser" && t !== "Back");
-
-  const fakeHosts = [
-    "guard-node-" + fakeIP(),
-    "relay-" + Math.floor(Math.random()*999),
-    "exit-node-" + fakeIP(),
-    "tor-circuit-" + Math.floor(Math.random()*99),
-    "middle-" + fakeIP(),
-  ];
-  const protocols = ["TCP","TLS","UDP","SOCKS5"];
-  const types     = ["DATA","RELAY","CONTROL","CELL","RELAY_DATA"];
-  const bytes     = Math.floor(Math.random()*1400)+64;
-
-  const useReal = realUrls.length > 0 && Math.random() < 0.3;
-  const dest    = useReal
-    ? realUrls[Math.floor(Math.random() * realUrls.length)]
-    : fakeHosts[Math.floor(Math.random() * fakeHosts.length)];
-  const proto   = protocols[Math.floor(Math.random() * protocols.length)];
-  const type    = types[Math.floor(Math.random() * types.length)];
-  const color   = useReal ? "#00ff9f" : type === "CONTROL" ? "#ffaa00" : "#4a8a4a";
-  const now     = new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"});
-
-  const entry = document.createElement("div");
-  entry.style.cssText = `color:${color};padding:1px 0;border-bottom:1px solid rgba(0,255,100,0.05);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0`;
-  entry.innerHTML = `<span style="color:#555">${now}</span> <span style="color:#888">${proto}</span> <span style="color:#00aaff;display:inline-block;width:72px">${type}</span> <span style="color:${color}">${dest}</span> <span style="color:#555"> ${bytes}B</span>`;
-  log.appendChild(entry);
-
-  // Keep max 60 entries
-  while (log.children.length > 60) log.removeChild(log.firstChild);
-}
-
-function closeNetworkMonitor() {
-  if (netMonInterval) { clearInterval(netMonInterval); netMonInterval = null; }
-  closeApp();
-}
-
-function closeFile() {
-  html = document.getElementsByClassName("monitor")[0];
-  loadDownloads();
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// LOGIN
-// ─────────────────────────────────────────────────────────────────────────────
-
-window.onload = function () {
-  html = document.getElementsByClassName("monitor")[0];
-  const lastLogin = localStorage.getItem("cicada_last_login");
-  const lastUser  = localStorage.getItem("cicada_last_user");
-  const lastLoginHint = lastLogin && lastUser
-    ? `<div style="color:#4a4a7a;font-size:8px;margin-top:8px;text-align:center;letter-spacing:1px">Last login: ${lastUser} — ${lastLogin}</div>`
-    : "";
-  html.innerHTML = `<div class="os-login-wrap">
-    <div class="os-login-field"><label class="os-login-label">USERNAME</label><input class="os-login-input" id="login" autocomplete="off"></div>
-    <div class="os-login-field"><label class="os-login-label">PASSWORD</label><input class="os-login-input" type="password" id="password"></div>
-    <button class="os-login-btn" onclick="login()">SIGN IN</button>
-    ${lastLoginHint}
-  </div>`;
-  generatePasswords();
-};
-
-function login() {
-  const username = document.getElementById("login").value;
-  const password = document.getElementById("password").value;
-
-  if (username === "SELECT * FROM users WHERE 1=1" || password === "SELECT * FROM users WHERE 1=1") {
-    const rows = USERS.map((u, i) => `<tr><td>${u}</td><td>${passwords[i]}</td></tr>`).join("");
-    html.innerHTML = `<div class="os-login-wrap"><div class="os-login-title" style="color:#ff6666;font-size:12px;margin-bottom:6px">ACCESS GRANTED</div><p style="color:#aaa;font-size:9px;margin:4px 0">Hello Admin :D</p><table class="os-sql-table"><thead><tr><th>User</th><th>Password</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-    return;
-  }
-
-  const userIndex = USERS.findIndex((u, i) => u === username && passwords[i] === password);
-  const nameMatch = USERS.includes(username);
-
-  if (userIndex !== -1) {
-    state.userID    = userIndex + 1;
-    state.loginTime = new Date();
-    const loginStr  = state.loginTime.toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
-    localStorage.setItem("cicada_last_login", loginStr);
-    localStorage.setItem("cicada_last_user",  USERS[userIndex]);
-    html.innerHTML = appMenu(USERS[userIndex]);
-    startDesktopClock();
-  } else if (nameMatch) {
-    html.innerHTML = loginForm(`<div class="os-login-err">Incorrect password.</div>`);
-  } else {
-    const hint = state.attempt >= 3
-      ? `<div class="os-login-err">SELECT * FROM users WHERE 1=1</div>`
-      : `<div class="os-login-err">Unknown user.</div>`;
-    html.innerHTML = loginForm(hint);
-    state.attempt++;
-  }
-}
-
-function loginForm(extra = "") {
-  return `<div class="os-login-wrap">
-    <div class="os-login-field"><label class="os-login-label">USERNAME</label><input class="os-login-input" id="login" autocomplete="off"></div>
-    <div class="os-login-field"><label class="os-login-label">PASSWORD</label><input class="os-login-input" type="password" id="password"></div>
-    <button class="os-login-btn" onclick="login()">SIGN IN</button>
-    ${extra}
-  </div>`;
-}
-
-function generatePasswords() {
-  const now    = new Date();
-  const DATE   = now.getDate();
-  const MONTH  = 1 + now.getMonth();
-  const YEAR   = now.getFullYear();
-  const DAY    = 1 + now.getDay();
-  const HOUR   = 1 + now.getHours();
-  const seed   = ((DATE * 10000) * ((MONTH + DAY) * 100) * YEAR + HOUR) % 2147483647;
-  const chars  = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~!@#$%^&*()-_+={}[]|\\;:,./?\"";
-  const rng    = new MonoRandom(seed);
-  USERS.forEach((_, i) => {
-    passwords[i] = Array.from({length: 8}, () => chars[rng.nextMax(chars.length)]).join("");
-  });
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PLATFORM PREP FUNCTIONS
-// ─────────────────────────────────────────────────────────────────────────────
-
-function dispatchLead(leads, ruleseedNumber, ruleseed, handlers) {
-  const method = leads[ruleseed.nextMax(leads.length)];
-  (handlers[method] || handlers._default || (() => {}))(ruleseed);
-}
-
-function contentHandlers(ruleseed) {
-  return {
-    messageInImageFile: r => messageInImageFile(r),
-    qrCode:             r => { const app = getLeadTarget(); app.innerHTML += `<div align="center" id="qrCode"></div><br><br><div align="center" id="qrCode2"></div>`; generateQR(r); },
-    imageProductWebsite:r => imageProductWebsite(r),
-    pizzaOrder:         r => pizzaReceipt(r),
-    asciiCaesarCipher:  r => asciiCaesarCipher(r),
-    asciiPigpen:        r => asciiPigpen(r),
-    asciiPlayfairCipher:r => asciiPlayfairCipher(r),
-    hexToASCII:         r => hexToASCII(r),
-    catOutguess:         r => catOutguess(r),
-    rpgBattleLog:          r => rpgBattleLog(r),
-    messageHiddenInImage: r => messageHiddenInImage(r),
-  };
-}
-
-function prepOnion(n, dispSlug) {
-  const snap = html.innerHTML; pushHistory(document.getElementById("win-title")?.textContent || "Tor Browser", () => { html.innerHTML = snap; });
-  const rng = new MonoRandom(combinedSeed(n));
-  const handlers = { ...contentHandlers(), pizzaOrder: r => pizzaReceipt(r) };
-  dispSlug = dispSlug || "";
-  html.innerHTML = `${windowBar()}
-  <div class="on-wrap">
-    <div class="on-header">
-      <div class="on-addr">&#128274; ${dispSlug}</div>
-      <div class="on-secure"><span class="on-lock">&#128274;</span>Secure connection via Tor</div>
-    </div>
-    <div class="on-content" id="onionContent"></div>
-  </div>`;
-  setWinTitle(dispSlug);
-  initialHTML = html.innerHTML;
-  state.leadTarget = "onionContent";
-  dispatchLead(LEADS.onion, n, rng, handlers);
-}
-
-function prepReddit(n, r) {
-  const user = USERS[Math.floor(Math.random() * USERS.length)];
-  html.innerHTML = `${windowBar()}
-  <div class="rd-wrap">
-    <div class="rd-header">
-      <span style="font-size:18px">&#129413;</span>
-      <div><div class="rd-logo">reddit</div><div class="rd-sub">the front page of the internet</div></div>
-    </div>
-    <div class="rd-card">
-      <div class="rd-flair">ARG</div>
-      <div class="rd-user">${user}</div>
-      <div style="font-size:10px;color:#555;margin-bottom:6px">r/${r}</div>
-      <div id="redditPost">
-        <button class="rd-post-btn" id="redditButton">View Post</button>
-      </div>
-    </div>
-  </div>`;
-  setWinTitle("Reddit — r/" + r);
-  initialHTML = html.innerHTML;
-  const rng = new MonoRandom(combinedSeed(n));
-  document.getElementById("redditButton").addEventListener("click", () => {
-    const snap = html.innerHTML;
-    pushHistory("Reddit — r/" + r, () => { html.innerHTML = snap; });
-    html.innerHTML = initialHTML;
-    state.leadTarget = "redditPost";
-    dispatchLead(LEADS.reddit, n, rng, contentHandlers());
-  });
-}
-
-function prep4Chan(n, r) {
-  const snap = html.innerHTML; pushHistory(document.getElementById("win-title")?.textContent || "Google", () => { html.innerHTML = snap; });
-  html.innerHTML = `${windowBar()}
-  <div class="fc-wrap">
-    <div class="fc-header">
-      <div class="fc-header-text">4chan — /${r}/ — Cicada</div>
-      <div class="fc-boards">[ a / b / c / d / e / g / gif / h / hr / k / m / o / p / r / s / t ]</div>
-    </div>
-    <div class="fc-post">
-      <div class="fc-post-header">
-        <span class="fc-post-name">Anonymous</span>
-        <span class="fc-post-no">No.${Math.floor(Math.random()*90000000)+10000000}</span>
-      </div>
-      <div id="fourChanPost" class="fc-post-body"></div>
-    </div>
-  </div>`;
-  setWinTitle("4chan — /" + r + "/");
-  initialHTML = html.innerHTML;
-  const rng = new MonoRandom(combinedSeed(n));
-  state.leadTarget = "fourChanPost";
-  dispatchLead(LEADS.fourChan, n, rng, contentHandlers());
-}
-
-function prepPastebin(n) {
-  const snap = html.innerHTML; pushHistory(document.getElementById("win-title")?.textContent || "Google", () => { html.innerHTML = snap; });
-  const user = USERS[Math.floor(Math.random() * USERS.length)];
-  html.innerHTML = `${windowBar()}
-  <div class="pb-wrap">
-    <div class="pb-header">
-      <span style="font-size:16px;color:#fff">&#128196;</span>
-      <div class="pb-logo">Pastebin</div>
-    </div>
-    <div class="pb-toolbar"><span class="pb-meta">by ${user.toUpperCase()}</span></div>
-    <div class="pb-content"><div id="fourChanPost"></div></div>
-  </div>`;
-  setWinTitle("Pastebin");
-  initialHTML = html.innerHTML;
-  const rng = new MonoRandom(combinedSeed(n));
-  const handlers = { ...contentHandlers(), pizzaOrder: r => pizzaReceiptText(r) };
-  state.leadTarget = "fourChanPost";
-  dispatchLead(LEADS.pastebin, n, rng, handlers);
-}
-
-function prepTwitter(n, placement) {
-  const snap = html.innerHTML; pushHistory(document.getElementById("win-title")?.textContent || "Google", () => { html.innerHTML = snap; });
-  html.innerHTML = `${windowBar()}
-  <div class="tw-wrap">
-    <div class="tw-header">
-      <div class="tw-icon"><svg viewBox="0 0 24 24" width="20" height="20" fill="#1d9bf0"><path d="M23.643 4.937c-.835.37-1.732.62-2.675.733a4.67 4.67 0 0 0 2.048-2.578 9.3 9.3 0 0 1-2.958 1.13 4.66 4.66 0 0 0-7.938 4.25 13.229 13.229 0 0 1-9.602-4.868c-.4.69-.63 1.49-.63 2.342A4.66 4.66 0 0 0 3.96 9.824a4.647 4.647 0 0 1-2.11-.583v.06a4.66 4.66 0 0 0 3.737 4.568 4.69 4.69 0 0 1-2.104.08 4.661 4.661 0 0 0 4.352 3.234 9.348 9.348 0 0 1-5.786 1.995 9.5 9.5 0 0 1-1.112-.065 13.175 13.175 0 0 0 7.14 2.093c8.57 0 13.255-7.098 13.255-13.254 0-.2-.005-.402-.014-.602a9.47 9.47 0 0 0 2.323-2.41z"/></svg></div>
-      <div>
-        <div class="tw-user-name">${placement}</div>
-        <div class="tw-user-handle">@${placement}</div>
-      </div>
-    </div>
-    <div class="tw-tweet" id="twitterPost"></div>
-  </div>`;
-  setWinTitle("Twitter — @" + placement);
-  initialHTML = html.innerHTML;
-  const rng = new MonoRandom(combinedSeed(n));
-  state.leadTarget = "twitterPost";
-  dispatchLead(LEADS.twitter, n, rng, contentHandlers());
-}
-
-function prepX(n, placement) {
-  const snap = html.innerHTML; pushHistory(document.getElementById("win-title")?.textContent || "Google", () => { html.innerHTML = snap; });
-  html.innerHTML = `${windowBar()}
-  <div class="tw-wrap">
-    <div class="tw-header">
-      <div class="x-icon" style="font-size:20px;font-weight:900">&#10005;</div>
-      <div>
-        <div class="tw-user-name">${placement}</div>
-        <div class="tw-user-handle">@${placement}</div>
-      </div>
-    </div>
-    <div class="tw-tweet" id="xPost"></div>
-  </div>`;
-  setWinTitle("X — @" + placement);
-  initialHTML = html.innerHTML;
-  const rng = new MonoRandom(combinedSeed(n));
-  state.leadTarget = "xPost";
-  dispatchLead(LEADS.twitter, n, rng, contentHandlers());
-}
-
-function prepImgur(n, seed) {
-  const snap = html.innerHTML; pushHistory(document.getElementById("win-title")?.textContent || "Google", () => { html.innerHTML = snap; });
-  html.innerHTML = `${windowBar()}
-  <div class="ig-wrap">
-    <div class="ig-header">
-      <div class="ig-logo">im<span>gur</span></div>
-    </div>
-    <div id="imgur"></div>
-  </div>`;
-  setWinTitle("Imgur");
-  const rng = new MonoRandom(combinedSeed(n));
-  const method = LEADS.imgur[rng.nextMax(LEADS.imgur.length)];
-  if (method !== "imgurPage") {
-    const imgurEl = document.getElementById("imgur");
-    imgurEl.innerHTML = `<div class="ig-post-wrap"><div class="ig-post-info">
-      <div class="ig-post-title">${method}</div>
-      <div class="ig-post-author">Anonymous</div>
-    </div></div>`;
-    if (method === "qrCode") {
-      imgurEl.innerHTML += `<div align="center" id="qrCode"></div><br><div align="center" id="qrCode2"></div>`;
-    }
-    initialHTML = html.innerHTML;
-    state.leadTarget = "imgur";
-    contentHandlers()[method](rng);
-  } else {
-    imgurPage(rng, seed);
-  }
-}
-
-function imgurPage(ruleseed, seed) {
-  const imgurEl = document.getElementById("imgur");
-  if (imgurEl) {
-    imgurEl.innerHTML = `<div class="ig-post-wrap">
-      <div class="ig-img-wrap"><img src="https://picsum.photos/seed/${seed}/200/200" onerror="this.style.display='none'"></div>
-      <div class="ig-post-info">
-        <div class="ig-post-title" id="imgurTitle"></div>
-        <div class="ig-post-author" id="author"></div>
-        <div class="ig-stats">&#128065; 1,337 views &nbsp; &#128077; 420 points</div>
-      </div>
-    </div>`;
-  }
-  initialHTML = html.innerHTML;
-  const methods = ["phoneNumber","4chan","pastebin"];
-  const method  = state.traversals >= 20 ? "dropbox" : methods[ruleseed.nextMax(3)];
-  const next    = method === "dropbox"    ? LINK_GENERATORS.dropbox(ruleseed)
-                : method === "phoneNumber"? LINK_GENERATORS.phoneNumber(ruleseed)
-                : method === "4chan"      ? LINK_GENERATORS["4chan"](ruleseed)
-                :                          LINK_GENERATORS.pastebin(ruleseed);
-  const titleEl  = document.getElementById("imgurTitle");
-  const authorEl = document.getElementById("author");
-  ruleseed.nextMax(2) === 0
-    ? (titleEl.innerHTML = next, authorEl.innerHTML = "Anonymous")
-    : (titleEl.innerHTML = "imgur post", authorEl.innerHTML = next);
-}
-
-function prepDropbox(n) {
-  const snap = html.innerHTML; pushHistory(document.getElementById("win-title")?.textContent || "Google", () => { html.innerHTML = snap; });
-  const combinedN = combinedSeed(n);
-  const traversalsAtVisit = state.traversals;
-  const rng = new MonoRandom(combinedN);
-  const idx = traversalsAtVisit >= 20 ? 4 + rng.nextMax(2) : rng.nextMax(LEADS.dropbox.length);
-  const slot = state.downloads.length;
-  const fileType = LEADS.dropbox[idx];
-  state.downloads.push(fileType);
-  state.downloadRules.push(combinedN);
-  state.downloadNames.push("");
-  html.innerHTML = `${windowBar()}
-  <div class="db-wrap">
-    <div class="db-header">
-      <span style="font-size:16px">&#128451;</span>
-      <div class="db-logo">Dropbox</div>
-    </div>
-    <div class="db-body">
-      <div class="db-file-card">
-        <div class="db-file-icon">${fileTypeIcon(fileType)}</div>
-        <div class="db-file-info">
-          <div class="db-file-name">Shared file</div>
-          <div class="db-file-meta">Shared with you</div>
-        </div>
-        <button class="db-btn" id="dropboxButton">&#11015; Download</button>
-      </div>
-      <div id="db-progress-wrap" style="display:none;margin-top:10px">
-        <div style="font-size:8px;color:#9aa0b2;letter-spacing:1px;margin-bottom:4px">DOWNLOADING...</div>
-        <div style="background:#e0e4ef;border-radius:4px;height:6px;overflow:hidden">
-          <div id="db-progress-bar" style="height:100%;width:0%;background:#0061ff;border-radius:4px;transition:width 0.1s linear"></div>
-        </div>
-        <div id="db-progress-pct" style="font-size:8px;color:#9aa0b2;margin-top:3px;text-align:right">0%</div>
-      </div>
-    </div>
-  </div>`;
-  setWinTitle("Dropbox");
-  initialHTML = html.innerHTML;
-  document.getElementById("dropboxButton").addEventListener("click", () => {
-    const snap = html.innerHTML;
-    pushHistory("Dropbox", () => { html.innerHTML = snap; });
-    downloadDropbox(combinedN, traversalsAtVisit, slot, fileType);
-  });
-}
-
-async function downloadDropbox(combined, traversalsAtVisit, slot, fileType) {
-  const btn       = document.getElementById("dropboxButton");
-  const wrap      = document.getElementById("db-progress-wrap");
-  const bar       = document.getElementById("db-progress-bar");
-  const pct       = document.getElementById("db-progress-pct");
-  if (btn)  btn.disabled = true;
-  if (wrap) wrap.style.display = "";
-
-  // Random duration 2000–6000ms, updated every 100ms
-  const duration  = 2000 + Math.random() * 4000;
-  const steps     = Math.floor(duration / 100);
-  for (let i = 1; i <= steps; i++) {
-    await delay(100);
-    const p = Math.round((i / steps) * 100);
-    if (bar) bar.style.width = p + "%";
-    if (pct) pct.textContent = p + "%";
-  }
-
-  const extMap = {
-    midiSubstitution:    ".mid",
-    pgp:                 ".pgp",
-    imageProductWebsite: ".png",
-    messageInImageFile:  ".png",
-    messageHiddenInImage:".png",
-    qrCode:              ".png",
-    asciiCaesarCipher:   ".txt",
-    asciiPlayfairCipher: ".txt",
-    hexToASCII:          ".txt",
-  };
-  const ext  = extMap[fileType] || ".file";
-  const now  = new Date();
-  const name = `${now.getFullYear()}-${now.getMonth()}-${now.getDay()}_${now.getHours()}.${now.getMinutes()}.${now.getSeconds()}${ext}`;
-  state.downloadNames[slot] = name;
-
-  // Sound + notification
-  try { new Audio("audio/callend.mp3").play(); } catch(e) {}
-  showNotification(name, fileTypeIcon(fileType));
-
-  html.innerHTML = initialHTML;
-}
-
-function loadFile(num) {
-  html = document.getElementsByClassName("monitor")[0];
-  state.leadTarget = null;
-  loadFileExplorer();
-  const rng  = new MonoRandom(state.downloadRules[num]);
-  const type = state.downloads[num];
-  const fileHandlers = {
-    imageProductWebsite: r => imageProductWebsite(r),
-    asciiCaesarCipher:   r => asciiCaesarCipher(r),
-    messageInImageFile:  r => messageInImageFile(r),
-    messageHiddenInImage:r => messageHiddenInImage(r),
-    qrCode:              r => { const app = getLeadTarget(); app.innerHTML += `<div align="center" id="qrCode"></div><br><br><div align="center" id="qrCode2"></div>`; generateQR(r); },
-    midiSubstitution:    r => midiSubstitution(r),
-    pgp:                 r => loadPGP(r),
-  };
-  (fileHandlers[type] || (() => {}))(rng);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// TOOL PAGES
-// ─────────────────────────────────────────────────────────────────────────────
-
-function prepCaesar() {
-  const snap = html.innerHTML; pushHistory(document.getElementById("win-title")?.textContent || "Google", () => { html.innerHTML = snap; });
-  html.innerHTML = `${windowBar()}
-  <div class="cic-scanlines"></div>
-  <div class="cic-wrap">
-    <div class="cic-header">
-      <div class="cic-logo">&#9654; ASCIICAESARCIPHER.COM<span class="cic-blink">_</span></div>
-      <div class="cic-sub">94-CHARACTER PRINTABLE ASCII SHIFT TOOL</div>
-    </div>
-    <div class="cic-section">
-      <div class="cic-section-title">&#9632; Input Ciphertext</div>
-      <input class="cic-input" id="asciiCaesar" placeholder="paste ciphertext here...">
-      <div style="margin-top:5px">
-        <button class="cic-btn" onclick="cryptanalyzeCaesar()">&#9654; CRYPTANALYZE ALL SHIFTS</button>
-      </div>
-    </div>
-    <div class="cic-section">
-      <div class="cic-section-title">&#9632; Results</div>
-      <div class="cic-result-box" id="result"><span class="cic-hint">enter ciphertext above and click cryptanalyze</span></div>
-    </div>
-  </div>`;
-  setWinTitle("ASCII Caesar Cipher");
-}
-
-function prepDecryptPGP() {
-  const snap = html.innerHTML; pushHistory(document.getElementById("win-title")?.textContent || "Google", () => { html.innerHTML = snap; });
-  html.innerHTML = `${windowBar()}
-  <div class="cic-scanlines"></div>
-  <div class="cic-wrap">
-    <div class="cic-header">
-      <div class="cic-logo">&#9654; DECRYPTPGP.COM<span class="cic-blink">_</span></div>
-      <div class="cic-sub">PGP / OPENPGP MESSAGE DECRYPTION TOOL</div>
-    </div>
-    <div class="cic-section">
-      <div class="cic-section-title">&#9632; Private Key</div>
-      <textarea class="cic-input" id="pgpKey" placeholder="-----BEGIN PGP PRIVATE KEY BLOCK-----"></textarea>
-    </div>
-    <div class="cic-section">
-      <div class="cic-section-title">&#9632; Encrypted Message</div>
-      <textarea class="cic-input" id="pgpMess" placeholder="-----BEGIN PGP MESSAGE-----"></textarea>
-    </div>
-    <div class="cic-section">
-      <div class="cic-section-title">&#9632; Passphrase</div>
-      <input class="cic-input" id="pgpPass" type="password" placeholder="passphrase...">
-      <div style="margin-top:5px">
-        <button class="cic-btn" onclick="decryptPGP()">&#9654; DECRYPT</button>
-      </div>
-    </div>
-    <div class="cic-section">
-      <div class="cic-section-title">&#9632; Decrypted Output</div>
-      <div class="cic-result-box" id="result"><span class="cic-hint">decrypted message will appear here</span></div>
-    </div>
-  </div>`;
-  setWinTitle("DecryptPGP");
-}
-
-function decryptPGP() {
-  decryptMessage(
-    document.getElementById("pgpMess").value,
-    document.getElementById("pgpKey").value,
-    document.getElementById("pgpPass").value
-  );
-}
-
-function prepProductWebsite(n) {
-  const snap = html.innerHTML; pushHistory(document.getElementById("win-title")?.textContent || "Google", () => { html.innerHTML = snap; });
-  html.innerHTML = `${windowBar()}
-  <div class="pw-wrap">
-    <img class="pw-img" src="img/productWebIMG.jpg" title="Patience is a virtue.">
-    <div class="pw-timer" id="timer">0:10</div>
-    <div class="pw-timer-label" id="timer-label">TIME REMAINING</div>
-  </div>`;
-  setWinTitle("Product Website");
-  initialHTML = html.innerHTML;
-  const rng = new MonoRandom(combinedSeed(n));
-  countdown(document.getElementById("timer"), 10, rng);
-}
-
-async function countdown(timerEl, t, rng) {
-  if (t === 60)      { timerEl.innerHTML = "1:00"; }
-  else if (t === 0)  { timerEl.className = "pw-coords"; timerEl.innerHTML = LINK_GENERATORS.coordinate(rng); const lbl = document.getElementById("timer-label"); if (lbl) lbl.textContent = "COORDINATES"; await delay(1000); return; }
-  else if (t < 10)   { timerEl.innerHTML = `0:0${t}`; }
-  else               { timerEl.innerHTML = `0:${t}`; }
-  await delay(1000);
-  countdown(timerEl, t - 1, rng);
-}
-
-async function geosearch() {
-  state.traversals++;
-  const lat = document.getElementById("latitude").value;
-  const lng = document.getElementById("longitude").value;
-  const latN = parseFloat(lat), lngN = parseFloat(lng);
-  if (isNaN(latN) || isNaN(lngN)) return;
-  const bbox = `${lngN-0.05},${latN-0.05},${lngN+0.05},${latN+0.05}`;
-  html.innerHTML = `${windowBar()}
-  <div class="map-wrap">
-    <div class="map-header"><span style="font-size:16px">&#128205;</span><div class="map-logo">Google Maps</div></div>
-    <div class="map-body">
-      <div class="map-field"><label class="map-label">LATITUDE</label><input class="map-input" id="latitude" value="${latN}"></div>
-      <div class="map-field"><label class="map-label">LONGITUDE</label><input class="map-input" id="longitude" value="${lngN}"></div>
-      <button class="map-btn" onclick="geosearch()">&#128269; Search</button>
-      <div style="margin-top:6px;border-radius:4px;overflow:hidden;border:1px solid #dfe1e5">
-        <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${latN},${lngN}" width="100%" height="200" style="display:block;border:none" loading="lazy"></iframe>
-      </div>
-      <div id="map-status" style="margin-top:6px;font-size:9px;color:#5f6368;display:flex;align-items:center;gap:4px">
-        <span style="display:inline-block;width:8px;height:8px;border:2px solid #4285f4;border-top-color:transparent;border-radius:50%;animation:map-spin 0.8s linear infinite"></span>
-        Searching location...
-      </div>
-      <style>@keyframes map-spin{to{transform:rotate(360deg)}}</style>
-      <div id="qrCode" style="display:none;text-align:center;margin-top:6px"></div>
-      <div id="qrCode2" style="display:none;text-align:center;margin-top:4px"></div>
-    </div>
-  </div>`;
-  setWinTitle("Google Maps — " + latN + ", " + lngN);
-  const seed = (Math.floor(latN * lngN) * state.userID) % 2147483647;
-  const rng  = new MonoRandom(seed);
-  await delay(5000);
-  const statusEl = document.getElementById("map-status");
-  if (statusEl) statusEl.innerHTML = `<span style="color:#34a853">&#10003;</span> <b style="color:#34a853">Poster found at this location.</b>`;
-  await delay(5000);
-  const qr1 = document.getElementById("qrCode");
-  const qr2 = document.getElementById("qrCode2");
-  if (qr1) qr1.style.display = "";
-  if (qr2) qr2.style.display = "";
-  await delay(100);
-  generateQR(rng);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// CIPHER / ENCODING DISPLAYS
-// ─────────────────────────────────────────────────────────────────────────────
-
-const ASCII_CHARS = '!"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'.split("");
-
-function cryptanalyzeCaesar() {
-  const inp     = document.getElementById("asciiCaesar").value;
-  const results = document.getElementById("result");
-  if (!inp.trim()) { results.innerHTML = `<span class="cic-hint">no input</span>`; return; }
-  results.innerHTML = ASCII_CHARS.map((_, shift) => {
-    const decoded = inp.split("").map(c => {
-      const i = ASCII_CHARS.indexOf(c);
-      return i === -1 ? c : ASCII_CHARS[(i - shift + ASCII_CHARS.length) % ASCII_CHARS.length];
-    }).join("");
-    return `<div class="cic-shift-row"><b>shift ${String(shift).padStart(2,'0')}</b> ${decoded}</div>`;
-  }).join("");
-}
-
-async function hexToASCII(ruleseed) {
-  const app = getLeadTarget();
-  app.innerHTML += `<div><div class="lead-wrap"><div class="lead-block lead-hex" id="hexadecimal"></div></div></div>`;
-  await delay(300);
-  const el = document.getElementById("hexadecimal");
-  if (el) el.textContent = generateHexReturn(ruleseed);
-}
-
-function generateHexReturn(ruleseed) {
-  return nextLink(ruleseed).split("").map(c => Number(c.charCodeAt(0)).toString(16)).join("");
-}
-
-function generateCaesarReturn(ruleseed) {
-  const link    = nextLink(ruleseed);
-  const shift   = ruleseed.nextMax(ASCII_CHARS.length);
-  const encoded = link.split("").map(c => {
-    const i = ASCII_CHARS.indexOf(c);
-    return i === -1 ? c : ASCII_CHARS[(i + shift) % ASCII_CHARS.length];
-  }).join("");
-  return `TIBERIVS CLAVDIVS CAESAR says "${encoded}"`;
-}
-
-async function asciiCaesarCipher(ruleseed) {
-  const app = getLeadTarget();
-  app.innerHTML += `<div><div class="lead-wrap"><div class="lead-block lead-caesar" id="caesar"></div></div></div>`;
-  await delay(300);
-  const el = document.getElementById("caesar");
-  if (el) el.textContent = generateCaesarReturn(ruleseed);
-}
-
-function generatePlayfairReturn(ruleseed) {
-  const square = Array.from({length:10}, (_,i) => Array.from({length:9}, (_,j) => ASCII_CHARS[i + j*10]));
-  const link   = nextLink(ruleseed);
-  const coords = link.split("").map(c => {
-    for (let i = 0; i < 10; i++) for (let j = 0; j < 9; j++) if (square[i][j] === c) return [i,j];
-    return null;
-  });
-  let out = "";
-  for (let i = 0; i < coords.length; i += 2) {
-    const a = coords[i], b = coords[i+1];
-    if (!a) continue;
-    if (!b)                               { out += square[a[0]][a[1]]; }
-    else if (a[0]===b[0] && a[1]===b[1]) { out += square[a[0]][a[1]] + square[b[0]][b[1]]; }
-    else if (a[1]===b[1])                 { out += square[(a[0]+1)%10][a[1]] + square[(b[0]+1)%10][b[1]]; }
-    else if (a[0]===b[0])                 { out += square[a[0]][(a[1]+1)%9] + square[b[0]][(b[1]+1)%9]; }
-    else                                  { out += square[a[0]][b[1]] + square[b[0]][a[1]]; }
-  }
-  return `CHARLES WHEATSTONE AND LYON PLAYFAIR says "${out}"`;
-}
-
-async function asciiPlayfairCipher(ruleseed) {
-  const app = getLeadTarget();
-  app.innerHTML += `<div><div class="lead-wrap"><div class="lead-block lead-playfair" id="playfair"></div></div></div>`;
-  await delay(300);
-  const el = document.getElementById("playfair");
-  if (el) el.textContent = generatePlayfairReturn(ruleseed);
-}
-
-async function asciiPigpen(ruleseed) {
-  const app = getLeadTarget();
-  app.innerHTML += `<div><div class="lead-wrap"><div class="lead-canvas-wrap"><canvas id="canvas" width="10000" height="10000"></canvas></div></div></div>`;
-  await delay(500);
-  generatePigpenMessage(ruleseed);
-}
-
-async function generatePigpenMessage(ruleseed) {
-  await document.fonts.load("48px ASCIIPigpen-Regular");
-
-  const canvas = document.getElementById("canvas");
-  canvas.width = canvas.height = 2000;
-  const ctx  = canvas.getContext("2d");
-  const hex  = Array.from({length:6}, () => "0123456789ABCDEF"[ruleseed.nextMax(16)]).join("");
-  ctx.fillStyle = `#${hex}`;
-
-  const pigpenMethods = ["onion","reddit","4chan","imgur","pastebin","twitter","x","dropbox","phoneNumber","coordinates","hexToASCII","asciiCaesarCipher","asciiPigpenCipher","asciiPlayfairCipher","nytimes","quizzington"];
-  const key     = pigpenMethods[ruleseed.nextMax(pigpenMethods.length)];
-  const message = key === "phoneNumber"        ? LINK_GENERATORS.phoneNumber(ruleseed)
-                : key === "coordinates"        ? LINK_GENERATORS.coordinate(ruleseed)
-                : key === "hexToASCII"         ? generateHexReturn(ruleseed)
-                : key === "asciiCaesarCipher"  ? generateCaesarReturn(ruleseed)
-                : key === "asciiPlayfairCipher"? generatePlayfairReturn(ruleseed)
-                : (LINK_GENERATORS[key] || LINK_GENERATORS.onion)(ruleseed);
-
-  ctx.font = "48px ASCIIPigpen-Regular";
-  const textWidth = ctx.measureText(message).width;
-  const minWidth  = Math.max(2000, Math.ceil(textWidth) + 100);
-  if (minWidth > canvas.width) {
-    canvas.width = minWidth;
-    ctx.fillStyle = `#${hex}`;
-    ctx.font = "48px ASCIIPigpen-Regular";
-  }
-  ctx.fillText(message, canvas.width / 40, canvas.height / 40);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// QR CODE / IMAGE / CANVAS GENERATORS
-// ─────────────────────────────────────────────────────────────────────────────
-
-function generateQR(ruleseed) {
-  const link  = nextStep(ruleseed);
-  const parts = link.split("\n");
-  new QRCode("qrCode", parts[0]);
-  if (parts[1]) new QRCode("qrCode2", parts[1]);
-}
-
-async function messageInImageFile(ruleseed) {
-  const app = getLeadTarget();
-  app.innerHTML += `<div><div class="lead-wrap"><div class="lead-canvas-wrap"><canvas id="canvas" width="200" height="200"></canvas></div></div></div>`;
-  await delay(500);
-  generateImage(ruleseed);
-}
-
-async function messageHiddenInImage(ruleseed) {
-  const app = getLeadTarget();
-  app.innerHTML += `<div><div class="lead-wrap"><div class="lead-canvas-wrap"><canvas id="canvas-mhii" width="200" height="200"></canvas></div></div></div>`;
-  await delay(500);
-  generateHiddenInImage(ruleseed);
-}
-
-function generateHiddenInImage(ruleseed) {
-  const canvas = document.getElementById("canvas-mhii");
-  canvas.width = canvas.height = 800;
-  const ctx = canvas.getContext("2d");
-  const d = "0123456789ABCDEF";
-
-  // Seeded background color — same RNG pattern as messageInImageFile
-  const hex  = Array.from({length: 6}, () => ruleseed.nextMax(16));
-  const bgHex = hex.map(x => d[x]).join("");
-  ctx.fillStyle = `#${bgHex}`;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Message color follows the same four-branch logic as generateImage's altHex
-  const hi = ruleseed.nextMax(50);
-  let msgHex = bgHex;
-  if      (hi < 15) msgHex = setCharAt(setCharAt(msgHex, 0, d[(hex[0]+1)%16]), 1, d[(hex[1]+1)%16]);
-  else if (hi < 30) msgHex = setCharAt(setCharAt(msgHex, 2, d[(hex[2]+1)%16]), 3, d[(hex[3]+1)%16]);
-  else if (hi < 45) msgHex = setCharAt(setCharAt(msgHex, 4, d[(hex[4]+1)%16]), 5, d[(hex[5]+1)%16]);
-  else              msgHex = Array.from({length: 6}, () => d[ruleseed.nextMax(16)]).join("");
-
-  // Get the next step URL — same method selection as messageInImageFile
-  const imageContentKeys = [null,"onion","phoneNumber","coordinate","reddit","4chan","imgur","pastebin","twitter","x","dropbox","nytimes","quizzington"];
-  let method = ruleseed.nextMax(13);
-  if (method === 0) method = 1;
-  if (state.traversals >= 20) method = 10;
-  const url = LINK_GENERATORS[imageContentKeys[method]](ruleseed);
-
-  // Message text position — always at canvas.height / 4, font size 28px
-  const msgY    = Math.floor(canvas.height / 4);
-  const msgSize = 28;
-  const msgBand = { top: msgY - msgSize, bot: msgY + 4 }; // conservative band to avoid
-
-  // Pixel Y position — seeded, must not land in the message band
-  let pixelY = ruleseed.nextMax(canvas.height);
-  if (pixelY >= msgBand.top && pixelY <= msgBand.bot)
-    pixelY = msgBand.bot + 1 + ruleseed.nextMax(canvas.height - (msgBand.bot + 1));
-
-  // Encode URL into pixels: R=char[i*3], G=char[i*3+1], B=char[i*3+2]
-  const padded = url.padEnd(Math.ceil(url.length / 3) * 3, "\0");
-  const pixelCount = padded.length / 3;
-  const startX = 16;
-  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  for (let i = 0; i < pixelCount; i++) {
-    const r = padded.charCodeAt(i * 3);
-    const g = padded.charCodeAt(i * 3 + 1);
-    const b = padded.charCodeAt(i * 3 + 2);
-    const idx = (pixelY * canvas.width + startX + i) * 4;
-    imgData.data[idx]     = r;
-    imgData.data[idx + 1] = g;
-    imgData.data[idx + 2] = b;
-    imgData.data[idx + 3] = 255;
-  }
-  ctx.putImageData(imgData, 0, 0);
-
-  // Render the ambiguous message
-  ctx.fillStyle = `#${msgHex}`;
-  ctx.font = `${msgSize}px Consolas`;
-  ctx.fillText("the image holds more than the eye allows", 16, msgY);
-}
-
-async function imageProductWebsite(ruleseed) {
-  const app = getLeadTarget();
-  app.innerHTML += `<div><div class="lead-wrap"><div class="lead-canvas-wrap"><canvas id="canvas" width="200" height="200"></canvas></div></div></div>`;
-  await delay(500);
-  generateImageProduct(ruleseed);
-}
-
-function generateImage(ruleseed) {
-  const canvas = document.getElementById("canvas");
-  canvas.width = canvas.height = 800;
-  const ctx  = canvas.getContext("2d");
-  const hex  = Array.from({length:6}, (_, i) => { const d="0123456789ABCDEF"; return {ch:d[ruleseed.nextMax(16)],i}; });
-  const hexStr = hex.map(x=>x.ch).join("");
-  const idxs   = hex.map(x=>x.i);
-  ctx.fillStyle = `#${hexStr}`;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  const hi = ruleseed.nextMax(50);
-  let altHex = hexStr;
-  const d = "0123456789ABCDEF";
-  if      (hi < 15) altHex = setCharAt(setCharAt(altHex,0,d[(idxs[0]+1)%16]),1,d[(idxs[1]+1)%16]);
-  else if (hi < 30) altHex = setCharAt(setCharAt(altHex,2,d[(idxs[2]+1)%16]),3,d[(idxs[3]+1)%16]);
-  else if (hi < 45) altHex = setCharAt(setCharAt(altHex,4,d[(idxs[4]+1)%16]),5,d[(idxs[5]+1)%16]);
-  else              altHex = Array.from({length:6}, ()=>d[ruleseed.nextMax(16)]).join("");
-  ctx.fillStyle = `#${altHex}`;
-
-  const imageContentKeys = [null,"onion","phoneNumber","coordinate","reddit","4chan","imgur","pastebin","twitter","x","dropbox","nytimes","quizzington"];
-  let method = ruleseed.nextMax(13);
-  if (method === 0) method = 1;
-  if (state.traversals >= 20) method = 10;
-  const key  = imageContentKeys[method];
-  const text = LINK_GENERATORS[key](ruleseed);
-  const size = 32;
-  ctx.font = `${size}px Consolas`;
-  const textWidth = ctx.measureText(text).width;
-  const minWidth  = Math.max(800, Math.ceil(textWidth) + 32);
-  if (minWidth > canvas.width) {
-    canvas.width = minWidth;
-    ctx.fillStyle = `#${hexStr}`;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = `#${altHex}`;
-    ctx.font = `${size}px Consolas`;
-  }
-  ctx.fillText(text, 16, canvas.height / (method <= 3 ? 4 : 2));
-}
-
-function generateImageProduct(ruleseed) {
-  const canvas = document.getElementById("canvas");
-  canvas.width  = DIMENSION_PRIMES[ruleseed.nextMax(DIMENSION_PRIMES.length)];
-  canvas.height = DIMENSION_PRIMES[ruleseed.nextMax(DIMENSION_PRIMES.length)];
-  const end = PRIMES[ruleseed.nextMax(PRIMES.length)];
-  const ctx = canvas.getContext("2d");
-  ctx.fillStyle = "#000000";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#FFFFFF";
-  const small   = canvas.width < 693;
-  ctx.font      = `${small ? 16 : 32}px Consolas`;
-  const newline = canvas.height < 743 ? 25 : 32;
-  const lines   = "Hello. We are looking for highly intelligent\nindividuals.  To find them, we have devised\na test.\n\nThere is a message hidden in this image.\n\nFind it, and it will lead you on the road to\nfinding us.  We look forward to meeting the\nfew that will make it all the way through.\n\nGood luck.\n\n".split("\n");
-  const ox = canvas.width / 40, oy = canvas.height / 4;
-  lines.forEach((line, i) => ctx.fillText(line, ox, oy + i * newline));
-  ctx.fillText(end, ox, oy + lines.length * newline);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PIZZA
-// ─────────────────────────────────────────────────────────────────────────────
-
-function pzIdToName(id) {
-  return id.replace(/canadianbacon/,"canadian bacon").replace(/artichokehearts/,"artichoke hearts")
-    .replace(/bananapepper/,"banana pepper").replace(/greenpepper/,"green pepper")
-    .replace(/brusselsprouts/,"brussel sprouts").replace(/picklejuice/,"pickle juice")
-    .replace(/bacongrease/,"bacon grease").replace(/melloyello/,"mello yello")
-    .replace(/mountaindew/,"mountain dew").replace(/mrpibb/,"mr. pibb")
-    .replace(/drpepper/,"dr. pepper").replace(/extralarge/,"extra-large");
-}
-
-const TOPPING_COLORS = {
-  pepperoni:"#c0392b",sausage:"#7d5a3c",canadianbacon:"#e07050",bacon:"#a0522d",
-  chicken:"#f5deb3",beef:"#8b4513",meatball:"#6b3a2a",salami:"#cc3333",
-  anchovies:"#4a7c59",mushroom:"#9b8760",onion:"#9b59b6",pineapple:"#f1c40f",
-  olive:"#2c3e50",jalapeno:"#27ae60",bananapepper:"#f9ca24",greenpepper:"#1e8449",
-  tomato:"#e74c3c",spinach:"#145a32",garlic:"#f8f9d2",artichokehearts:"#7fb347",
-  zucchini:"#52be80",turkey:"#d5a85a",corn:"#f0c040",cranberries:"#c0392b",
-  blueberries:"#2980b9",kimchi:"#e74c3c",sauerkraut:"#d4c07a",apricot:"#f39c12",
-  clam:"#f0e6d3",potato:"#f5cba7",peach:"#f1948a",brusselsprouts:"#27ae60",
-  crab:"#e74c3c",skittles:"#9b59b6",cicadas:"#2ecc71",
-};
-
-function pzDrawPizza() {
-  const cv = document.getElementById("pz-canvas");
-  if (!cv) return;
-  const ctx = cv.getContext("2d");
-  const W = cv.width, H = cv.height, cx = W/2, cy = H/2, r = Math.min(W,H)*0.42;
-
-  ctx.clearRect(0,0,W,H);
-
-  const sizeIdx = SIZE_IDS.indexOf(state.currentPizza[0]);
-  const scale = sizeIdx === -1 ? 0 : [0.55, 0.72, 0.88, 1.0][sizeIdx] || 0.72;
-
-  if (scale === 0) {
-    ctx.fillStyle = "rgba(0,0,0,0.3)";
-    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle = "#ffdd00"; ctx.font = "bold 11px Impact"; ctx.textAlign = "center";
-    ctx.fillText("SELECT A SIZE", cx, cy-6); ctx.fillText("TO SEE YOUR PIZZA", cx, cy+10);
-    return;
-  }
-
-  const pr = r * scale;
-
-  ctx.beginPath(); ctx.arc(cx,cy,pr,0,Math.PI*2);
-  ctx.fillStyle = "#e8a840"; ctx.fill();
-  ctx.strokeStyle = "#c47a20"; ctx.lineWidth = pr*0.09; ctx.stroke();
-
-  ctx.beginPath(); ctx.arc(cx,cy,pr*0.86,0,Math.PI*2);
-  ctx.fillStyle = "#c0392b"; ctx.fill();
-
-  ctx.beginPath(); ctx.arc(cx,cy,pr*0.80,0,Math.PI*2);
-  ctx.fillStyle = "#f5d060"; ctx.fill();
-
-  const cheeseRng = new MonoRandom(42);
-  for (let i=0;i<18;i++) {
-    const angle = cheeseRng.nextDouble()*Math.PI*2;
-    const dist  = cheeseRng.nextDouble()*pr*0.65;
-    const bx = cx + Math.cos(angle)*dist, by = cy + Math.sin(angle)*dist;
-    const br = (cheeseRng.nextDouble()*0.12+0.06)*pr;
-    ctx.beginPath(); ctx.arc(bx,by,br,0,Math.PI*2);
-    ctx.fillStyle = `rgba(255,240,120,0.5)`; ctx.fill();
-  }
-
-  const toppings = state.currentPizza.filter(id => TOPPING_IDS.includes(id));
-  toppings.forEach((tid, ti) => {
-    const rng = new MonoRandom(ti * 1000 + tid.length * 37);
-    const color = TOPPING_COLORS[tid] || "#888";
-    const count = Math.min(3 + ti % 3, 8);
-    for (let k=0; k<count; k++) {
-      const angle = rng.nextDouble()*Math.PI*2;
-      const dist  = rng.nextDouble()*pr*0.70;
-      const tx = cx + Math.cos(angle)*dist, ty = cy + Math.sin(angle)*dist;
-      const tr = pr * (0.06 + rng.nextDouble()*0.05);
-      ctx.beginPath(); ctx.arc(tx,ty,tr,0,Math.PI*2);
-      ctx.fillStyle = color; ctx.fill();
-      ctx.strokeStyle = "rgba(0,0,0,0.3)"; ctx.lineWidth = 1; ctx.stroke();
-    }
-  });
-
-  ctx.strokeStyle = "rgba(180,100,20,0.4)"; ctx.lineWidth = 1.5;
-  for (let s=0;s<8;s++) {
-    const angle = (s/8)*Math.PI*2;
-    ctx.beginPath();
-    ctx.moveTo(cx,cy);
-    ctx.lineTo(cx+Math.cos(angle)*pr, cy+Math.sin(angle)*pr);
-    ctx.stroke();
-  }
-}
-
-function pzRenderCart() {
-  const el = document.getElementById("pz-cart");
-  if (!el) return;
-  if (state.pizzaOrders.length === 0) { el.innerHTML = '<span style="color:#ffdd00;font-family:\'Comic Sans MS\',cursive;font-size:10px">Cart is empty</span>'; return; }
-  el.innerHTML = state.pizzaOrders.map((pizza, i) => {
-    const sizeId = SIZE_IDS.includes(pizza[0]) ? pizza[0] : "";
-    const lastItem = pizza[pizza.length-1];
-    const drinkId = DRINK_IDS.includes(lastItem) ? lastItem : "";
-    const tops = pizza.filter(id => TOPPING_IDS.includes(id));
-    const label = sizeId
-      ? `${pzIdToName(sizeId)} pizza${tops.length ? " / "+tops.map(pzIdToName).join(", ") : ""}${drinkId ? " + "+pzIdToName(drinkId) : ""}`
-      : pzIdToName(drinkId);
-    return `<div class="pz-cart-item">
-      <span style="flex:1;font-size:9px;font-family:'Comic Sans MS',cursive;color:#fff">${label}</span>
-      <button class="pz-cart-edit" onclick="pzEditOrder(${i})">&#9998;</button>
-      <button class="pz-cart-del"  onclick="pzDeleteOrder(${i})">&#10005;</button>
-    </div>`;
-  }).join("");
-}
-
-function pzEditOrder(i) {
-  const pizza = state.pizzaOrders.splice(i, 1)[0];
-  state.editingSlot = i;
-  state.currentPizza = [];
-  state.selectDrink = false;
-
-  const sizeId = SIZE_IDS.includes(pizza[0]) ? pizza[0] : null;
-  if (sizeId) addToOrder(sizeId);
-  pizza.filter(id => TOPPING_IDS.includes(id)).forEach(id => addToOrder(id));
-  const lastItem = pizza[pizza.length-1];
-  if (DRINK_IDS.includes(lastItem)) addDrink(lastItem);
-
-  pzRenderCart();
-  pzDrawPizza();
-  document.getElementById("compOrder").disabled = state.pizzaOrders.length === 0;
-}
-
-function pzDeleteOrder(i) {
-  state.pizzaOrders.splice(i, 1);
-  pzRenderCart();
-  document.getElementById("compOrder").disabled = state.pizzaOrders.length === 0;
-  updateCartPreview();
-}
-
-function prepPizza() {
-  initialHTML = html.innerHTML;
-  state.editingSlot = -1;
-  const toppingBtns = TOPPING_IDS.map(id => `<button class="pz-topping" id="${id}" onclick="addTopping(this.id)" disabled><img src="img/toppings/${id}.png" width="36px" height="36px" onerror="this.style.display='none'"><br><span>${pzIdToName(id)}</span></button>`).join("");
-  const drinkBtns   = DRINK_IDS.map(id => `<button class="pz-drink" id="${id}" onclick="addDrink(this.id)" disabled><img src="img/toppings/${id}.png" width="36px" height="36px" onerror="this.style.display='none'"><br><span>${pzIdToName(id)}</span></button>`).join("");
-  html.innerHTML = `${windowBar()}
-  <div class="pz-wrap">
-    <div class="pz-header">
-      <div class="pz-logo">&#127829; Pizza.NET &#127829;</div>
-      <div class="pz-tagline">"We Deliver... Eventually!"</div>
-      <span class="pz-star">&#10022;</span>
-      <span style="font-size:10px;font-family:'Comic Sans MS',cursive;color:#330000"> HOT &amp; FRESH </span>
-      <span class="pz-star" style="animation-direction:reverse">&#10022;</span>
-    </div>
-    <div class="pz-marquee"><span class="pz-marquee-inner">&#127829; ORDER NOW AND GET FREE DELIVERY &#127829; TODAY'S SPECIAL: CICADAS PIZZA 50% OFF &#127829; WE ACCEPT CASH, CARD, AND CRYPTO &#127829; CALL US AT (888) PIZ-ZNET &#127829;</span></div>
-    <div class="pz-builder-row">
-      <div class="pz-canvas-wrap">
-        <canvas id="pz-canvas" width="130" height="130"></canvas>
-        <div class="pz-canvas-label" id="pz-canvas-label">Pick a size!</div>
-        <div id="pz-topping-tags" style="max-width:134px;margin-top:2px"></div>
-      </div>
-      <div class="pz-form-col">
-        <div class="pz-section">
-          <div class="pz-section-title">&#9658; STEP 1: Size</div>
-          ${SIZE_IDS.map(s=>`<button class="pz-size-btn" id="${s}" onclick="addTopping(this.id)">${s.replace("extralarge","extra-large").toUpperCase()}</button>`).join("")}
-        </div>
-        <div class="pz-section">
-          <div class="pz-section-title">&#9658; STEP 2: Toppings</div>
-          <div class="pz-toppings-grid">${toppingBtns}</div>
-        </div>
-        <div class="pz-section">
-          <div class="pz-section-title">&#9658; STEP 3: Drink (optional)</div>
-          <div class="pz-toppings-grid">${drinkBtns}</div>
-        </div>
-      </div>
-    </div>
-    <div class="pz-cart-section">
-      <div class="pz-section-title">&#128722; YOUR CART</div>
-      <div id="pz-cart"><span style="color:#ffdd00;font-family:'Comic Sans MS',cursive;font-size:10px">Cart is empty</span></div>
-    </div>
-    <div style="text-align:center;margin-top:4px">
-      <button class="pz-action-btn" id="addCart" onclick="addOrder()" disabled>&#10133; ADD TO CART</button>
-      <button class="pz-action-btn pz-confirm-btn" id="compOrder" onclick="order()" disabled>&#9989; CONFIRM ORDER</button>
-    </div>
-    <div id="pz-cart-preview" style="font-family:'Comic Sans MS',cursive;font-size:10px;color:#ffdd00;text-align:center;min-height:14px;margin-top:2px"></div>
-  </div>`;
-
-  requestAnimationFrame(pzDrawPizza);
-  pzRenderCart();
-  setWinTitle("Pizza.NET");
-  initialHTML = html.innerHTML;
-}
-
-function addTopping(id) { addToOrder(id); }
-
-function updateCartPreview() {
-  const el = document.getElementById("pz-cart-preview");
-  if (!el) return;
-  const count = state.pizzaOrders.length;
-  const cur   = state.currentPizza.length;
-  el.innerHTML = count > 0
-    ? `&#127829; ${count} item${count>1?"s":""} in cart &nbsp;|&nbsp; building: ${cur} selection${cur!==1?"s":""}`
-    : cur > 0 ? `Building order... ${cur} selection${cur!==1?"s":""}` : "";
-}
-
-function pzUpdateCanvasLabel() {
-  const label = document.getElementById("pz-canvas-label");
-  if (!label) return;
-  const sizeIdx = SIZE_IDS.indexOf(state.currentPizza[0]);
-  const tops = state.currentPizza.filter(id => TOPPING_IDS.includes(id));
-  const drinkLast = state.currentPizza.length > 0 && DRINK_IDS.includes(state.currentPizza[state.currentPizza.length-1]);
-  if (sizeIdx === -1) { label.textContent = "Pick a size!"; return; }
-  const sizeName = ["Small","Medium","Large","Extra-Large"][sizeIdx];
-  label.textContent = `${sizeName}${tops.length ? " · "+tops.length+" topping"+(tops.length>1?"s":"") : ""}${drinkLast ? " · drink" : ""}`;
-}
-
-function pzUpdateToppingTags() {
-  const el = document.getElementById("pz-topping-tags");
-  if (!el) return;
-  const tops = state.currentPizza.filter(id => TOPPING_IDS.includes(id));
-  el.innerHTML = tops.map(id =>
-    `<span class="pz-topping-tag">${pzIdToName(id)} <button class="pz-remove-btn" onclick="pzRemoveTopping('${id}')">✕</button></span>`
-  ).join("");
-  const lastItem = state.currentPizza[state.currentPizza.length-1];
-  if (DRINK_IDS.includes(lastItem)) {
-    el.innerHTML += `<span class="pz-topping-tag" style="border-color:#88ccff;color:#88ccff">${pzIdToName(lastItem)} <button class="pz-remove-btn" onclick="addDrink('${lastItem}')">✕</button></span>`;
-  }
-}
-
-function pzRemoveTopping(id) {
-  const idx = state.currentPizza.indexOf(id);
-  if (idx !== -1) state.currentPizza.splice(idx, 1);
-  if (!state.currentPizza.includes(id)) {
-    const el = document.getElementById(id);
-    if (el) el.classList.remove("selected");
-  }
-  pzDrawPizza();
-  pzUpdateCanvasLabel();
-  pzUpdateToppingTags();
-  updateCartPreview();
-  if (!SIZE_IDS.includes(state.currentPizza[0])) {
-    const btn = document.getElementById("addCart");
-    if (btn) btn.disabled = true;
-  }
-}
-
-function addDrink(id) {
-  const cartBtn = document.getElementById("addCart");
-  const el = document.getElementById(id);
-  if (!state.selectDrink) {
-    cartBtn.disabled = false;
-    setButtons(SIZE_IDS, true);
-    DRINK_IDS.filter(d => d !== id).forEach(d => document.getElementById(d).disabled = true);
-    state.currentPizza.push(id);
-    if (el) el.classList.add("selected");
-  } else {
-    cartBtn.disabled = !state.currentPizza.some(i => SIZE_IDS.includes(i));
-    setButtons(SIZE_IDS, false);
-    DRINK_IDS.filter(d => d !== id).forEach(d => document.getElementById(d).disabled = false);
-    state.currentPizza.pop();
-    if (el) el.classList.remove("selected");
-  }
-  state.selectDrink = !state.selectDrink;
-  pzUpdateToppingTags();
-  updateCartPreview();
-}
-
-function addToOrder(id) {
-  if (SIZE_IDS.includes(id)) {
-    const prevSizeIdx = state.currentPizza.findIndex(i => SIZE_IDS.includes(i));
-    if (prevSizeIdx !== -1) state.currentPizza.splice(prevSizeIdx, 1);
-  }
-  state.currentPizza.push(id);
-  document.getElementById("addCart").disabled  = false;
-  document.getElementById("compOrder").disabled = state.pizzaOrders.length === 0;
-  if (SIZE_IDS.includes(id)) {
-    SIZE_IDS.forEach(s => { const el = document.getElementById(s); if (el) { el.classList.toggle("selected", s === id); el.disabled = s !== id; } });
-    setButtons(TOPPING_IDS, false);
-    setButtons(DRINK_IDS, true);
-  } else if (TOPPING_IDS.includes(id)) {
-    const el = document.getElementById(id);
-    if (el) el.classList.add("selected");
-  }
-  pzDrawPizza();
-  pzUpdateCanvasLabel();
-  pzUpdateToppingTags();
-  updateCartPreview();
-}
-
-function addOrder() {
-  [...SIZE_IDS, ...TOPPING_IDS, ...DRINK_IDS].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.classList.remove("selected");
-  });
-  setButtons(SIZE_IDS, false);
-  setButtons(TOPPING_IDS, true);
-  const isDrinkOnly = DRINK_IDS.includes(state.currentPizza[0]);
-  setButtons(DRINK_IDS, isDrinkOnly);
-  if (state.editingSlot >= 0 && state.editingSlot <= state.pizzaOrders.length) {
-    state.pizzaOrders.splice(state.editingSlot, 0, [...state.currentPizza]);
-    state.editingSlot = -1;
-  } else {
-    state.pizzaOrders.push([...state.currentPizza]);
-  }
-  state.currentPizza = [];
-  state.selectDrink = false;
-  document.getElementById("addCart").disabled  = true;
-  document.getElementById("compOrder").disabled = false;
-  pzRenderCart();
-  pzDrawPizza();
-  pzUpdateCanvasLabel();
-  pzUpdateToppingTags();
-  updateCartPreview();
-}
-
-function order() {
-  // Build the full HTML string inside a variable
-  let content = `<div id="webApp">
-    <div class="pz-receipt-wrap">
-      <div class="pz-receipt-header">
-        <div class="pz-receipt-logo">&#127829; Pizza.NET &#127829;</div>
-        <div class="pz-receipt-sub">Thank you for your order!</div>
-      </div>
-      <hr class="pz-receipt-divider">`;
-
-  let rule = 0;
-  for (const pizza of state.pizzaOrders) {
-    const sizeId = SIZE_IDS.includes(pizza[0]) ? pizza[0] : "";
-    const lastItem = pizza[pizza.length - 1];
-    const drinkId = DRINK_IDS.includes(lastItem) ? lastItem : "";
-    const toppingList = pizza.filter(item => TOPPING_IDS.includes(item));
-    const idToName = id => id.replace(/canadianbacon/,"canadian bacon").replace(/artichokehearts/,"artichoke hearts").replace(/bananapepper/,"banana pepper").replace(/greenpepper/,"green pepper").replace(/brusselsprouts/,"brussel sprouts").replace(/picklejuice/,"pickle juice").replace(/bacongrease/,"bacon grease").replace(/melloyello/,"mello yello").replace(/mountaindew/,"mountain dew").replace(/mrpibb/,"mr. pibb").replace(/drpepper/,"dr. pepper").replace(/extralarge/,"extra-large");
-    const sizeName = idToName(sizeId);
-    const toppingStr = toppingList.length === 0 ? "nothing" : toppingList.map(idToName).join(", ");
-    const drinkStr = drinkId ? ` with a ${idToName(drinkId)}` : "";
-    if (!sizeId) {
-      content += `<div class="pz-receipt-item">1 ${idToName(drinkId)}</div>`;
-    } else {
-      content += `<div class="pz-receipt-item">1 ${sizeName} pizza with ${toppingStr}${drinkStr}</div>`;
-    }
-    pizza.forEach(item => {
-      if (SIZE_IDS.includes(item)) rule += SIZE_IDS.indexOf(item) * 2;
-      if (TOPPING_IDS.includes(item)) rule += TOPPING_IDS.indexOf(item);
-      if (DRINK_IDS.includes(item)) rule += DRINK_IDS.indexOf(item) * 5;
-    });
-  }
-
-  content += `<hr class="pz-receipt-divider"><div class="pz-receipt-meta">Paid By: John Doe</div>`;
-  const rng = new MonoRandom((rule * state.userID) % 2147483647);
-  content += `<div class="pz-receipt-meta">Deliver To:</div><div class="pz-receipt-dest">${nextStep(rng)}</div>`;
-  content += `<div class="pz-receipt-footer">&#127829; Thank you for dialing up to Pizza.NET! &#127829;</div>
-    </div>
-  </div>`;
-
-  // Replace the whole monitor content at once
-  html.innerHTML = windowBar() + content;
-  setWinTitle("Pizza.NET — Receipt");
-
-  state.currentPizza = [];
-  state.pizzaOrders  = [];
-}
-
-function generatePizzaOrder(ruleseed, call = false) {
-  const count   = ruleseed.nextMax(3) + 1;
-  const parts   = [];
-  let rule = 0;
-  for (let c = 0; c < count; c++) {
-    const size         = ruleseed.nextMax(PIZZA_SIZES.length);
-    const toppingCount = ruleseed.nextMax(Math.floor(PIZZA_TOPPINGS.length / 4));
-    rule += size * 2;
-    let toppingStr;
-    if (toppingCount === 0) {
-      toppingStr = "nothing on it";
-    } else {
-      const tops = Array.from({length: toppingCount}, () => {
-        const ti = ruleseed.nextMax(PIZZA_TOPPINGS.length);
-        rule += ti;
-        return PIZZA_TOPPINGS[ti];
-      });
-      toppingStr = (toppingCount === 1 ? tops[0] : tops.slice(0,-1).join(", ") + " and " + tops.at(-1))
-                 + (call ? " on it" : "");
-    }
-    let line;
-    if (call) {
-      line = `a ${PIZZA_SIZES[size]} pizza with ${toppingStr}`;
-    } else {
-      line = `${PIZZA_SIZES[size]} pizza with ${toppingStr}  ${PIZZA_PRICES[size]}/`;
-    }
-    if (ruleseed.nextMax(2) === 1) {
-      const di    = ruleseed.nextMax(DRINKS.length);
-      const drink = DRINKS[di];
-      rule += di * 5;
-      line += call ? ` and a ${drink}/` : `${drink}:  2.99/`;
-    } else if (call) {
-      line += "/";
-    }
-    parts.push(line);
-  }
-  return parts.join(call ? " and " : "");
-}
-
-async function pizzaReceipt(ruleseed) {
-  const app = getLeadTarget();
-  app.innerHTML += `<div id="receipt-container"></div>`;
-  const order = generatePizzaOrder(ruleseed);
-  await delay(300);
-  const container = document.getElementById("receipt-container");
-  if (!container) return;
-  const lines = ("Pizza.NET\nORDER:\n" + order.replaceAll("/", "\n")).split("\n").filter(l => l.trim());
-  container.innerHTML = `<div class="lead-wrap"><div class="lead-receipt-wrap">
-    <div class="lead-receipt-title">&#127829; Pizza.NET</div>
-    ${lines.map(l => `<div class="lead-receipt-line">${l}</div>`).join("")}
-    <div class="lead-receipt-line" style="border-top:1px dashed #aaa;margin-top:4px;padding-top:3px;text-align:center;font-size:8px">Thank you for dialing up to Pizza.NET!</div>
-  </div></div>`;
-}
-
-async function pizzaReceiptText(ruleseed) {
-  const app = getLeadTarget();
-  app.innerHTML += `<div id="receipt-container"></div>`;
-  const order = generatePizzaOrder(ruleseed);
-  await delay(300);
-  const container = document.getElementById("receipt-container");
-  if (!container) return;
-  const lines = ("Pizza.NET\nORDER:\n" + order.replaceAll("/", "\n")).split("\n").filter(l => l.trim());
-  container.innerHTML = `<div class="lead-wrap"><div class="lead-receipt-wrap">
-    <div class="lead-receipt-title">&#127829; Pizza.NET</div>
-    ${lines.map(l => `<div class="lead-receipt-line">${l}</div>`).join("")}
-    <div class="lead-receipt-line" style="border-top:1px dashed #aaa;margin-top:4px;padding-top:3px;text-align:center;font-size:8px">Thank you for dialing up to Pizza.NET!</div>
-  </div></div>`;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PHONE / SKYPE
-// ─────────────────────────────────────────────────────────────────────────────
-
-function inputNumber(digit) {
-  if (state.phoneDigits >= 10) return;
-  const disp = document.getElementById("phoneNumberDisplay");
-  if (state.phoneDigits === 0) { state.callerID = ""; disp.innerHTML = "("; }
-  if (state.phoneDigits === 3) disp.innerHTML += ") ";
-  if (state.phoneDigits === 6) disp.innerHTML += "-";
-  disp.innerHTML += digit;
-  state.phoneDigits++;
-  state.callerID += String(digit);
-}
-
-async function callNumber() {
-  if (state.callerID.length !== 10 || state.callerID === "undefined") {
-    const displayNum = document.getElementById("phoneNumberDisplay")?.innerHTML || state.callerID;
-    state.callLog.push({
-      number: displayNum.replace(/<[^>]*>/g, ""),
-      time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-      connected: false,
-    });
-    html.innerHTML = `${windowBar()}
-    <div class="sky-wrap">
-      <div class="sky-header"><span style="font-size:16px">&#128222;</span><div class="sky-logo">Skype</div></div>
-      <div class="sky-body">
-        <div class="sky-display" style="font-size:10px;color:#c00;text-align:center">${state.callerID}</div>
-        <div style="text-align:center;font-size:9px;color:#999;margin-top:4px">Cannot connect to this number</div>
-      </div>
-    </div>`;
-    await delay(100);
-    audio = new Audio("audio/calling.mp3"); audio.play();
-    await delay(3000);
-    audio = new Audio("audio/cannotcomplete.mp3"); audio.play();
-    await delay(20000);
-    endCall();
-    return;
-  }
-
-  const rule    = (parseInt(state.callerID) * state.userID) % 2147483647;
-  const rng     = new MonoRandom(rule);
-  const display = document.getElementById("phoneNumberDisplay").innerHTML;
-
-  // Log the successful connection
-  state.callLog.push({
-    number: display.replace(/<[^>]*>/g, ""),
-    time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
-    connected: true,
-  });
-
-  html.innerHTML = `${windowBar()}
-  <div class="sky-wrap">
-    <div class="sky-header"><span style="font-size:16px">&#128222;</span><div class="sky-logo">Skype</div></div>
-    <div class="sky-body">
-      <div class="sky-display" id="display">${display}</div>
-      <div style="text-align:center;font-size:9px;color:#00aff0;margin-top:4px" id="call-status">&#128222; Calling...</div>
-    </div>
-  </div>`;
-  await delay(100);
-
-  const isPizza = rng.nextMax(2) === 0;
-
-  state.traversals++;
-  audio = new Audio("audio/calling.mp3"); audio.play();
-  await delay(3000);
-
-  if (isPizza) {
-    const order = generatePizzaOrder(rng, true);
-    await pizza(order.toLowerCase());
-  } else {
-    const encodeMethods = ["spectro", "nato", "morse", "tap"];
-    const encodeMethod = encodeMethods[rng.nextMax(encodeMethods.length)];
-    const nextContent = nextStep(rng);
-    const handler = CALL_HANDLERS[encodeMethod];
-    await handler(nextContent.toLowerCase());
-  }
-}
-
-const CALL_HANDLERS = { spectro, nato, morse, tap, pizza };
-
-async function spectro(message) {
-  for (const ch of message) {
-    if (ch === "\n" || ch === " ") {
-      await delay(500);
-      continue;
-    }
-    let idx;
-    if (ch === ".") idx = MESSAGE_CHARS.indexOf("dot");
-    else if (ch === "/") idx = MESSAGE_CHARS.indexOf("slash");
-    else if (ch === "-") idx = MESSAGE_CHARS.indexOf("-");
-    else idx = MESSAGE_CHARS.indexOf(ch);
-    if (idx !== -1) {
-      const audio = new Audio(`audio/spectro/${MESSAGE_CHARS[idx]}.wav`);
-      // Wait for the audio to finish playing
-      await new Promise(resolve => {
-        audio.onended = resolve;
-        audio.play();
-      });
-    }
-  }
-  await delay(1000);
-  endCall();
-}
-
-async function nato(message) {
-  for (const ch of message) {
-    if (ch === "\n") { await delay(1000); continue; }
-    const key = ch === "." ? "dot" : ch === "/" ? "slash" : ch === "-" ? "dash" : ch;
-    if (MESSAGE_CHARS.includes(key)) { audio = new Audio(`audio/nato/${key}.mp3`); audio.play(); await delay(500); }
-  }
-  await delay(1000); endCall();
-}
-
-async function morse(message) {
-  for (const ch of message) {
-    if (ch === "\n") { await delay(1000); continue; }
-    const key = ch === "." ? "dot" : ch === "/" ? "slash" : ch;
-    const idx = MESSAGE_CHARS.indexOf(key);
-    if (idx !== -1) {
-      for (const sym of MORSE_ALPHA[idx]) {
-        audio = new Audio(sym === "." ? "audio/morse/dot.mp3" : "audio/morse/dash.mp3");
-        audio.play(); await delay(sym === "." ? 200 : 400);
-      }
-    }
-    await delay(600);
-  }
-  await delay(1000); endCall();
-}
-
-async function tap(message) {
-  for (const ch of message) {
-    if (ch === "\n") { await delay(1000); continue; }
-    const key  = ch === "." ? "dot" : ch === "/" ? "slash" : ch;
-    const taps = tapCodeDigits(key);
-    if (taps) {
-      for (const count of taps) {
-        for (let k = 0; k < count; k++) { new Audio("audio/tapCode/tap.wav").play(); await delay(500); }
-        await delay(500);
-      }
-    }
-  }
-  await delay(1000); endCall();
-}
-
-function tapCodeDigits(character) {
-  for (let i = 0; i < TAP_CODES.length; i++)
-    for (let j = 0; j < TAP_CODES[i].length; j++)
-      if (character === TAP_CODES[i][j]) return [i+1, j+1];
-  return null;
-}
-
-async function pizza(message) {
-  const sentences = (`Thank you for calling Pizza.NET's hotline. My name is ${USERS[Math.floor(Math.random()*USERS.length)]}. How may I take your order?/` + message).split("/");
-  for (const s of sentences) {
-    const utt = new SpeechSynthesisUtterance(s);
-    utt.voice = voices[0];
-    await new Promise((res, rej) => { utt.onend = res; utt.onerror = rej; synth.speak(utt); });
-  }
-  await delay(1000); endCall();
-}
-
-function endCall() {
-  new Audio("audio/callend.mp3").play();
-  state.callerID    = "undefined";
-  state.phoneDigits = 0;
-  audio = {};
-  loadSkype();
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// WORDLE
-// ─────────────────────────────────────────────────────────────────────────────
-
-function prepWordle(n) {
-  const snap = html.innerHTML; pushHistory(document.getElementById("win-title")?.textContent || "Google", () => { html.innerHTML = snap; state.typable = false; state.isWordle = false; });
-
-  // Inject Wordle CSS once
-  if (!document.getElementById("wrd-style")) {
-    const s = document.createElement("style");
-    s.id = "wrd-style";
-    s.textContent = `
-      .wrd-col { display:inline-flex; flex-direction:column; align-items:center; margin:1px; }
-      .wrd-tile {
-        display:flex; align-items:center; justify-content:center;
-        border:2px solid #d3d6da; background:#fff; color:#333;
-        font-weight:700; box-sizing:border-box;
-        transition:border-color 0.1s;
-        backface-visibility:hidden;
-      }
-      .wrd-tile.filled  { border-color:#878a8c; }
-      .wrd-tile.correct { border-color:#538d4e; background:#538d4e; color:#fff; animation:wrd-flip 0.5s ease forwards; }
-      .wrd-tile.wrong   { border-color:#787c7e; background:#787c7e; color:#fff; animation:wrd-flip 0.5s ease forwards; }
-      .wrd-fb {
-        display:flex; align-items:center; justify-content:center;
-        box-sizing:border-box; opacity:0; transition:opacity 0.2s;
-        font-weight:700;
-      }
-      .wrd-fb.visible { opacity:1; }
-      .wrd-fb.correct { color:#538d4e; }
-      .wrd-fb.wrong   { color:#787c7e; }
-      @keyframes wrd-flip {
-        0%   { transform:scaleY(1); }
-        50%  { transform:scaleY(0); }
-        100% { transform:scaleY(1); }
-      }
-    `;
-    document.head.appendChild(s);
-  }
-
-  html.innerHTML = `${windowBar()}
-  <div class="wrd-wrap">
-    <div class="wrd-header">
-      <div class="wrd-title">Wordle</div>
-      <div class="wrd-sub">Guess the hidden link — type and press Enter</div>
-    </div>
-    <div id="wrd-body" style="padding:8px"></div>
-  </div>`;
-  setWinTitle("Wordle");
-
-  const rng  = new MonoRandom(combinedSeed(n));
-  const link = nextLink(rng);
-  state.eventLink  = link;
-  state.linkLength = link.length;
-  state.typable    = true;
-  state.isWordle   = true;
-
-  const count = String(state.wordleCounter).padStart(2,"0");
-  wrdAppendGuessRow(count, link.length);
-  initialHTML = html.innerHTML;
-}
-
-function prepCrossword(n) {
-  const snap = html.innerHTML;
-  pushHistory(document.getElementById("win-title")?.textContent || "Google", () => { html.innerHTML = snap; state.typable = false; state.isWordle = false; });
-
-  // Get the numeric combined seed
-  const combined = combinedSeed(n);
-  const rng = new MonoRandom(combined);
-  currentCompletionPhone = LINK_GENERATORS.phoneNumber(rng);
-
-  // Add permanent highlight styles for crossword (only once)
-  if (!document.getElementById("cw-style")) {
-    const s = document.createElement("style");
-    s.id = "cw-style";
-    s.textContent = `
-      .cell-input.correct {
-        background-color: #c8e6c9;
-        border-color: #4caf50;
-        color: #1b5e20;
-      }
-      .cell-input.incorrect {
-        background-color: #ffcdd2;
-        border-color: #f44336;
-        color: #c62828;
-      }
-    `;
-    document.head.appendChild(s);
-  }
-
-  // Build HTML (same as before, but note the button row already only has Check and Reset)
-  html.innerHTML = `${windowBar()}
-  <div style="background:#f7f7f7;min-height:100%;font-family:Arial,sans-serif">
-    <div style="background:#fff;text-align:center;padding:10px 8px 6px;border-bottom:1px solid #e0e0e0">
-      <div style="font-family:'Times New Roman',serif;font-size:1.1rem;font-weight:700;color:#1a1a1a">The Mini</div>
-      <div style="font-size:0.6rem;letter-spacing:0.12em;color:#6b6b6b;text-transform:uppercase;margin-top:2px">NY Times Crossword</div>
-    </div>
-    <div style="max-width:700px;margin:0 auto;padding:8px">
-      <div id="cw-status" style="text-align:center;font-size:0.75rem;color:#6b6b6b;min-height:1rem;margin-bottom:6px"></div>
-      <div id="cw-infoBar" style="display:none;text-align:center;margin-bottom:6px;font-size:0.65rem;color:#888;letter-spacing:0.06em">
-        <span id="cw-chipSize"></span> &nbsp;·&nbsp;
-        <span id="cw-chipWords"></span> &nbsp;·&nbsp;
-        <span id="cw-chipEncrypt"></span>
-      </div>
-      <div id="cw-checkRow" style="display:none;text-align:center;margin-bottom:8px">
-        <button onclick="cw_checkAnswers()" style="background:#1a1a1a;color:#fff;border:none;font-size:0.7rem;font-weight:700;padding:5px 14px;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;border-radius:2px;margin:0 3px">Check</button>
-        <button onclick="cw_resetPuzzle()" style="background:#fff;color:#1a1a1a;border:1px solid #ccc;font-size:0.7rem;font-weight:700;padding:5px 14px;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;border-radius:2px;margin:0 3px">Reset</button>
-      </div>
-      <div id="cw-puzzleContainer" style="display:flex;flex-wrap:wrap;gap:16px;justify-content:center">
-        <div>
-          <div id="cw-gridTitle" style="font-size:0.75rem;color:#6b6b6b;margin-bottom:6px;text-align:center"></div>
-          <div id="cw-crosswordGrid" style="display:inline-grid;border:2px solid #000;background:#000;gap:1px"></div>
-        </div>
-        <div style="min-width:220px;max-width:340px">
-          <div style="margin-bottom:10px">
-            <div style="font-family:Arial,sans-serif;font-size:0.65rem;font-weight:700;color:#000;border-bottom:2px solid #000;padding-bottom:3px;margin-bottom:6px;letter-spacing:0.08em;text-transform:uppercase">Across</div>
-            <div id="cw-cluesAcross"></div>
-          </div>
-          <div>
-            <div style="font-family:Arial,sans-serif;font-size:0.65rem;font-weight:700;color:#000;border-bottom:2px solid #000;padding-bottom:3px;margin-bottom:6px;letter-spacing:0.08em;text-transform:uppercase">Down</div>
-            <div id="cw-cluesDown"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>`;
-  setWinTitle("NYT Crossword");
-  initialHTML = html.innerHTML;
-
-  // Pass the numeric combined seed, not the rng object
-  cw_runPuzzle(combined);
-}
-
-let currentCompletionPhone = null;
-let currentPuzzle = null;
-let currentRng    = null;
-
-async function cw_runPuzzle(seed) {
-  cw_setStatus('Generating puzzle…');
-  const rng = new MonoRandom(seed);
-  currentRng = rng;
-
-  const sizes    = [7, 9, 11, 13];
-  const gridSize = sizes[rng.nextMax(sizes.length)];
-  const wordCount = rng.next(8, Math.floor(gridSize * gridSize * 0.15) + 10);
-
-  const maxLen  = Math.min(gridSize - 1, 12);
-  const words   = rng.shuffleArray(WORD_BANK.filter(w => w.word.length >= 3 && w.word.length <= maxLen)).slice(0, wordCount + 15);
-
-  if (words.length < 4) { cw_setStatus('Not enough words — try another link.'); return; }
-
-  const puzzle = buildCrossword(rng, words, gridSize);
-  if (!puzzle) { cw_setStatus('Could not generate puzzle — try another link.'); return; }
-
-  currentPuzzle = puzzle;
-  renderPuzzle(puzzle, rng, seed);
-  cw_setStatus('');
-}
-
-function cwDialPhone(phone) {
-  // Strip formatting to get 10 digits
-  const digits = phone.replace(/\D/g, '');
-  state.callerID    = digits;
-  state.phoneDigits = 10;
-  loadSkype();
-  // Pre-fill display after Skype loads
-  setTimeout(() => {
-    const disp = document.getElementById("phoneNumberDisplay");
-    if (disp) disp.innerHTML = phone;
-  }, 200);
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// MASYU PUZZLE
-// ─────────────────────────────────────────────────────────────────────────────
-
-const MASYU_SIZE = 10;
-let masyuCurrentOnion = null;
-let masyuCurrentDifficulty = '';
-let masyuGrid        = null;
-let masyuHSegs       = null;
-let masyuVSegs       = null;
-let masyuSolutions   = [];   // all valid solutions (array of flat state arrays)
-let masyuChecked     = false; // true after Check is pressed
-
-// ── Generator ────────────────────────────────────────────────────────────────
-
-// ─────────────────────────────────────────────────────────────────────────────
-// MASYU GENERATOR (deterministic, seed-stable)
-// ─────────────────────────────────────────────────────────────────────────────
-
-function masyuGenerate(seed) {
-  console.log(`[Masyu] Generating puzzle (seed ${seed})`);
-  const rng = new MonoRandom(seed);
-  const N   = MASYU_SIZE;
-
-  // 1. Build a high-quality loop
-  const t0 = performance.now();
-  const loop = masyuBuildLoop(rng, N);
-  const score = masyuLoopScore(loop);
-  console.log(`[Masyu] Loop built: ${loop.length} cells, ${Math.round(score*100)}% turns (${(performance.now()-t0).toFixed(1)}ms)`);
-
-  // 2. Build solution segments
-  const solH = Array.from({length: N},   () => new Array(N-1).fill(false));
-  const solV = Array.from({length: N-1}, () => new Array(N).fill(false));
-  for (let i = 0; i < loop.length; i++) {
-    const [r1,c1] = loop[i], [r2,c2] = loop[(i+1)%loop.length];
-    if (r1 === r2) solH[r1][Math.min(c1,c2)] = true;
-    else           solV[Math.min(r1,r2)][c1]  = true;
-  }
-
-  // 3. Classify every loop cell as a valid white/black candidate
-  const allValid = masyuClassifyCells(loop);
-  console.log(`[Masyu] Valid clue positions — white: ${allValid.white.length}, black: ${allValid.black.length}`);
-
-  // 4. Build minimal clue set additively (fast propagation check)
-  const t1 = performance.now();
-  let { grid, difficulty } = masyuBuildClues(rng, N, loop, allValid, solH, solV);
-  console.log(`[Masyu] Clue building done in ${(performance.now()-t1).toFixed(1)}ms`);
-
-  // 5. Validate known solution and check for alternates using fast propagation
-  const t2 = performance.now();
-  const knownSol = { hSegs: solH, vSegs: solV };
-  const solutions = masyuSolve(grid, N, 10, knownSol);
-
-  if (solutions.length > 0) {
-    // Fast check: are there any alternate solutions?
-    const isUnique = masyuCheckUniqueSilent(grid, N, solH, solV);
-    if (!isUnique) {
-      console.log(`[Masyu] Fast check suggests alternate solutions exist — running full solver`);
-      const allSols = masyuSolve(grid, N, 10); // no knownSolution → full search
-      if (allSols.length > 1) solutions.push(...allSols.filter(s => !s.every((v,i) => v === solutions[0][i])));
-    }
-  }
-  console.log(`[Masyu] Solver found ${solutions.length} solution(s) in ${(performance.now()-t2).toFixed(1)}ms`);
-
-  let whites = 0, blacks = 0;
-  for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
-    if (grid[r][c] === 1) whites++;
-    if (grid[r][c] === 2) blacks++;
-  }
-  console.log(`[Masyu] Final puzzle — white: ${whites}, black: ${blacks}, total: ${whites+blacks}, valid answers: ${solutions.length}`);
-  console.log(`[Masyu] Difficulty — ${difficulty.label}`);
-
-  return { grid, solutions, difficulty };
-}
-
-// ── Loop builder ──────────────────────────────────────────────────────────────
-// Builds a quality closed loop using a structured approach:
-// 1. Choose random waypoints spread across the grid
-// 2. Connect them with axis-aligned segments, snaking to fill space
-// 3. Guarantee minimum run length to create interesting turn patterns
-
-function masyuBuildLoop(rng, N) {
-  const minLen = 20, maxLen = 60, minBlacks = 2;
-  const DIRS = [[0,1],[1,0],[0,-1],[-1,0]];
-
-  for (let attempt = 0; attempt < 500; attempt++) {
-    const sr = rng.nextMax(N), sc = rng.nextMax(N);
-    const onPath = Array.from({length:N}, () => new Uint8Array(N));
-    const path = [[sr, sc]];
-    onPath[sr][sc] = 1;
-    let lastDir = -1;
-
-    for (let steps = 0; steps < 50000 && path.length > 0; steps++) {
-      const [r, c] = path[path.length - 1];
-
-      // Check if we can close — do this before movement so it's checked every step
-      if (path.length >= minLen) {
-        for (let di = 0; di < 4; di++) {
-          const [dr, dc] = DIRS[di];
-          if (r + dr !== sr || c + dc !== sc) continue;
-          // Can close — count black positions
-          const L = path.length;
-          let blacks = 0;
-          for (let i = 0; i < L; i++) {
-            const p=path[(i-1+L)%L], u=path[i], n=path[(i+1)%L];
-            const id=[u[0]-p[0],u[1]-p[1]], od=[n[0]-u[0],n[1]-u[1]];
-            if (id[0]!==od[0]||id[1]!==od[1]) {
-              const pp=path[(i-2+L)%L], nn=path[(i+2)%L];
-              const ip=[p[0]-pp[0],p[1]-pp[1]], on2=[nn[0]-n[0],nn[1]-n[1]];
-              if (ip[0]===id[0]&&ip[1]===id[1]&&on2[0]===od[0]&&on2[1]===od[1]) blacks++;
-            }
-          }
-          if (blacks >= minBlacks) {
-            // Validate all steps are adjacent before returning
-            let valid = true;
-            for (let i = 0; i < L; i++) {
-              const [a,b]=path[i], [x,y]=path[(i+1)%L];
-              if (Math.abs(a-x)+Math.abs(b-y) !== 1) { valid=false; break; }
-            }
-            if (valid) return path;
-          }
-          // Can close but not enough blacks — keep walking (don't break, just don't close)
-        }
-      }
-
-      // Cap path length
-      if (path.length >= maxLen) {
-        onPath[r][c] = 0;
-        path.pop();
-        lastDir = -1;
-        continue;
-      }
-
-      // Shuffle directions with momentum bias
-      const perm = [0,1,2,3];
-      for (let i = 3; i > 0; i--) {
-        const j = rng.nextMax(i + 1);
-        [perm[i], perm[j]] = [perm[j], perm[i]];
-      }
-      if (lastDir >= 0 && rng.nextMax(2) === 0) {
-        const idx = perm.indexOf(lastDir);
-        if (idx > 0) { perm.splice(idx, 1); perm.unshift(lastDir); }
-      }
-
-      // Try to move — allow stepping onto start only if we're closing
-      let moved = false;
-      for (const di of perm) {
-        const [dr, dc] = DIRS[di];
-        const nr = r + dr, nc = c + dc;
-        if (nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
-        if (nr === sr && nc === sc) continue; // closure handled above
-        if (onPath[nr][nc]) continue;
-        onPath[nr][nc] = 1;
-        path.push([nr, nc]);
-        lastDir = di;
-        moved = true;
-        break;
-      }
-
-      if (!moved) {
-        onPath[r][c] = 0;
-        path.pop();
-        lastDir = -1;
-      }
-    }
-  }
-
-  console.warn('[Masyu] Loop builder exhausted all attempts — using border loop');
-  return masyuBorderLoop(N);
-}
-
-function masyuLoopScore(loop) {
-  let turns = 0;
-  const L = loop.length;
-  for (let i = 0; i < L; i++) {
-    const [pr,pc]=loop[(i-1+L)%L], [cr,cc]=loop[i], [nr,nc]=loop[(i+1)%L];
-    if (cr-pr !== nr-cr || cc-pc !== nc-cc) turns++;
-  }
-  return turns / L;
-}
-
-function masyuBorderLoop(N) {
-  const path = [];
-  for (let c=0; c<N; c++)    path.push([0,c]);
-  for (let r=1; r<N; r++)    path.push([r,N-1]);
-  for (let c=N-2; c>=0; c--) path.push([N-1,c]);
-  for (let r=N-2; r>=1; r--) path.push([r,0]);
-  return path;
-}
-
-// ── Cell classifier ───────────────────────────────────────────────────────────
-
-function masyuClassifyCells(loop) {
-  const white = [], black = [];
-  const L = loop.length;
-  for (let i=0; i<L; i++) {
-    const prev = loop[(i-1+L)%L], curr = loop[i], next = loop[(i+1)%L];
-    const inDir  = [curr[0]-prev[0], curr[1]-prev[1]];
-    const outDir = [next[0]-curr[0], next[1]-curr[1]];
-    const isTurn = (inDir[0]!==outDir[0] || inDir[1]!==outDir[1]);
-
-    if (isTurn) {
-      // Black: both neighbours must be straight
-      const pp = loop[(i-2+L)%L], nn = loop[(i+2)%L];
-      const inPrev  = [prev[0]-pp[0], prev[1]-pp[1]];
-      const outNext = [nn[0]-next[0], nn[1]-next[1]];
-      if (inPrev[0]===inDir[0] && inPrev[1]===inDir[1] &&
-          outNext[0]===outDir[0] && outNext[1]===outDir[1]) black.push(i);
-    } else {
-      // White: must turn on at least one side
-      const pp = loop[(i-2+L)%L], nn = loop[(i+2)%L];
-      const inPrev  = [prev[0]-pp[0], prev[1]-pp[1]];
-      const outNext = [nn[0]-next[0], nn[1]-next[1]];
-      const prevTurns = (inPrev[0]!==inDir[0] || inPrev[1]!==inDir[1]);
-      const nextTurns = (outNext[0]!==outDir[0] || outNext[1]!==outDir[1]);
-      if (prevTurns || nextTurns) white.push(i);
-    }
-  }
-  return { white, black };
-}
-
-// ── Clue builder (additive, O(clues) uniqueness checks) ──────────────────────
-// Instead of starting with all clues and removing, we start with none and add
-// clues one at a time until the puzzle is unique. Each candidate clue is tested
-// with a single silent propagation pass — no backtracking, no per-segment loops.
-
-function masyuBuildClues(rng, N, loop, allValid, solH, solV) {
-  const TOTAL = N*(N-1) + (N-1)*N;
-
-  // Shuffle the candidate order with the seeded RNG
-  const candidates = rng.shuffleFisherYates([
-    ...allValid.white.map(i => ({ i, type: 1 })),
-    ...allValid.black.map(i => ({ i, type: 2 })),
-  ]);
-
-  const grid = Array.from({length:N}, () => new Array(N).fill(0));
-
-  // Track whether we have at least one of each colour
-  let hasWhite = false, hasBlack = false;
-
-  // Run a silent base propagation to see how many unknowns start free
-  const base = new Array(TOTAL).fill(0);
-  masyuPropagate(grid, N, base);  // silent (depth=-1 default)
-  let unknowns = base.filter(v => v===0).length;
-  console.log(`  [Clues] Base propagation: ${TOTAL-unknowns}/${TOTAL} forced, ${unknowns} unknown`);
-
-  let added = 0;
-  for (const { i, type } of candidates) {
-    const [r,c] = loop[i];
-    if (grid[r][c] !== 0) continue; // cell already has a clue
-
-    // Tentatively add this clue
-    grid[r][c] = type;
-
-    // Silent uniqueness check
-    const unique = masyuCheckUniqueSilent(grid, N, solH, solV);
-
-    if (unique) {
-      // Keep it — update colour tracking
-      if (type === 1) hasWhite = true;
-      if (type === 2) hasBlack = true;
-      added++;
-      console.log(`  [Clues] Added ${type===1?'white':'black'} at (${r},${c}) — total: ${added}`);
-
-      // Once we have at least one of each and puzzle is unique, we're done
-      if (hasWhite && hasBlack) {
-        console.log(`  [Clues] Puzzle unique with ${added} clues — stopping`);
-        break;
-      }
-    } else {
-      // This clue doesn't yet make it unique — keep it anyway if we still need
-      // its colour (ensures both colours are always represented)
-      const needsThisColor = (type===1 && !hasWhite) || (type===2 && !hasBlack);
-      if (needsThisColor) {
-        if (type === 1) hasWhite = true;
-        if (type === 2) hasBlack = true;
-        added++;
-        console.log(`  [Clues] Added ${type===1?'white':'black'} at (${r},${c}) (colour requirement) — total: ${added}`);
-      } else {
-        grid[r][c] = 0; // remove — not needed yet
-      }
-    }
-  }
-
-  // If still not unique after iterating all candidates, do one final pass
-  // adding any remaining valid clue until unique
-  if (!masyuCheckUniqueSilent(grid, N, solH, solV)) {
-    console.log(`  [Clues] Not yet unique after additive pass — adding remaining clues`);
-    for (const { i, type } of candidates) {
-      const [r,c] = loop[i];
-      if (grid[r][c] !== 0) continue;
-      grid[r][c] = type;
-      if (type === 1) hasWhite = true;
-      if (type === 2) hasBlack = true;
-      added++;
-      if (masyuCheckUniqueSilent(grid, N, solH, solV)) {
-        console.log(`  [Clues] Unique after adding fallback clue at (${r},${c}) — total: ${added}`);
-        break;
-      }
-    }
-  }
-
-  // Difficulty: count unknowns left after propagation on final grid
-  const finalBase = new Array(TOTAL).fill(0);
-  masyuPropagate(grid, N, finalBase);
-  const finalUnknowns = finalBase.filter(v=>v===0).length;
-  const label = finalUnknowns === 0 ? 'Easy'
-              : finalUnknowns <= 15 ? 'Medium'
-              : finalUnknowns <= 40 ? 'Hard'
-              : 'Expert';
-
-  return { grid, difficulty: { label, branches: finalUnknowns, rounds: 0, elapsed: 0 } };
-}
-
-// Silent uniqueness check — fast propagation only, used during clue building hot path.
-// Returns true if all single-segment alternates contradict (likely unique).
-// NOT a guarantee of logical solvability — use masyuSolve for the final puzzle.
-function masyuCheckUniqueSilent(grid, N, solH, solV) {
-  const maxH  = N*(N-1);
-  const TOTAL = maxH + (N-1)*N;
-  const hIdx  = (r,c) => masyuHIdx(N,r,c);
-  const vIdx  = (r,c) => masyuVIdx(N,r,c);
-
-  const known = new Array(TOTAL);
-  for (let r=0; r<N;   r++) for (let c=0; c<N-1; c++) known[hIdx(r,c)] = solH[r][c] ? 1 : 2;
-  for (let r=0; r<N-1; r++) for (let c=0; c<N;   c++) known[vIdx(r,c)] = solV[r][c] ? 1 : 2;
-
-  const base = new Array(TOTAL).fill(0);
-  if (!masyuPropagate(grid, N, base)) return false;
-
-  const unknowns = [];
-  for (let i=0; i<TOTAL; i++) if (base[i]===0) unknowns.push(i);
-  if (unknowns.length === 0) return base.every((v,i) => v === known[i]);
-
-  for (const si of unknowns) {
-    const altVal = known[si] === 1 ? 2 : 1;
-    const altState = base.slice();
-    altState[si] = altVal;
-    if (masyuPropagate(grid, N, altState)) return false;
-  }
-  return true;
-}
-
-// ── Solver ────────────────────────────────────────────────────────────────────
-// ── Shared solver helpers ─────────────────────────────────────────────────────
-
-function masyuHIdx(N, r, c) { return r * (N - 1) + c; }
-function masyuVIdx(N, r, c) { return N * (N - 1) + c * (N - 1) + r; }
-
-function masyuNbSegs(N, r, c) {
-  const s = [];
-  if (c > 0)   s.push(masyuHIdx(N, r, c-1));
-  if (c < N-1) s.push(masyuHIdx(N, r, c));
-  if (r > 0)   s.push(masyuVIdx(N, r-1, c));
-  if (r < N-1) s.push(masyuVIdx(N, r, c));
-  return s;
-}
-
-// Propagate constraints in-place on flat state array (0=unknown,1=on,2=off).
-// Returns false on contradiction, true otherwise.
-// depth/log controls whether forced assignments are logged.
-function masyuPropagate(grid, N, state, depth = -1) {
-  const hIdx = (r,c) => masyuHIdx(N,r,c);
-  const vIdx = (r,c) => masyuVIdx(N,r,c);
-  const nbSegs = (r,c) => masyuNbSegs(N,r,c);
-  const log = depth >= 0;
-  const pad = log ? '  '.repeat(depth) : '';
-
-  let changed = true;
-  let rounds = 0;
-  while (changed) {
-    changed = false;
-    rounds++;
-    const forcedOn = [], forcedOff = [];
-
-    for (let r = 0; r < N; r++) {
-      for (let c = 0; c < N; c++) {
-        const segs    = nbSegs(r, c);
-        const on      = segs.filter(s => state[s] === 1).length;
-        const unknown = segs.filter(s => state[s] === 0);
-        const off     = segs.filter(s => state[s] === 2).length;
-
-        if (on > 2) { if (log) console.log(`${pad}  ✗ cell(${r},${c}) degree overflow`); return false; }
-        if (on === 2) {
-          for (const s of unknown) { state[s] = 2; if (log) forcedOff.push(`seg${s}[cell(${r},${c})full]`); changed = true; }
-        }
-        if (off === segs.length - 1 && on === 1 && unknown.length === 1) {
-          state[unknown[0]] = 1; if (log) forcedOn.push(`seg${unknown[0]}[cell(${r},${c})needs2]`); changed = true;
-        }
-
-        const type = grid[r][c];
-        if (type === 0) continue;
-
-        const hL = c > 0   ? hIdx(r,c-1) : -1;
-        const hR = c < N-1 ? hIdx(r,c)   : -1;
-        const vU = r > 0   ? vIdx(r-1,c) : -1;
-        const vD = r < N-1 ? vIdx(r,c)   : -1;
-
-        const hLon = hL>=0 && state[hL]===1, hRon = hR>=0 && state[hR]===1;
-        const vUon = vU>=0 && state[vU]===1, vDon = vD>=0 && state[vD]===1;
-        const hLoff= hL< 0 || state[hL]===2, hRoff= hR< 0 || state[hR]===2;
-        const vUoff= vU< 0 || state[vU]===2, vDoff= vD< 0 || state[vD]===2;
-        const circ = type===2 ? `●(${r},${c})` : `○(${r},${c})`;
-
-        if (type === 2) {
-          if (hLon && hRon) { if (log) console.log(`${pad}  ✗ ${circ} both H on`); return false; }
-          if (vUon && vDon) { if (log) console.log(`${pad}  ✗ ${circ} both V on`); return false; }
-          if (hLon && hR>=0) { if (state[hR]===1) { if (log) console.log(`${pad}  ✗ ${circ} hL+hR`); return false; } if (state[hR]===0) { state[hR]=2; if(log)forcedOff.push(`H(${r},${c}→${c+1})[${circ}]`); changed=true; } }
-          if (hRon && hL>=0) { if (state[hL]===1) { if (log) console.log(`${pad}  ✗ ${circ} hR+hL`); return false; } if (state[hL]===0) { state[hL]=2; if(log)forcedOff.push(`H(${r},${c-1}→${c})[${circ}]`); changed=true; } }
-          if (vUon && vD>=0) { if (state[vD]===1) { if (log) console.log(`${pad}  ✗ ${circ} vU+vD`); return false; } if (state[vD]===0) { state[vD]=2; if(log)forcedOff.push(`V(${r}→${r+1},${c})[${circ}]`); changed=true; } }
-          if (vDon && vU>=0) { if (state[vU]===1) { if (log) console.log(`${pad}  ✗ ${circ} vD+vU`); return false; } if (state[vU]===0) { state[vU]=2; if(log)forcedOff.push(`V(${r-1}→${r},${c})[${circ}]`); changed=true; } }
-          if (hLoff && hRoff) {
-            if ((vU>=0&&state[vU]===2)||(vD>=0&&state[vD]===2)) { if(log)console.log(`${pad}  ✗ ${circ} no H, V blocked`); return false; }
-            if (vU>=0&&state[vU]===0) { state[vU]=1; if(log)forcedOn.push(`V(${r-1}→${r},${c})[${circ}noH]`); changed=true; }
-            if (vD>=0&&state[vD]===0) { state[vD]=1; if(log)forcedOn.push(`V(${r}→${r+1},${c})[${circ}noH]`); changed=true; }
-          }
-          if (vUoff && vDoff) {
-            if ((hL>=0&&state[hL]===2)||(hR>=0&&state[hR]===2)) { if(log)console.log(`${pad}  ✗ ${circ} no V, H blocked`); return false; }
-            if (hL>=0&&state[hL]===0) { state[hL]=1; if(log)forcedOn.push(`H(${r},${c-1}→${c})[${circ}noV]`); changed=true; }
-            if (hR>=0&&state[hR]===0) { state[hR]=1; if(log)forcedOn.push(`H(${r},${c}→${c+1})[${circ}noV]`); changed=true; }
-          }
-          if (hLon&&c>=2  &&state[hIdx(r,c-2)]===0) { state[hIdx(r,c-2)]=1; if(log)forcedOn.push(`H(${r},${c-2}→${c-1})[${circ}arm]`); changed=true; }
-          if (hRon&&c<N-2 &&state[hIdx(r,c+1)]===0) { state[hIdx(r,c+1)]=1; if(log)forcedOn.push(`H(${r},${c+1}→${c+2})[${circ}arm]`); changed=true; }
-          if (vUon&&r>=2  &&state[vIdx(r-2,c)]===0) { state[vIdx(r-2,c)]=1; if(log)forcedOn.push(`V(${r-2}→${r-1},${c})[${circ}arm]`); changed=true; }
-          if (vDon&&r<N-2 &&state[vIdx(r+1,c)]===0) { state[vIdx(r+1,c)]=1; if(log)forcedOn.push(`V(${r+1}→${r+2},${c})[${circ}arm]`); changed=true; }
-        }
-
-        if (type === 1) {
-          if ((hLon||hRon)&&(vUon||vDon)) { if(log)console.log(`${pad}  ✗ ${circ} H+V mix`); return false; }
-          if (hLon) {
-            if (hR>=0&&state[hR]===0) { state[hR]=1; if(log)forcedOn.push(`H(${r},${c}→${c+1})[${circ}hL]`); changed=true; }
-            if (hR>=0&&state[hR]===2) { if(log)console.log(`${pad}  ✗ ${circ} hL on hR off`); return false; }
-            if (vU>=0&&state[vU]===0) { state[vU]=2; if(log)forcedOff.push(`V(${r-1}→${r},${c})[${circ}H]`); changed=true; }
-            if (vD>=0&&state[vD]===0) { state[vD]=2; if(log)forcedOff.push(`V(${r}→${r+1},${c})[${circ}H]`); changed=true; }
-          }
-          if (hRon) {
-            if (hL>=0&&state[hL]===0) { state[hL]=1; if(log)forcedOn.push(`H(${r},${c-1}→${c})[${circ}hR]`); changed=true; }
-            if (hL>=0&&state[hL]===2) { if(log)console.log(`${pad}  ✗ ${circ} hR on hL off`); return false; }
-            if (vU>=0&&state[vU]===0) { state[vU]=2; if(log)forcedOff.push(`V(${r-1}→${r},${c})[${circ}H]`); changed=true; }
-            if (vD>=0&&state[vD]===0) { state[vD]=2; if(log)forcedOff.push(`V(${r}→${r+1},${c})[${circ}H]`); changed=true; }
-          }
-          if (vUon) {
-            if (vD>=0&&state[vD]===0) { state[vD]=1; if(log)forcedOn.push(`V(${r}→${r+1},${c})[${circ}vU]`); changed=true; }
-            if (vD>=0&&state[vD]===2) { if(log)console.log(`${pad}  ✗ ${circ} vU on vD off`); return false; }
-            if (hL>=0&&state[hL]===0) { state[hL]=2; if(log)forcedOff.push(`H(${r},${c-1}→${c})[${circ}V]`); changed=true; }
-            if (hR>=0&&state[hR]===0) { state[hR]=2; if(log)forcedOff.push(`H(${r},${c}→${c+1})[${circ}V]`); changed=true; }
-          }
-          if (vDon) {
-            if (vU>=0&&state[vU]===0) { state[vU]=1; if(log)forcedOn.push(`V(${r-1}→${r},${c})[${circ}vD]`); changed=true; }
-            if (vU>=0&&state[vU]===2) { if(log)console.log(`${pad}  ✗ ${circ} vD on vU off`); return false; }
-            if (hL>=0&&state[hL]===0) { state[hL]=2; if(log)forcedOff.push(`H(${r},${c-1}→${c})[${circ}V]`); changed=true; }
-            if (hR>=0&&state[hR]===0) { state[hR]=2; if(log)forcedOff.push(`H(${r},${c}→${c+1})[${circ}V]`); changed=true; }
-          }
-          if (hLoff&&hRoff) {
-            if (vU>=0&&state[vU]===0) { state[vU]=1; if(log)forcedOn.push(`V(${r-1}→${r},${c})[${circ}noH]`); changed=true; }
-            if (vD>=0&&state[vD]===0) { state[vD]=1; if(log)forcedOn.push(`V(${r}→${r+1},${c})[${circ}noH]`); changed=true; }
-          }
-          if (vUoff&&vDoff) {
-            if (hL>=0&&state[hL]===0) { state[hL]=1; if(log)forcedOn.push(`H(${r},${c-1}→${c})[${circ}noV]`); changed=true; }
-            if (hR>=0&&state[hR]===0) { state[hR]=1; if(log)forcedOn.push(`H(${r},${c}→${c+1})[${circ}noV]`); changed=true; }
-          }
-        }
-      }
-    }
-
-    if (log && (forcedOn.length || forcedOff.length)) {
-      if (forcedOn.length)  console.log(`${pad}  prop round ${rounds}: ON  — ${forcedOn.join(', ')}`);
-      if (forcedOff.length) console.log(`${pad}  prop round ${rounds}: OFF — ${forcedOff.join(', ')}`);
-    }
-  }
-  return true;
-}
-
-// ── Uniqueness check (fast path) ──────────────────────────────────────────────
-// Seeds the state with the known solution, propagates to fixpoint, then for
-// each remaining unknown tries the opposite value and checks if it contradicts.
-// If any opposite doesn't contradict → not unique.
-
-function masyuSegName(N, si) {
-  const maxH = N * (N - 1);
-  if (si < maxH) { const r = Math.floor(si/(N-1)), c = si%(N-1); return `H(${r},${c}→${c+1})`; }
-  const vi = si-maxH, col = Math.floor(vi/(N-1)), row = vi%(N-1);
-  return `V(${row}→${row+1},${col})`;
-}
-
-function masyuCheckUnique(grid, N, solH, solV) {
-  const maxH  = N * (N - 1);
-  const maxV  = (N - 1) * N;
-  const TOTAL = maxH + maxV;
-  const hIdx  = (r,c) => masyuHIdx(N,r,c);
-  const vIdx  = (r,c) => masyuVIdx(N,r,c);
-  const sn    = si => masyuSegName(N, si);
-
-  // Build the known-solution state
-  const known = new Array(TOTAL).fill(0);
-  for (let r = 0; r < N;   r++) for (let c = 0; c < N-1; c++) known[hIdx(r,c)] = solH[r][c] ? 1 : 2;
-  for (let r = 0; r < N-1; r++) for (let c = 0; c < N;   c++) known[vIdx(r,c)] = solV[r][c] ? 1 : 2;
-
-  // Step 1: propagate from empty state to find what's forced by circles alone
-  console.log(`    [Uniqueness] Step 1 — base propagation from empty state (${TOTAL} segments)`);
-  const base = new Array(TOTAL).fill(0);
-  const baseOk = masyuPropagate(grid, N, base, 2);
-  if (!baseOk) {
-    console.log(`    [Uniqueness] ✗ Base propagation contradicted — grid has no solution`);
-    return false;
-  }
-
-  const unknowns = base.reduce((acc, v, i) => { if (v === 0) acc.push(i); return acc; }, []);
-  const forced   = TOTAL - unknowns.length;
-  console.log(`    [Uniqueness] Base propagation forced ${forced}/${TOTAL} segments, ${unknowns.length} remain unknown`);
-
-  if (unknowns.length === 0) {
-    const matches = base.every((v, i) => v === known[i]);
-    console.log(`    [Uniqueness] Fully determined by propagation alone — ${matches ? '✓ unique' : '✗ mismatch with known solution'}`);
-    return matches;
-  }
-
-  // Log which unknowns remain and which value the known solution assigns each
-  console.log(`    [Uniqueness] Unknown segments: ${unknowns.map(si => `${sn(si)}=${known[si]===1?'ON':'OFF'}`).join(', ')}`);
-
-  // Step 2: for each unknown, force the OPPOSITE of the known solution and propagate.
-  // If it contradicts → this branch can't produce a different solution.
-  // If it doesn't → a second solution might exist → not unique.
-  console.log(`    [Uniqueness] Step 2 — testing ${unknowns.length} alternates...`);
-  let checked = 0;
-  for (const si of unknowns) {
-    const solVal = known[si];
-    const altVal = solVal === 1 ? 2 : 1;
-    const altState = [...base];
-    altState[si] = altVal;
-
-    console.log(`    [Uniqueness]   [${checked+1}/${unknowns.length}] ${sn(si)}: solution=${solVal===1?'ON':'OFF'}, testing ${altVal===1?'ON':'OFF'}...`);
-    const ok = masyuPropagate(grid, N, altState, 3);
-    checked++;
-
-    if (ok) {
-      const stillUnknown = altState.filter(v => v === 0).length;
-      console.log(`    [Uniqueness]   ✗ Alternate for ${sn(si)} did NOT contradict (${stillUnknown} unknowns remain) — NOT unique`);
-      return false;
-    }
-    console.log(`    [Uniqueness]   ✓ Alternate for ${sn(si)} contradicted`);
-  }
-
-  console.log(`    [Uniqueness] All ${checked} alternates contradicted — ✓ unique`);
-  return true;
-}
-
-// ── Full solver (used for Check validation) ───────────────────────────────────
-// Checks uniqueness by solving from scratch using constraint propagation.
-// Returns array of up to `limit` solutions (each is {hSegs, vSegs}).
-
-function masyuSolve(grid, N, limit, knownSolution = null) {
-  const solutions = [];
-
-  const maxH  = N * (N - 1);
-  const maxV  = (N - 1) * N;
-  const TOTAL = maxH + maxV;
-  const hIdx  = (r,c) => masyuHIdx(N,r,c);
-  const vIdx  = (r,c) => masyuVIdx(N,r,c);
-  const nbSegs = (r,c) => masyuNbSegs(N,r,c);
-
-  let branchCount    = 0;
-  let contradictions = 0;
-
-  // Pre-compute which segments are adjacent to a circle cell — used for MCV scoring
-  const segScore = new Int8Array(TOTAL); // higher = more constrained = branch here first
-  for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
-    if (grid[r][c] === 0) continue;
-    const segs = nbSegs(r, c);
-    for (const si of segs) segScore[si] += grid[r][c] === 2 ? 3 : 2; // black circles more constraining
-  }
-
-  // Pick the best unknown segment to branch on (MCV heuristic).
-  // Prefers segments adjacent to circles, then segments adjacent to already-decided segments.
-  function pickBranchSegment(state) {
-    let bestSi = -1, bestScore = -1;
-    for (let i = 0; i < TOTAL; i++) {
-      if (state[i] !== 0) continue;
-      let score = segScore[i] * 10; // circle adjacency base score
-      // Add score for each already-decided neighbour (propagation leverage)
-      if (i < maxH) {
-        const r=Math.floor(i/(N-1)), c=i%(N-1);
-        if (c>0   && state[hIdx(r,c-1)]!==0) score++;
-        if (c<N-2 && state[hIdx(r,c+1)]!==0) score++;
-        if (state[vIdx(r,c)]!==0)   score++;
-        if (state[vIdx(r,c+1)]!==0) score++;
-        if (r>0   && state[vIdx(r-1,c)]!==0)   score++;
-        if (r>0   && state[vIdx(r-1,c+1)]!==0) score++;
-      } else {
-        const vi=i-maxH, c=Math.floor(vi/(N-1)), r=vi%(N-1);
-        if (r>0   && state[vIdx(r-1,c)]!==0) score++;
-        if (r<N-2 && state[vIdx(r+1,c)]!==0) score++;
-        if (state[hIdx(r,c)]!==0)   score++;
-        if (state[hIdx(r+1,c)]!==0) score++;
-        if (c>0   && state[hIdx(r,c-1)]!==0)   score++;
-        if (c>0   && state[hIdx(r+1,c-1)]!==0) score++;
-      }
-      if (score > bestScore) { bestScore = score; bestSi = i; }
-    }
-    return bestSi;
-  }
-
-  // Logging suppressed in solver — caller logs its own summary
-
-  function solve(state, depth = 0) {
-    if (solutions.length >= limit) return;
-
-    const ok = masyuPropagate(grid, N, state);
-    if (!ok) { contradictions++; return; }
-
-    if (!state.includes(0)) {
-      if (masyuValidateSolution(state, grid, N)) solutions.push(state);
-      return;
-    }
-
-    branchCount++;
-    if (branchCount > 200000) return; // hard safety limit
-
-    const bi = pickBranchSegment(state);
-    if (bi === -1) return;
-
-    const s1 = state.slice(); s1[bi] = 1;
-    solve(s1, depth + 1);
-    if (solutions.length >= limit) return;
-
-    const s2 = state.slice(); s2[bi] = 2;
-    solve(s2, depth + 1);
-  }
-
-  if (knownSolution) {
-    // Directly validate the known solution
-    const knownState = new Array(TOTAL).fill(2); // all OFF by default
-    for (let r=0; r<N;   r++) for (let c=0; c<N-1; c++) if (knownSolution.hSegs[r][c]) knownState[hIdx(r,c)] = 1;
-    for (let r=0; r<N-1; r++) for (let c=0; c<N;   c++) if (knownSolution.vSegs[r][c]) knownState[vIdx(r,c)] = 1;
-    if (masyuValidateSolution(knownState, grid, N)) {
-      solutions.push(knownState);
-      console.log(`[Masyu Solver] Known solution validated`);
-    } else {
-      console.log(`[Masyu Solver] Known solution failed validation — searching from scratch`);
-      solve(new Array(TOTAL).fill(0));
-    }
-  } else {
-    solve(new Array(TOTAL).fill(0));
-  }
-  console.log(`[Masyu Solver] branches: ${branchCount}, contradictions: ${contradictions}, solutions: ${solutions.length}`);
-  return solutions;
-}
-
-// ── Prep / UI ─────────────────────────────────────────────────────────────────
-
-function prepMasyu(n) {
-  const snap = html.innerHTML;
-  pushHistory(document.getElementById("win-title")?.textContent || "Google", () => {
-    html.innerHTML = snap;
-  });
-
-  const combined = combinedSeed(n);
-  const rng = new MonoRandom(combined);
-  masyuCurrentOnion = LINK_GENERATORS.onion(rng);
-
-  html.innerHTML = `${windowBar()}
-  <div style="background:#f7f7f7;min-height:100%;font-family:Arial,sans-serif">
-    <div style="background:#fff;text-align:center;padding:10px 8px 6px;border-bottom:1px solid #e0e0e0">
-      <div style="font-family:'Times New Roman',serif;font-size:1.1rem;font-weight:700;color:#1a1a1a">Masyu</div>
-      <div style="font-size:0.6rem;letter-spacing:0.12em;color:#6b6b6b;text-transform:uppercase;margin-top:2px">NY Times Puzzle</div>
-    </div>
-    <div style="max-width:700px;margin:0 auto;padding:8px">
-      <div id="msy-status" style="text-align:center;font-size:0.75rem;color:#6b6b6b;min-height:1rem;margin-bottom:6px"></div>
-      <div id="msy-checkRow" style="display:none;text-align:center;margin-bottom:8px">
-        <button onclick="masyuCheck()" style="background:#1a1a1a;color:#fff;border:none;font-size:0.7rem;font-weight:700;padding:5px 14px;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;border-radius:2px;margin:0 3px">Check</button>
-        <button onclick="masyuReset()" style="background:#fff;color:#1a1a1a;border:1px solid #ccc;font-size:0.7rem;font-weight:700;padding:5px 14px;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;border-radius:2px;margin:0 3px">Reset</button>
-      </div>
-      <div id="msy-container" style="display:flex;justify-content:center;padding:8px"></div>
-    </div>
-  </div>`;
-
-  setWinTitle("NYT Masyu");
-  initialHTML = html.innerHTML;
-
-  masyuSetStatus('Generating puzzle…');
-  setTimeout(() => {
-    try {
-      console.log(`[Masyu] Generator started (combined seed: ${combined})`);
-      const result = masyuGenerate(combined);
-      if (!result) { masyuSetStatus('Could not generate puzzle — try another link.'); return; }
-      masyuGrid     = result.grid;
-      masyuSolutions = result.solutions || [];
-      masyuChecked  = false;
-      masyuCurrentDifficulty = result.difficulty ? result.difficulty.label : '';
-      masyuHSegs    = Array.from({length: MASYU_SIZE},   () => new Array(MASYU_SIZE - 1).fill(false));
-      masyuVSegs    = Array.from({length: MASYU_SIZE - 1}, () => new Array(MASYU_SIZE).fill(false));
-      masyuRender();
-      document.getElementById('msy-checkRow').style.display = '';
-      const diff = result.difficulty ? result.difficulty.label : '';
-      masyuSetStatus(diff ? `Difficulty: ${diff}` : '');
-    } catch (e) {
-      console.error('[Masyu] Generator threw an error:', e);
-      masyuSetStatus('Error generating puzzle — check console.');
-    }
-  }, 0);
-}
-
-function masyuSetStatus(msg) {
-  const el = document.getElementById('msy-status');
-  if (el) el.textContent = msg;
-}
-
-function masyuReset() {
-  const N = MASYU_SIZE;
-  masyuHSegs   = Array.from({length: N},   () => new Array(N - 1).fill(false));
-  masyuVSegs   = Array.from({length: N - 1}, () => new Array(N).fill(false));
-  masyuChecked = false;
-  masyuRender();
-  masyuSetStatus('');
-}
-
-function masyuRender() {
-  const container = document.getElementById('msy-container');
-  if (!container) return;
-  const N    = MASYU_SIZE;
-  const CELL = 32; // px per cell
-  const LINE = 3;  // segment line width
-  const HIT  = 8;  // hit zone half-width around gridline
-
-  const W = N * CELL, H = N * CELL;
-  const canvas = document.createElement('canvas');
-  canvas.width  = W;
-  canvas.height = H;
-  canvas.style.cursor = 'pointer';
-  canvas.style.display = 'block';
-
-  const ctx = canvas.getContext('2d');
-  masyuDraw(ctx, N, CELL, LINE);
-
-  canvas.addEventListener('click', e => {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width  / rect.width;
-    const scaleY = canvas.height / rect.height;
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top)  * scaleY;
-    masyuHandleClick(x, y, CELL, HIT, N);
-    masyuChecked = false;          // clear check state so colours reset on edit
-    masyuSetStatus(masyuCurrentDifficulty ? `Difficulty: ${masyuCurrentDifficulty}` : '');
-    masyuDraw(ctx, N, CELL, LINE);
-  });
-
-  container.innerHTML = '';
-  container.appendChild(canvas);
-}
-
-function masyuDraw(ctx, N, CELL, LINE) {
-  const W = N * CELL, H = N * CELL;
-  ctx.clearRect(0, 0, W, H);
-
-  // Background
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(0, 0, W, H);
-
-  // Draw placed segments (before grid so they appear under circles)
-  // Horizontal segments
-  for (let r = 0; r < N; r++) {
-    for (let c = 0; c < N - 1; c++) {
-      if (!masyuHSegs[r][c]) continue;
-      const col = masyuSegColor('h', r, c);
-      ctx.strokeStyle = col;
-      ctx.lineWidth   = LINE;
-      ctx.beginPath();
-      ctx.moveTo((c + 0.5) * CELL, (r + 0.5) * CELL);
-      ctx.lineTo((c + 1.5) * CELL, (r + 0.5) * CELL);
-      ctx.stroke();
-    }
-  }
-  // Vertical segments
-  for (let r = 0; r < N - 1; r++) {
-    for (let c = 0; c < N; c++) {
-      if (!masyuVSegs[r][c]) continue;
-      const col = masyuSegColor('v', r, c);
-      ctx.strokeStyle = col;
-      ctx.lineWidth   = LINE;
-      ctx.beginPath();
-      ctx.moveTo((c + 0.5) * CELL, (r + 0.5) * CELL);
-      ctx.lineTo((c + 0.5) * CELL, (r + 1.5) * CELL);
-      ctx.stroke();
-    }
-  }
-
-  // Grid lines
-  ctx.strokeStyle = '#aaa';
-  ctx.lineWidth   = 1;
-  for (let i = 0; i <= N; i++) {
-    ctx.beginPath(); ctx.moveTo(i * CELL, 0);     ctx.lineTo(i * CELL, H);  ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0, i * CELL);     ctx.lineTo(W, i * CELL);  ctx.stroke();
-  }
-
-  // Circles
-  for (let r = 0; r < N; r++) {
-    for (let c = 0; c < N; c++) {
-      const type = masyuGrid[r][c];
-      if (type === 0) continue;
-      const cx = (c + 0.5) * CELL;
-      const cy = (r + 0.5) * CELL;
-      const rad = CELL * 0.35;
-      ctx.beginPath();
-      ctx.arc(cx, cy, rad, 0, Math.PI * 2);
-      ctx.fillStyle   = type === 2 ? '#000' : '#fff';
-      ctx.strokeStyle = '#000';
-      ctx.lineWidth   = 1.5;
-      ctx.fill();
-      ctx.stroke();
-    }
-  }
-}
-
-function masyuSegColor(dir, r, c) {
-  if (!masyuChecked || !masyuSolutions.length) return '#4a90d9';
-  const N = MASYU_SIZE;
-  const si = dir === 'h' ? masyuHIdx(N,r,c) : masyuVIdx(N,r,c);
-  const placed = (dir === 'h' ? masyuHSegs : masyuVSegs)[r][c];
-  if (!placed) return '#4a90d9';
-  const inAnySolution = masyuSolutions.some(sol => Array.isArray(sol) && sol[si] === 1);
-  return inAnySolution ? '#2ecc71' : '#e74c3c';
-}
-
-function masyuHandleClick(x, y, CELL, HIT, N) {
-  // Determine if click is near a vertical gridline (between cols) or horizontal gridline (between rows)
-  const col  = x / CELL;
-  const row  = y / CELL;
-  const colFrac = col % 1;
-  const rowFrac = row % 1;
-  const colInt  = Math.floor(col);
-  const rowInt  = Math.floor(row);
-
-  const nearVGrid = colFrac * CELL < HIT || (1 - colFrac) * CELL < HIT;
-  const nearHGrid = rowFrac * CELL < HIT || (1 - rowFrac) * CELL < HIT;
-
-  // A vertical gridline between columns c and c+1 is a horizontal segment hSegs[r][c]
-  // A horizontal gridline between rows r and r+1 is a vertical segment vSegs[r][c]
-
-  if (nearVGrid && !nearHGrid) {
-    // Clicking near a vertical gridline → toggle horizontal segment
-    const segCol = colFrac < 0.5 ? colInt - 1 : colInt;
-    const segRow = rowInt;
-    if (segCol >= 0 && segCol < N - 1 && segRow >= 0 && segRow < N) {
-      masyuHSegs[segRow][segCol] = !masyuHSegs[segRow][segCol];
-    }
-  } else if (nearHGrid && !nearVGrid) {
-    // Clicking near a horizontal gridline → toggle vertical segment
-    const segRow = rowFrac < 0.5 ? rowInt - 1 : rowInt;
-    const segCol = colInt;
-    if (segRow >= 0 && segRow < N - 1 && segCol >= 0 && segCol < N) {
-      masyuVSegs[segRow][segCol] = !masyuVSegs[segRow][segCol];
-    }
-  }
-}
-
-// Validate a player's solution using the same approach as kakuro-online's checkSolution.
-// Works directly on the 2D masyuHSegs/masyuVSegs arrays rather than a flat state.
-// ps[r][c] = 1 if segment is ON, using:
-//   hSeg(r,c) = horizontal segment between cell(r,c) and cell(r,c+1)
-//   vSeg(r,c) = vertical segment between cell(r,c) and cell(r+1,c)
-function masyuValidateSolution(state, grid, N) {
-  // Convert flat state to 2D segment arrays for easy neighbour lookup
-  const hIdx = (r,c) => masyuHIdx(N,r,c);
-  const vIdx = (r,c) => masyuVIdx(N,r,c);
-  const hOn = (r,c) => c>=0 && c<N-1 && r>=0 && r<N   && state[hIdx(r,c)]===1;
-  const vOn = (r,c) => r>=0 && r<N-1 && c>=0 && c<N   && state[vIdx(r,c)]===1;
-
-  // 1. Every cell must have exactly 0 or 2 lines
-  for (let r=0; r<N; r++) for (let c=0; c<N; c++) {
-    const count = (hOn(r,c-1)?1:0) + (hOn(r,c)?1:0) + (vOn(r-1,c)?1:0) + (vOn(r,c)?1:0);
-    if (count !== 0 && count !== 2) return false;
-  }
-
-  // 2. Check circle constraints
-  for (let r=0; r<N; r++) for (let c=0; c<N; c++) {
-    const type = grid[r][c];
-    if (type === 0) continue;
-
-    const goH = hOn(r,c-1) && hOn(r,c);   // going horizontal through cell
-    const goV = vOn(r-1,c) && vOn(r,c);   // going vertical through cell
-
-    if (type === 1) { // white: must go straight, at least one side turns
-      if (!goH && !goV) return false; // not going straight at all
-      if (goH) {
-        // left neighbour turns if it has a vertical segment
-        const leftTurns  = vOn(r-1,c-1) || vOn(r,c-1);
-        // right neighbour turns if it has a vertical segment
-        const rightTurns = vOn(r-1,c+1) || vOn(r,c+1);
-        if (!leftTurns && !rightTurns) return false;
-      } else {
-        // up neighbour turns if it has a horizontal segment
-        const upTurns   = hOn(r-1,c-1) || hOn(r-1,c);
-        // down neighbour turns if it has a horizontal segment
-        const downTurns = hOn(r+1,c-1) || hOn(r+1,c);
-        if (!upTurns && !downTurns) return false;
-      }
-    }
-
-    if (type === 2) { // black: must turn, each arm extends at least 1 cell
-      // must have one H arm and one V arm
-      const hasH = hOn(r,c-1) || hOn(r,c);
-      const hasV = vOn(r-1,c) || vOn(r,c);
-      if (!hasH || !hasV) return false;
-      if (hOn(r,c-1) && hOn(r,c)) return false; // both H sides — not a turn
-      if (vOn(r-1,c) && vOn(r,c)) return false; // both V sides — not a turn
-      // each arm must extend at least 1 more cell
-      if (hOn(r,c-1) && !hOn(r,c-2)) return false; // left arm needs c-2
-      if (hOn(r,c)   && !hOn(r,c+1)) return false; // right arm needs c+1
-      if (vOn(r-1,c) && !vOn(r-2,c)) return false; // up arm needs r-2
-      if (vOn(r,c)   && !vOn(r+1,c)) return false; // down arm needs r+1
-    }
-  }
-
-  // 3. All lines form a single closed loop (using kakuro-online's travel approach)
-  // Find first line segment
-  let startR=-1, startC=-1, startDir='';
-  outer: for (let r=0; r<N; r++) {
-    for (let c=0; c<N-1; c++) if (hOn(r,c)) { startR=r; startC=c; startDir='h'; break outer; }
-    for (let c=0; c<N;   c++) if (vOn(r,c)) { startR=r; startC=c; startDir='v'; break outer; }
-  }
-  if (startR===-1) return false;
-
-  // Count total segments
-  let totalSegs=0;
-  for (let r=0;r<N;  r++) for (let c=0;c<N-1;c++) if (hOn(r,c)) totalSegs++;
-  for (let r=0;r<N-1;r++) for (let c=0;c<N;  c++) if (vOn(r,c)) totalSegs++;
-
-  // Travel the loop from the starting cell of the first segment
-  // Cell neighbours reachable via ON segments
-  const neighbours = (r,c) => {
-    const nb=[];
-    if (hOn(r,c-1)) nb.push([r,c-1]);
-    if (hOn(r,c))   nb.push([r,c+1]);
-    if (vOn(r-1,c)) nb.push([r-1,c]);
-    if (vOn(r,c))   nb.push([r+1,c]);
-    return nb;
-  };
-
-  // Start at the left cell of the first segment
-  const sr = startR, sc = startDir==='h' ? startC : startC;
-  let pr=-1, pc=-1, cr=sr, cc=sc, visited=0;
-  for (let step=0; step<=totalSegs+1; step++) {
-    visited++;
-    const nbs = neighbours(cr,cc).filter(([nr,nc])=>!(nr===pr&&nc===pc));
-    if (nbs.length===0) break;
-    [pr,pc]=[cr,cc]; [cr,cc]=nbs[0];
-    if (cr===sr && cc===sc) {
-      // Closed — check all segments were visited (visited counts cells = segments+1 on loop)
-      // A loop with S segments visits S cells before returning to start
-      return visited === totalSegs;
-    }
-  }
-  return false;
-}
-
-function masyuCheck() {
-  if (!masyuSolutions.length || !masyuGrid) return;
-  const N = MASYU_SIZE;
-  masyuChecked = true;
-  console.log(`[Masyu] Check pressed`);
-
-  // Build a state array from the player's placed segments
-  const maxH  = N*(N-1), TOTAL = maxH + (N-1)*N;
-  const hIdx  = (r,c) => masyuHIdx(N,r,c);
-  const vIdx  = (r,c) => masyuVIdx(N,r,c);
-  const playerState = new Array(TOTAL).fill(2);
-  for (let r=0; r<N;   r++) for (let c=0; c<N-1; c++) if (masyuHSegs[r][c]) playerState[hIdx(r,c)] = 1;
-  for (let r=0; r<N-1; r++) for (let c=0; c<N;   c++) if (masyuVSegs[r][c]) playerState[vIdx(r,c)] = 1;
-
-  // First: check against all stored solutions (guard against any non-array entries)
-  let allCorrect = masyuSolutions.some(sol => Array.isArray(sol) && sol.every((v,i) => v === playerState[i]));
-
-  // Fallback: if not matching any stored solution, validate directly
-  // (handles alternate solutions not found during generation)
-  if (!allCorrect) {
-    const nbSegs = (r,c) => masyuNbSegs(N,r,c);
-    allCorrect = masyuValidateSolution(playerState, masyuGrid, N);
-    if (allCorrect) {
-      console.log(`[Masyu] Alternate solution accepted — adding to solutions list`);
-      masyuSolutions.push(playerState);
-    }
-  }
-
-  if (allCorrect) {
-    console.log(`[Masyu] Solved correctly!`);
-  } else {
-    // Count segments wrong against the closest solution
-    let minWrong = Infinity;
-    for (const sol of masyuSolutions) {
-      if (!Array.isArray(sol)) continue;
-      const wrong = sol.reduce((n,v,i) => n + (v !== playerState[i] ? 1 : 0), 0);
-      if (wrong < minWrong) minWrong = wrong;
-    }
-    console.log(`[Masyu] Incorrect — closest solution is ${minWrong} segment(s) off`);
-  }
-
-  // Redraw with colors
-  const container = document.getElementById('msy-container');
-  if (!container) return;
-  const canvas = container.querySelector('canvas');
-  if (!canvas) return;
-  masyuDraw(canvas.getContext('2d'), N, 32, 3);
-
-  if (allCorrect) {
-    masyuShowOnion();
-  } else {
-    masyuSetStatus('Not quite right — keep trying!');
-  }
-}
-
-function masyuShowOnion() {
-  if (document.getElementById('msy-completionBanner')) return;
-  const onion = masyuCurrentOnion || 'aaaaaaaaaaaaaaaa.onion';
-  const banner = document.createElement('div');
-  banner.id = 'msy-completionBanner';
-  banner.style.cssText = 'background:#fff;border:2px solid #000;padding:12px 16px;text-align:center;margin:8px 0;border-radius:2px';
-  banner.innerHTML = `
-    <div style="font-family:'Times New Roman',serif;font-size:1rem;font-weight:700;color:#000;margin-bottom:6px">&#10003; Puzzle Complete!</div>
-    <div style="font-size:0.7rem;color:#6b6b6b;margin-bottom:6px">A hidden service address has been uncovered.</div>
-    <div style="font-family:'Courier New',monospace;font-size:0.85rem;font-weight:700;color:#7d00c8;letter-spacing:0.05em;margin:6px 0;word-break:break-all">${onion}</div>
-  `;
-  const container = document.getElementById('msy-container');
-  if (container) container.insertBefore(banner, container.firstChild);
-  masyuSetStatus('Puzzle solved!');
-}
-
-
-// ─────────────────────────────────────────────────────────────────────────────
 // CROSSWORD GENERATOR (embedded)
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -5867,9 +2162,9 @@ function renderPuzzle(puzzle, rng, seed) {
         inp.dataset.r = r;
         inp.dataset.c = c;
         inp.addEventListener('input', onCellInput);
+        inp.addEventListener('mousedown', () => onCellMousedown(r, c));
         inp.addEventListener('focus', () => onCellFocus(r, c));
         inp.addEventListener('keydown', onCellKeydown);
-        inp.addEventListener('input', onCellInputClearCheck);   // new listener
         cell.appendChild(inp);
       }
       gridEl.appendChild(cell);
@@ -5936,14 +2231,20 @@ function renderPuzzle(puzzle, rng, seed) {
     div.addEventListener('click', () => {
       document.querySelectorAll('.clue-item').forEach(el => el.classList.remove('active'));
       div.classList.add('active');
-      highlightWord(p.row, p.col, p.dir, p.word.length);
-      // Focus first empty cell of this word
+      cwActiveDir = p.dir;
       const dr = p.dir === 'across' ? 0 : 1;
       const dc = p.dir === 'across' ? 1 : 0;
+      // Find first empty cell (or first cell if all filled)
+      let targetR = p.row, targetC = p.col;
       for (let i = 0; i < p.word.length; i++) {
         const inp = getCellInput(p.row + dr*i, p.col + dc*i);
-        if (inp && !inp.value) { inp.focus(); break; }
+        if (inp && !inp.value) { targetR = p.row + dr*i; targetC = p.col + dc*i; break; }
       }
+      cwFocusedR = targetR;
+      cwFocusedC = targetC;
+      highlightWord(p.row, p.col, p.dir, p.word.length, targetR, targetC);
+      const inp = getCellInput(targetR, targetC);
+      if (inp) inp.focus();
     });
     return div;
   }
@@ -5969,41 +2270,98 @@ function getCellInput(r, c) {
   return document.querySelector(`.cell-input[data-r="${r}"][data-c="${c}"]`);
 }
 
-function highlightWord(row, col, dir, len) {
-  document.querySelectorAll('.cell').forEach(el => el.classList.remove('highlighted','active'));
+function highlightWord(row, col, dir, len, focusedR, focusedC) {
+  document.querySelectorAll('.cell').forEach(el => el.classList.remove('highlighted', 'active', 'focused-cell'));
   const dr = dir === 'across' ? 0 : 1;
   const dc = dir === 'across' ? 1 : 0;
   for (let i = 0; i < len; i++) {
     const r = row + dr*i, c = col + dc*i;
     const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-    if (cell) cell.classList.add('highlighted');
+    if (cell) {
+      cell.classList.add('highlighted');
+      if (focusedR === r && focusedC === c) cell.classList.add('focused-cell');
+    }
   }
 }
 
+// Tracks the current typing direction ('across' or 'down') and focused cell
+let cwActiveDir = 'across';
+let cwFocusedR = -1;
+let cwFocusedC = -1;
+
+// Called only on genuine user click — handles direction toggling at intersections
+function onCellMousedown(r, c) {
+  if (!currentPuzzle) return;
+  const acrossWord = currentPuzzle.placed.find(p => p.dir === 'across' && p.row === r && c >= p.col && c < p.col + p.word.length);
+  const downWord   = currentPuzzle.placed.find(p => p.dir === 'down'   && p.col === c && r >= p.row && r < p.row + p.word.length);
+
+  if (r === cwFocusedR && c === cwFocusedC && acrossWord && downWord) {
+    // Same intersection cell clicked again — toggle direction
+    cwActiveDir = cwActiveDir === 'across' ? 'down' : 'across';
+  } else {
+    // New cell — keep current direction if valid, otherwise use whichever exists
+    if (cwActiveDir === 'across' && !acrossWord && downWord) cwActiveDir = 'down';
+    else if (cwActiveDir === 'down' && !downWord && acrossWord) cwActiveDir = 'across';
+  }
+  cwFocusedR = r;
+  cwFocusedC = c;
+  // Explicitly re-highlight: if the input is already focused, the focus event won't re-fire
+  onCellFocus(r, c);
+}
+
+// Called on every focus (including browser tab-back, programmatic advance) — only highlights, never toggles
 function onCellFocus(r, c) {
   if (!currentPuzzle) return;
-  // Find which word(s) this cell belongs to
   const acrossWord = currentPuzzle.placed.find(p => p.dir === 'across' && p.row === r && c >= p.col && c < p.col + p.word.length);
-  const downWord = currentPuzzle.placed.find(p => p.dir === 'down' && p.col === c && r >= p.row && r < p.row + p.word.length);
-  const p = acrossWord || downWord;
-  if (p) highlightWord(p.row, p.col, p.dir, p.word.length);
+  const downWord   = currentPuzzle.placed.find(p => p.dir === 'down'   && p.col === c && r >= p.row && r < p.row + p.word.length);
+
+  // Only force a direction switch if the current direction has no word at this cell
+  if (cwActiveDir === 'across' && !acrossWord && downWord) cwActiveDir = 'down';
+  else if (cwActiveDir === 'down' && !downWord && acrossWord) cwActiveDir = 'across';
+
+  const p = cwActiveDir === 'across' ? (acrossWord || downWord) : (downWord || acrossWord);
+  if (p) {
+    highlightWord(p.row, p.col, p.dir, p.word.length, r, c);
+    document.querySelectorAll('.clue-item').forEach(el => el.classList.remove('active'));
+    const clueEl = document.querySelector(`.clue-item[data-r="${p.row}"][data-c="${p.col}"][data-dir="${p.dir}"]`);
+    if (clueEl) clueEl.classList.add('active');
+  }
 }
 
 function onCellInput(e) {
   const inp = e.target;
   inp.value = inp.value.toUpperCase().replace(/[^A-Z]/g, '').slice(-1);
-  // Auto-advance
+  // Clear check highlights from every cell in the grid
+  document.querySelectorAll('.cell-input').forEach(el => el.classList.remove('correct', 'incorrect'));
+  const banner = document.getElementById('cw-completionBanner');
+  if (banner) banner.remove();
+  cw_setStatus('', '');
+  // Auto-advance along the active direction only
   const r = parseInt(inp.dataset.r);
   const c = parseInt(inp.dataset.c);
   if (inp.value) {
-    const acrossWord = currentPuzzle?.placed.find(p => p.dir === 'across' && p.row === r && c >= p.col && c < p.col + p.word.length);
-    const downWord = currentPuzzle?.placed.find(p => p.dir === 'down' && p.col === c && r >= p.row && r < p.row + p.word.length);
-    const p = acrossWord || downWord;
+    // Find the word in the active direction
+    const activeWord = currentPuzzle?.placed.find(p =>
+      p.dir === cwActiveDir &&
+      (cwActiveDir === 'across'
+        ? (p.row === r && c >= p.col && c < p.col + p.word.length)
+        : (p.col === c && r >= p.row && r < p.row + p.word.length))
+    );
+    const p = activeWord;
     if (p) {
       const dr = p.dir === 'across' ? 0 : 1;
       const dc = p.dir === 'across' ? 1 : 0;
-      const nextInp = getCellInput(r + dr, c + dc);
-      if (nextInp) nextInp.focus();
+      const nr = r + dr, nc = c + dc;
+      const stillInWord = cwActiveDir === 'across'
+        ? (p.row === nr && nc >= p.col && nc < p.col + p.word.length)
+        : (p.col === nc && nr >= p.row && nr < p.row + p.word.length);
+      const nextInp = getCellInput(nr, nc);
+      if (nextInp && stillInWord) {
+        // Update focused coords before focusing so the toggle logic doesn't fire
+        cwFocusedR = nr;
+        cwFocusedC = nc;
+        nextInp.focus();
+      }
     }
   }
   // Auto-check for completion
@@ -6026,33 +2384,41 @@ function onCellKeydown(e) {
     const nextInp = getCellInput(r+dr, c+dc);
     if (nextInp) nextInp.focus();
   }
-  if (e.key === 'Backspace' && !inp.value) {
-    const acrossWord = currentPuzzle?.placed.find(p => p.dir === 'across' && p.row === r && c >= p.col && c < p.col + p.word.length);
-    const downWord = currentPuzzle?.placed.find(p => p.dir === 'down' && p.col === c && r >= p.row && r < p.row + p.word.length);
-    const p = acrossWord || downWord;
+  if (e.key === 'Backspace') {
+    e.preventDefault();
+    const activeWord = currentPuzzle?.placed.find(p =>
+      p.dir === cwActiveDir &&
+      (cwActiveDir === 'across'
+        ? (p.row === r && c >= p.col && c < p.col + p.word.length)
+        : (p.col === c && r >= p.row && r < p.row + p.word.length))
+    );
+    const p = activeWord;
     if (p) {
       const dr = p.dir === 'across' ? 0 : 1;
       const dc = p.dir === 'across' ? 1 : 0;
-      const prevInp = getCellInput(r - dr, c - dc);
-      if (prevInp) {
-        prevInp.value = '';
-        prevInp.classList.remove('correct', 'incorrect');
-        prevInp.focus();
-        const banner = document.getElementById('cw-completionBanner');
-        if (banner) banner.remove();
-        cw_setStatus('', '');
+      if (inp.value) {
+        // Cell has a value: delete it and stay on this cell
+        inp.value = '';
+        inp.classList.remove('correct', 'incorrect');
+      } else {
+        // Cell is empty: move to previous cell and clear it
+        const pr = r - dr, pc = c - dc;
+        const prevInp = getCellInput(pr, pc);
+        if (prevInp) {
+          prevInp.value = '';
+          prevInp.classList.remove('correct', 'incorrect');
+          cwFocusedR = pr;
+          cwFocusedC = pc;
+          prevInp.focus();
+        }
       }
+      const banner = document.getElementById('cw-completionBanner');
+      if (banner) banner.remove();
+      cw_setStatus('', '');
     }
   }
 }
 
-function onCellInputClearCheck(e) {
-  const inp = e.target;
-  inp.classList.remove('correct', 'incorrect');
-  const banner = document.getElementById('cw-completionBanner');
-  if (banner) banner.remove();
-  cw_setStatus('', '');
-}
 
 function cw_checkAnswers() {
   if (!currentPuzzle) return;
@@ -6110,7 +2476,10 @@ function cw_resetPuzzle() {
   document.querySelectorAll('.cell-input').forEach(inp => {
     inp.value = '';
     inp.style.color = 'var(--ink)';
+    inp.classList.remove('correct', 'incorrect');
   });
+  const banner = document.getElementById('cw-completionBanner');
+  if (banner) banner.remove();
   cw_setStatus('Grid reset.', '');
 }
 
@@ -6248,7 +2617,7 @@ function prepQuizzington(n, seed, puzzle) {
   document.getElementsByClassName("monitor")[0].classList.add("quizzingtonback");
   initialHTML = html.innerHTML;
   const rng = new MonoRandom(combinedSeed(n));
-  const puzzleFns = { sequence: quizzingtonSequence, find8: quizzingtonFind8, numbers: quizzingtonNumbers, static: quizzingtonStatic };
+  const puzzleFns = { sequence: quizzingtonSequence, find8: quizzingtonFind8, numbers: quizzingtonNumbers, static: quizzingtonStatic, colorbynumber: quizzingtonColorByNumber };
   (puzzleFns[puzzle] || quizzingtonSequence)(rng);
 }
 
@@ -6350,6 +2719,550 @@ function animate() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// QUIZZINGTON — COLOR-BY-NUMBER  (v4)
+// ─────────────────────────────────────────────────────────────────────────────
+//
+// INTEGRATION (puzzles.js):
+//   1. Paste after the existing Quizzington section.
+//   2. Add to prepQuizzington() puzzleFns: colorByNumber: quizzingtonColorByNumber
+//   3. Add to validateQuizzingtonAnswer():
+//        case "color-by-number":
+//          if (!/^[0-9a-f]{6}$/i.test(message.trim()))
+//            return "Answer must be a 6-digit hex color (e.g. a3f02b).";
+//          return null;
+//   4. Add "Color-By-Number" to subjects[] in mail.js.
+//
+// ─────────────────────────────────────────────────────────────────────────────
+//
+// DESIGN:
+//   Five labeled regions: one per color (1–4) plus the unknown (?).
+//   The ambassadors (1–4) are NOT required to be adjacent to ?.
+//   Instead, uniqueness is verified by a constraint-propagation solver that
+//   exactly simulates human logic:
+//
+//     Known set K = { ambassador regions with their colors }.
+//     Repeat:
+//       For each unlabeled region R not yet in K:
+//         Count how many distinct colors appear among R's neighbors that are in K.
+//         If 3 distinct colors appear → R's color is forced (the 4th). Add to K.
+//     Until no progress.
+//     ? is solvable iff it ends up in K.
+//
+//   Ambassador placement is chosen (from a small candidate search) to maximize
+//   the number of propagation steps required before ? is forced, subject to
+//   the puzzle being uniquely solvable. This produces the most "interesting"
+//   puzzle while still guaranteeing a unique answer.
+//
+// ─────────────────────────────────────────────────────────────────────────────
+
+const CBN_W = 360;
+const CBN_H = 270;
+ 
+// ── Color generation (unchanged) ──────────────────────────────────────────────
+function cbnGenerateColors(rng) {
+  const MIN_DIST = 120;
+  function wDist(a, b) {
+    const dr=a[0]-b[0], dg=a[1]-b[1], db=a[2]-b[2], rm=(a[0]+b[0])/2;
+    return Math.sqrt((2+rm/256)*dr*dr + 4*dg*dg + (2+(255-rm)/256)*db*db);
+  }
+  for (;;) {
+    const raw = Array.from({length:4}, () => [rng.nextMax(256), rng.nextMax(256), rng.nextMax(256)]);
+    let ok = true;
+    outer: for (let i=0;i<4;i++)
+      for (let j=i+1;j<4;j++)
+        if (wDist(raw[i],raw[j]) < MIN_DIST) { ok=false; break outer; }
+    if (ok) return raw.map(([r,g,b]) => ((r<<16)|(g<<8)|b).toString(16).padStart(6,'0'));
+  }
+}
+ 
+// ── Seed generation — jittered grid, integer arithmetic ───────────────────────
+// RNG: GX*GY*2 nextMax calls + (GX*GY-1) shuffle calls.
+// Seeds kept well inside canvas (MARGIN px from each edge) so all cells are
+// large enough to label, and sentinels can anchor boundary circumcenters.
+function cbnGenerateSeeds(rng, count) {
+  const MARGIN = 20; // px from canvas edge — real seeds never closer than this
+  const W = CBN_W - 2*MARGIN;
+  const H = CBN_H - 2*MARGIN;
+  const GX = Math.ceil(Math.sqrt(count * W / H));
+  const GY = Math.ceil(count / GX);
+  const cellW = Math.floor(W / GX);
+  const cellH = Math.floor(H / GY);
+  const inner = 2;
+  const all = [];
+  for (let gy=0; gy<GY; gy++) {
+    for (let gx=0; gx<GX; gx++) {
+      const xMin = MARGIN + gx*cellW + inner,  xMax = MARGIN + (gx+1)*cellW - inner;
+      const yMin = MARGIN + gy*cellH + inner,  yMax = MARGIN + (gy+1)*cellH - inner;
+      const x = xMin + rng.nextMax(Math.max(1, xMax - xMin));
+      const y = yMin + rng.nextMax(Math.max(1, yMax - yMin));
+      all.push({x, y});
+    }
+  }
+  for (let i=all.length-1; i>0; i--) {
+    const j = rng.nextMax(i+1);
+    [all[i], all[j]] = [all[j], all[i]];
+  }
+  return all.slice(0, count);
+}
+ 
+// ── Sentinel seeds — mirror real seeds across each canvas edge ────────────────
+// These anchor circumcenters near the canvas so no cell geometry flies off.
+// Sentinels are appended after the real seeds; indices >= n are sentinel.
+function cbnAddSentinels(seeds) {
+  const extra = [];
+  for (const s of seeds) {
+    // Mirror across left edge (x=0): reflect x
+    extra.push({x: -s.x,           y: s.y});
+    // Mirror across right edge (x=CBN_W)
+    extra.push({x: 2*CBN_W - s.x,  y: s.y});
+    // Mirror across top edge (y=0)
+    extra.push({x: s.x,            y: -s.y});
+    // Mirror across bottom edge (y=CBN_H)
+    extra.push({x: s.x,            y: 2*CBN_H - s.y});
+  }
+  return [...seeds, ...extra];
+}
+ 
+// ── Bowyer-Watson Delaunay triangulation ──────────────────────────────────────
+// Operates on allPts (real + sentinel seeds).
+// Returns triangles as {a,b,c} index triples — indices into allPts.
+function cbnDelaunay(allPts) {
+  const n = allPts.length;
+  const mg = Math.max(CBN_W, CBN_H) * 4;
+  // Super-triangle encloses everything
+  const ST = [
+    {x: CBN_W/2,  y: -mg},
+    {x: -mg,      y:  mg*2},
+    {x: CBN_W+mg, y:  mg*2},
+  ];
+  const pts = [...allPts, ...ST];
+  const sn = pts.length;
+ 
+  function circumcircle(i, j, k) {
+    const ax=pts[i].x, ay=pts[i].y;
+    const bx=pts[j].x, by=pts[j].y;
+    const cx=pts[k].x, cy=pts[k].y;
+    const D = 2*(ax*(by-cy)+bx*(cy-ay)+cx*(ay-by));
+    if (Math.abs(D) < 1e-10) return null;
+    const ux = ((ax*ax+ay*ay)*(by-cy)+(bx*bx+by*by)*(cy-ay)+(cx*cx+cy*cy)*(ay-by))/D;
+    const uy = ((ax*ax+ay*ay)*(cx-bx)+(bx*bx+by*by)*(ax-cx)+(cx*cx+cy*cy)*(bx-ax))/D;
+    const r2 = (ax-ux)*(ax-ux)+(ay-uy)*(ay-uy);
+    return {cx:ux, cy:uy, r2};
+  }
+ 
+  let tris = [{a:n, b:n+1, c:n+2}];
+ 
+  for (let p=0; p<n; p++) {
+    const px=pts[p].x, py=pts[p].y;
+    const bad = tris.filter(t => {
+      const cc = circumcircle(t.a, t.b, t.c);
+      if (!cc) return false;
+      const dx=px-cc.cx, dy=py-cc.cy;
+      return dx*dx+dy*dy <= cc.r2 + 1e-7;
+    });
+    const em = new Map();
+    for (const t of bad)
+      for (const [u,v] of [[t.a,t.b],[t.b,t.c],[t.c,t.a]]) {
+        const k = u<v ? `${u},${v}` : `${v},${u}`;
+        em.set(k, (em.get(k)||0)+1);
+      }
+    tris = tris.filter(t => !bad.includes(t));
+    for (const [k, c] of em)
+      if (c===1) {
+        const [u,v] = k.split(',').map(Number);
+        tris.push({a:p, b:u, c:v});
+      }
+  }
+  // Remove any triangle touching the super-triangle vertices
+  return tris.filter(t => t.a<n && t.b<n && t.c<n);
+}
+ 
+// ── Sutherland-Hodgman polygon clip to canvas rectangle ───────────────────────
+function cbnClip(poly) {
+  function half(poly, p1x,p1y, p2x,p2y) {
+    if (!poly.length) return [];
+    const dx=p2x-p1x, dy=p2y-p1y;
+    const inside = p => dx*(p.y-p1y) - dy*(p.x-p1x) >= -1e-9;
+    const intersect = (a,b) => {
+      const adx=b.x-a.x, ady=b.y-a.y;
+      const den = dx*ady - dy*adx;
+      if (Math.abs(den)<1e-10) return a;
+      const t = ((p1x-a.x)*dy-(p1y-a.y)*dx)/den;
+      return {x:a.x+t*adx, y:a.y+t*ady};
+    };
+    const out = [];
+    for (let i=0; i<poly.length; i++) {
+      const cur=poly[i], prev=poly[(i+poly.length-1)%poly.length];
+      const ci=inside(cur), pi=inside(prev);
+      if (ci) { if (!pi) out.push(intersect(prev,cur)); out.push(cur); }
+      else if (pi) out.push(intersect(prev,cur));
+    }
+    return out;
+  }
+  let p = poly;
+  p = half(p, 0,0,       CBN_W,0);
+  p = half(p, CBN_W,0,   CBN_W,CBN_H);
+  p = half(p, CBN_W,CBN_H, 0,CBN_H);
+  p = half(p, 0,CBN_H,   0,0);
+  return p;
+}
+ 
+// ── Voronoi cells from Delaunay dual ─────────────────────────────────────────
+// For each real seed (index 0..n-1), collects the circumcenters of all
+// triangles that contain it, sorts them angularly, and clips to the canvas.
+// Returns { regions, adj } where regions[i] is an array of {x,y} vertices.
+function cbnVoronoi(seeds, n, tris) {
+  // allPts used during Delaunay = seeds (real+sentinel), so triangle vertex
+  // indices directly index into seeds array.
+ 
+  // Circumcenter of a triangle (indices into the full pts array used in Delaunay)
+  // We stored tris with indices into allPts (real+sentinel), so we pass allPts.
+  const allPts = seeds; // seeds here = real+sentinel combined
+ 
+  function cc(t) {
+    const ax=allPts[t.a].x, ay=allPts[t.a].y;
+    const bx=allPts[t.b].x, by=allPts[t.b].y;
+    const cx=allPts[t.c].x, cy=allPts[t.c].y;
+    const D=2*(ax*(by-cy)+bx*(cy-ay)+cx*(ay-by));
+    if (Math.abs(D)<1e-8) return {x:(ax+bx+cx)/3, y:(ay+by+cy)/3};
+    const ux=((ax*ax+ay*ay)*(by-cy)+(bx*bx+by*by)*(cy-ay)+(cx*cx+cy*cy)*(ay-by))/D;
+    const uy=((ax*ax+ay*ay)*(cx-bx)+(bx*bx+by*by)*(ax-cx)+(cx*cx+cy*cy)*(bx-ax))/D;
+    return {x:ux, y:uy};
+  }
+ 
+  // Map each real seed to the triangles it appears in
+  const seedTris = Array.from({length:n}, () => []);
+  tris.forEach((t,ti) => {
+    if (t.a < n) seedTris[t.a].push(ti);
+    if (t.b < n) seedTris[t.b].push(ti);
+    if (t.c < n) seedTris[t.c].push(ti);
+  });
+ 
+  // Adjacency: two real seeds adjacent iff they share a Delaunay edge
+  const adj = Array.from({length:n}, () => new Set());
+  for (const t of tris) {
+    // Only count edges between two real seeds
+    const verts = [t.a, t.b, t.c].filter(v => v < n);
+    for (let i=0; i<verts.length; i++)
+      for (let j=i+1; j<verts.length; j++) {
+        adj[verts[i]].add(verts[j]);
+        adj[verts[j]].add(verts[i]);
+      }
+  }
+ 
+  // Build each region
+  const regions = seeds.slice(0, n).map((seed, si) => {
+    const rawCC = seedTris[si].map(ti => cc(tris[ti]));
+    // Sort angularly around seed
+    rawCC.sort((a,b) => Math.atan2(a.y-seed.y,a.x-seed.x) - Math.atan2(b.y-seed.y,b.x-seed.x));
+    // Deduplicate
+    const dedup = rawCC.filter((v,i,arr) =>
+      i===0 || Math.hypot(v.x-arr[i-1].x, v.y-arr[i-1].y) > 0.3
+    );
+    // Clip to canvas — gentle trim because sentinels kept circumcenters near canvas
+    return cbnClip(dedup);
+  });
+ 
+  return {regions, adj};
+}
+ 
+// ── Polygon geometry helpers ──────────────────────────────────────────────────
+function cbnArea(verts) {
+  let a=0;
+  for (let i=0;i<verts.length;i++) {
+    const j=(i+1)%verts.length;
+    a += verts[i].x*verts[j].y - verts[j].x*verts[i].y;
+  }
+  return Math.abs(a)/2;
+}
+ 
+function cbnCentroid(verts) {
+  let cx=0, cy=0, area=0;
+  for (let i=0;i<verts.length;i++) {
+    const j=(i+1)%verts.length;
+    const cross = verts[i].x*verts[j].y - verts[j].x*verts[i].y;
+    cx += (verts[i].x+verts[j].x)*cross;
+    cy += (verts[i].y+verts[j].y)*cross;
+    area += cross;
+  }
+  area /= 2;
+  if (Math.abs(area) < 1e-6)
+    return {x: verts.reduce((s,v)=>s+v.x,0)/verts.length,
+            y: verts.reduce((s,v)=>s+v.y,0)/verts.length};
+  return {x:cx/(6*area), y:cy/(6*area)};
+}
+ 
+// Min distance from centroid to any polygon edge
+function cbnInradius(verts) {
+  if (verts.length<3) return 0;
+  const {x:px, y:py} = cbnCentroid(verts);
+  let minD = Infinity;
+  for (let i=0;i<verts.length;i++) {
+    const a=verts[i], b=verts[(i+1)%verts.length];
+    const abx=b.x-a.x, aby=b.y-a.y, len2=abx*abx+aby*aby;
+    if (len2===0) continue;
+    const t=Math.max(0,Math.min(1,((px-a.x)*abx+(py-a.y)*aby)/len2));
+    const dx=a.x+t*abx-px, dy=a.y+t*aby-py;
+    minD=Math.min(minD,Math.sqrt(dx*dx+dy*dy));
+  }
+  return minD===Infinity ? 0 : minD;
+}
+ 
+// A region is label-ready if the polygon has enough area AND the centroid
+// has enough clearance from all edges to fit the label text.
+const CBN_MIN_AREA     = 600;  // px²
+const CBN_MIN_INRADIUS = 10;   // px from centroid to nearest edge
+ 
+function cbnLabelReady(verts) {
+  return verts.length >= 3
+      && cbnArea(verts) >= CBN_MIN_AREA
+      && cbnInradius(verts) >= CBN_MIN_INRADIUS;
+}
+ 
+function cbnPolyPath(verts) {
+  if (verts.length < 2) return '';
+  return `M${verts[0].x.toFixed(2)},${verts[0].y.toFixed(2)}`
+       + verts.slice(1).map(v=>`L${v.x.toFixed(2)},${v.y.toFixed(2)}`).join('')
+       + 'Z';
+}
+ 
+// ── Greedy 4-coloring with backtracking ───────────────────────────────────────
+function cbnColor4(adj, n) {
+  const col = new Array(n).fill(-1);
+  function bt(i) {
+    if (i===n) return true;
+    for (let c=0;c<4;c++) {
+      if ([...adj[i]].every(nb=>col[nb]!==c)) {
+        col[i]=c; if (bt(i+1)) return true; col[i]=-1;
+      }
+    }
+    return false;
+  }
+  bt(0); return col;
+}
+ 
+// ── Constraint-propagation solver ─────────────────────────────────────────────
+function cbnPropagate(known, target, adj, coloring) {
+  const K=new Map(known);
+  let changed=true, steps=0;
+  while (changed) {
+    if (K.has(target)) return {steps, solved:true};
+    changed=false;
+    for (let r=0;r<coloring.length;r++) {
+      if (K.has(r)) continue;
+      const nbC=new Set([...adj[r]].filter(x=>K.has(x)).map(x=>K.get(x)));
+      if (nbC.size===3) {
+        let f=-1; for (let c=0;c<4;c++) if(!nbC.has(c)){f=c;break;}
+        K.set(r,f); changed=true;
+      }
+    }
+    if (changed) steps++;
+  }
+  return {steps, solved:K.has(target)};
+}
+ 
+// ── Ambassador selection ───────────────────────────────────────────────────────
+// Pass 1: find 4 ambassadors (one per color, all label-ready) that make the
+//         puzzle uniquely solvable via propagation, maximising steps.
+// Pass 2: if Pass 1 fails, add one label-ready hint region.
+function cbnChooseAmbassadors(target, adj, coloring, n, regions) {
+  const myColor=coloring[target];
+ 
+  // BFS distance from target (graph hops)
+  const bfsDist=new Array(n).fill(Infinity);
+  bfsDist[target]=0;
+  const q=[target];
+  while (q.length) {
+    const cur=q.shift();
+    for (const nb of adj[cur])
+      if (bfsDist[nb]===Infinity) { bfsDist[nb]=bfsDist[cur]+1; q.push(nb); }
+  }
+ 
+  // Candidates per color: label-ready, sorted farthest-first
+  const MAX_CANDS=4;
+  const byColor=[[],[],[],[]];
+  for (let r=0;r<n;r++) {
+    if (r===target) continue;
+    if (!cbnLabelReady(regions[r])) continue;
+    byColor[coloring[r]].push(r);
+  }
+  for (let c=0;c<4;c++) byColor[c].sort((a,b)=>bfsDist[b]-bfsDist[a]);
+ 
+  if (!byColor[myColor].length) return null;
+  const myAmb=byColor[myColor][0];
+ 
+  const oc=[0,1,2,3].filter(c=>c!==myColor);
+  const [c0,c1,c2]=oc;
+  const ca0=byColor[c0].slice(0,MAX_CANDS);
+  const ca1=byColor[c1].slice(0,MAX_CANDS);
+  const ca2=byColor[c2].slice(0,MAX_CANDS);
+  if (!ca0.length||!ca1.length||!ca2.length) return null;
+ 
+  // Pass 1: 64 combos
+  let bestSteps=-1, bestAmb=null, uSteps=-1, uAmb=null;
+  for (const a0 of ca0) for (const a1 of ca1) for (const a2 of ca2) {
+    const K=new Map([[myAmb,myColor],[a0,c0],[a1,c1],[a2,c2]]);
+    const {steps,solved}=cbnPropagate(K,target,adj,coloring);
+    if (solved&&steps>bestSteps){bestSteps=steps;bestAmb=[a0,a1,a2];}
+    if (!solved&&steps>uSteps){uSteps=steps;uAmb=[a0,a1,a2];}
+  }
+ 
+  if (bestAmb) {
+    const amb=new Array(4).fill(-1);
+    amb[myColor]=myAmb; amb[c0]=bestAmb[0]; amb[c1]=bestAmb[1]; amb[c2]=bestAmb[2];
+    return {ambassadors:amb, hint:-1, steps:bestSteps};
+  }
+ 
+  // Pass 2: hint
+  const base=uAmb||[ca0[0],ca1[0],ca2[0]];
+  const reserved=new Set([target,myAmb,...base]);
+  let hSteps=-1, hId=-1;
+  for (let h=0;h<n;h++) {
+    if (reserved.has(h)||!cbnLabelReady(regions[h])) continue;
+    const K=new Map([[myAmb,myColor],[base[0],c0],[base[1],c1],[base[2],c2],[h,coloring[h]]]);
+    const {steps,solved}=cbnPropagate(K,target,adj,coloring);
+    if (solved&&steps>hSteps){hSteps=steps;hId=h;}
+  }
+  if (hId===-1) return null;
+ 
+  const amb=new Array(4).fill(-1);
+  amb[myColor]=myAmb; amb[c0]=base[0]; amb[c1]=base[1]; amb[c2]=base[2];
+  return {ambassadors:amb, hint:hId, steps:hSteps};
+}
+ 
+// ── Main puzzle function ──────────────────────────────────────────────────────
+function quizzingtonColorByNumber(rng) {
+ 
+  // 1. Colors
+  const colors = cbnGenerateColors(rng);
+ 
+  // 2. Region count 20–40
+  const regionCount = rng.next(20, 41);
+ 
+  // 3. Real seeds (inside canvas with margin)
+  const seeds = cbnGenerateSeeds(rng, regionCount);
+ 
+  // 4. Add sentinel seeds (mirrors across each edge) — no RNG used
+  const allSeeds = cbnAddSentinels(seeds);
+ 
+  // 5. Delaunay over real + sentinel seeds, then extract Voronoi for real seeds
+  const tris = cbnDelaunay(allSeeds);
+  const {regions, adj} = cbnVoronoi(allSeeds, regionCount, tris);
+ 
+  // 6. 4-coloring
+  const coloring = cbnColor4(adj, regionCount);
+ 
+  // 7. Choose target + ambassadors
+  const order = Array.from({length:regionCount},(_,i)=>i);
+  for (let i=order.length-1;i>0;i--) {
+    const j=rng.nextMax(i+1);
+    [order[i],order[j]]=[order[j],order[i]];
+  }
+ 
+  let bestTarget=-1, bestAmb=null, bestHint=-1, bestSteps=-1;
+  for (const r of order) {
+    if (!cbnLabelReady(regions[r])) continue;
+    const res=cbnChooseAmbassadors(r,adj,coloring,regionCount,regions);
+    if (res&&res.steps>bestSteps) {
+      bestSteps=res.steps; bestTarget=r; bestAmb=res.ambassadors; bestHint=res.hint;
+      if (bestHint===-1&&bestSteps>=2) break;
+    }
+  }
+ 
+  // Fallback: direct-neighbor
+  if (bestTarget===-1) {
+    for (const r of order) {
+      if (!cbnLabelReady(regions[r])) continue;
+      const mc=coloring[r], nb4=new Array(4).fill(-1);
+      for (const nb of adj[r])
+        if (coloring[nb]!==mc&&nb4[coloring[nb]]===-1&&cbnLabelReady(regions[nb]))
+          nb4[coloring[nb]]=nb;
+      if ([0,1,2,3].filter(c=>c!==mc&&nb4[c]!==-1).length===3) {
+        bestTarget=r; bestAmb=nb4; bestHint=-1;
+        for (let r2=0;r2<regionCount;r2++)
+          if (r2!==r&&coloring[r2]===mc&&cbnLabelReady(regions[r2])){bestAmb[mc]=r2;break;}
+        break;
+      }
+    }
+  }
+  if (bestTarget===-1){bestTarget=order[0];bestAmb=new Array(4).fill(-1);bestHint=-1;}
+ 
+  // 8. Label map
+  const labelMap=new Map();
+  labelMap.set(bestTarget,'?');
+  for (let c=0;c<4;c++) if (bestAmb[c]!==-1) labelMap.set(bestAmb[c],String(c+1));
+  if (bestHint!==-1) labelMap.set(bestHint,String(coloring[bestHint]+1));
+ 
+  // 9. Answer
+  const answerHex=colors[coloring[bestTarget]];
+  state.cbnAnswer=answerHex;
+ 
+  // 10. Render
+  const STROKE_DIM='#484848', STROKE_AMB='#b0b0b0', STROKE_HINT='#7ec8e3';
+  const FILL='#222222', BG='#1a1a1a';
+  let svgPaths='', svgLabels='';
+ 
+  for (let i=0;i<regionCount;i++) {
+    const verts=regions[i];
+    if (!verts||verts.length<3) continue;
+    const isLabeled=labelMap.has(i);
+    const isHint=i===bestHint;
+    const stroke=!isLabeled?STROKE_DIM:isHint?STROKE_HINT:STROKE_AMB;
+    svgPaths+=`<path d="${cbnPolyPath(verts)}" fill="${FILL}"
+      stroke="${stroke}" stroke-width="${isLabeled?1.8:1.0}" stroke-linejoin="round"/>`;
+ 
+    if (isLabeled) {
+      const cent=cbnCentroid(verts);
+      const label=labelMap.get(i);
+      const isQ=label==='?';
+      const inrad=cbnInradius(verts);
+      const fsize=Math.min(isQ?15:13, Math.floor(inrad*1.4));
+      const fill=isQ?'#ff8c42':isHint?'#7ec8e3':'#e0e0e0';
+      svgLabels+=`<text x="${cent.x.toFixed(1)}" y="${(cent.y+fsize*0.36).toFixed(1)}"
+        text-anchor="middle" font-size="${fsize}" font-weight="bold"
+        font-family="monospace" fill="${fill}" style="pointer-events:none">${label}</text>`;
+    }
+  }
+ 
+  const LEGEND_Y=CBN_H+8, LEGEND_H=22;
+  let legend='';
+  for (let c=0;c<4;c++) {
+    const lx=12+c*84, hex='#'+colors[c];
+    const luma=0.299*parseInt(colors[c].slice(0,2),16)
+              +0.587*parseInt(colors[c].slice(2,4),16)
+              +0.114*parseInt(colors[c].slice(4,6),16);
+    legend+=`<rect x="${lx}" y="${LEGEND_Y}" width="78" height="${LEGEND_H}" rx="3"
+      fill="${hex}" stroke="#444" stroke-width="1"/>
+      <text x="${lx+39}" y="${LEGEND_Y+15}" text-anchor="middle" font-size="10"
+        font-weight="bold" font-family="monospace"
+        fill="${luma>140?'#111':'#eee'}">${c+1} — #${colors[c]}</text>`;
+  }
+ 
+  const totalH=CBN_H+LEGEND_H+14;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${CBN_W} ${totalH}"
+    style="display:block;margin:6px auto;border-radius:4px;border:1px solid #444;background:${BG};max-width:100%">
+    ${svgPaths}${svgLabels}${legend}
+  </svg>`;
+ 
+  document.getElementById('quizzington').innerHTML=
+    QUIZ_DISCLAIMER+
+    `<div class="qz-puzzle-box">
+      <div class="qz-puzzle-label">Color-By-Number</div>
+      <div class="qz-puzzle-data" style="padding:4px 0">
+        <div style="font-size:9px;color:#aaa;text-align:center;margin-bottom:2px">
+          No two adjacent regions share a color. Use logic to find the color of
+          <b style="color:#ff8c42">?</b>.${bestHint!==-1?' <span style="color:#7ec8e3">(highlighted region is an extra hint)</span>':''}
+        </div>
+        ${svg}
+      </div>
+    </div>`+
+    QUIZZINGTON_CONTACT+
+    `<div style="font-size:8px;color:#666;margin-top:4px">
+      Subject: "Color-By-Number" &nbsp;|&nbsp; Message: 6-digit hex (no #, e.g. a3f02b)
+    </div>`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // TORMAIL
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -6394,6 +3307,10 @@ function validateQuizzingtonAnswer(subject, message) {
       return null;
     case "static":
       if (!/^[a-zA-Z]+$/.test(message)) return "Static answer must be a single word containing only letters.";
+      return null;
+    case "color-by-number":
+      if (!/^[0-9a-f]{6}$/i.test(message.trim()))
+          return "Color-By-Number answer must be a 6-digit hex color without # (e.g. a3f02b).";
       return null;
     default:
       return null;
@@ -6474,7 +3391,6 @@ function prepLiberHelp() {
   ).join("");
 
   html.innerHTML = `${windowBar()}
-  <div class="lp-vignette"></div>
   <div class="lp-wrap">
     <div class="lp-header">
       <div class="lp-rune-banner">ᚠᚢᚦᚩᚱᚳᚷᚹᚻᚾ</div>
@@ -6508,7 +3424,6 @@ async function prepPrimus(n) {
   const dispSlug = Array.from({length:56}, () => RULESEED_CHARS[dispRng.nextMax(RULESEED_CHARS.length)]).join("");
   html.innerHTML = `${windowBar()}
   <div class="po-wrap">
-    <div class="po-vignette"></div>
     <div class="po-addr">&#128274; ${dispSlug}.onion</div>
     <div class="po-secure">&#128994; Authenticated hidden service</div>
     <div class="po-rune-header">
@@ -6591,25 +3506,22 @@ function subPrimeTranslation(name) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function loadPGP(ruleseed) {
-  const snap = html.innerHTML; pushHistory(document.getElementById("win-title")?.textContent || "Downloads", () => { html.innerHTML = snap; });
-  html.innerHTML = `${windowBar()}
-  <div class="cic-scanlines"></div>
-  <div class="cic-wrap">
-    <div class="cic-header">
-      <div class="cic-logo">&#9654; PGP ENCRYPTED FILE<span class="cic-blink">_</span></div>
-      <div class="cic-sub">USE DECRYPTPGP.COM TO DECRYPT</div>
-    </div>
-    <div class="cic-section">
-      <div class="cic-section-title">&#9632; Private Key</div>
-      <div class="cic-result-box" id="pgpKeyBox"><span class="cic-hint">generating...</span></div>
-    </div>
-    <div class="cic-section">
-      <div class="cic-section-title">&#9632; Encrypted Message</div>
-      <div class="cic-result-box" id="pgpHTML"><span class="cic-hint">encrypting...</span></div>
-    </div>
-  </div>`;
-  setWinTitle("PGP Encrypted File");
-  initialHTML = html.innerHTML;
+  // A downloaded .pgp file — like every other downloaded file type, this
+  // just fills the #webApp shell that loadFileExplorer() already built
+  // (light "GPG Keychain"-style viewer, proper filename/app title, and a
+  // close button that returns to Downloads instead of the desktop).
+  const app = getLeadTarget();
+  app.innerHTML = `
+    <div class="pgpv-body">
+      <div class="pgpv-row">
+        <div class="pgpv-label">Private Key</div>
+        <div class="pgpv-box" id="pgpKeyBox"><span class="pgpv-hint">generating...</span></div>
+      </div>
+      <div class="pgpv-row">
+        <div class="pgpv-label">Encrypted Message</div>
+        <div class="pgpv-box" id="pgpHTML"><span class="pgpv-hint">encrypting...</span></div>
+      </div>
+    </div>`;
   await delay(300);
   generatePGPFile(ruleseed);
 }
@@ -6694,27 +3606,15 @@ WEBSITE_CHARS.split("").forEach((ch, i) => {
   };
 });
 
-async function midiSubstitution(ruleseed) {
-  const app = getLeadTarget();
-  app.innerHTML += `<div id="midi-container"></div>`;
-  await delay(300);
-  const link     = LINK_GENERATORS.liber(ruleseed);
-  const fullText = `${PANGRAM} ${PI_DIGITS} ${link}`;
-  const midiData = generateMIDI(fullText);
-  const url      = URL.createObjectURL(new Blob([midiData], { type:"audio/midi" }));
-  const container = document.getElementById("midi-container");
-  if (!container) return;
-  container.innerHTML = `<div class="lead-midi-wrap">
-    <div class="lead-block" style="display:flex;align-items:center;gap:6px">
-      <span style="font-size:16px">&#127925;</span>
-      <a class="lead-midi-link" href="${url}" download="midiFile.mid">midiFile.mid</a>
-    </div>
-  </div>`;
-}
-
-function generateMIDI(text) {
-  const midi   = new Midi();
-  const track  = midi.addTrack();
+// Builds the note sequence for a piece of text directly from NOTE_MAP —
+// the same {pitch,time,duration,velocity} shape midiStartPlayback() plays
+// and onMidiFileSelected() used to reconstruct from a parsed .mid file.
+// Encoding text straight to notes (instead of round-tripping through a
+// real Standard MIDI File via the external Midi library) means both the
+// media-player view below and the MIDI.Helper decoder can share one pure,
+// dependency-free function of (ruleseed) — no CDN, no file parsing.
+function buildMidiNotes(text) {
+  const notes = [];
   const endTimes = {};
   let time = 0;
   for (const ch of text) {
@@ -6723,11 +3623,49 @@ function generateMIDI(text) {
     const { note, length, velocity } = mapped;
     const dur = length / BASE_LENGTH;
     if (endTimes[note] && time < endTimes[note]) time = endTimes[note];
-    track.addNote({ midi:note, time, duration:dur, velocity:velocity/127 });
+    notes.push({ pitch: note, time, duration: dur, velocity });
     endTimes[note] = time + dur + 0.5;
     time += dur - 0.1;
   }
-  return midi.toArray();
+  return notes;
+}
+
+function midiFullTextFor(ruleseed) {
+  const link = LINK_GENERATORS.liber(ruleseed);
+  return `${PANGRAM} ${PI_DIGITS} ${link}`;
+}
+
+// The "opened from Downloads" view of a .mid file — a small media-player
+// card (matching how a real OS previews an audio file) rather than a bare
+// download-link chip. Play/Pause reuses the exact same Web Audio
+// synthesizer MIDI.Helper's uploaded-file playback uses.
+async function midiSubstitution(ruleseed) {
+  const app = getLeadTarget();
+  app.innerHTML += `<div id="midi-container"></div>`;
+  await delay(300);
+  const notes = buildMidiNotes(midiFullTextFor(ruleseed));
+  const container = document.getElementById("midi-container");
+  if (!container) return;
+
+  const TEMPO    = 0.5;
+  const totalSec = notes.length ? Math.max(...notes.map(n => n.time + n.duration)) * TEMPO : 0;
+  const mm = Math.floor(totalSec / 60);
+  const ss = Math.floor(totalSec % 60).toString().padStart(2, "0");
+
+  container.innerHTML = `<div class="mp-player">
+    <div class="mp-row">
+      <button class="mp-play-btn" id="midiPlayBtn" onclick="midiStartPlayback()">&#9654; PLAY</button>
+      <div class="mp-info">
+        <div class="mp-title">Audio Track</div>
+        <div class="mp-meta">MIDI &middot; ${notes.length} notes &middot; ${mm}:${ss}</div>
+      </div>
+      <span class="mp-icon">&#127925;</span>
+    </div>
+    <div class="mp-progress-track"><div class="mp-progress-fill" id="midiProgressFill"></div></div>
+  </div>`;
+
+  midiPlaybackNotes = notes;
+  midiStopPlayback();
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -6747,6 +3685,11 @@ function midiStopPlayback() {
   midiIsPlaying = false;
   const btn = document.getElementById("midiPlayBtn");
   if (btn) btn.textContent = "▶ PLAY";
+  // Reset the media-player scrubber, if one is present (only midiSubstitution's
+  // media-player view has #midiProgressFill — MIDI.Helper's inline player
+  // controls don't, and this is a harmless no-op there).
+  const fill = document.getElementById("midiProgressFill");
+  if (fill) { fill.style.transition = "none"; fill.style.width = "0%"; }
 }
 
 function midiStartPlayback() {
@@ -6760,6 +3703,18 @@ function midiStartPlayback() {
   const ctx = midiAudioCtx;
   const now = ctx.currentTime + 0.05;
   const TEMPO = 0.5;
+
+  const fill = document.getElementById("midiProgressFill");
+  if (fill && midiPlaybackNotes.length) {
+    const lastTime = Math.max(...midiPlaybackNotes.map(n => n.time + n.duration));
+    fill.style.transition = "none";
+    fill.style.width = "0%";
+    requestAnimationFrame(() => {
+      fill.style.transition = `width ${Math.max(lastTime * TEMPO, 0.05)}s linear`;
+      fill.style.width = "100%";
+    });
+  }
+
   midiPlaybackNotes.forEach(n => {
     const start = now + n.time * TEMPO;
     const dur   = Math.max(n.duration * TEMPO, 0.05);
@@ -6788,79 +3743,94 @@ function midiStartPlayback() {
 function prepMidiHelper() {
   const snap = html.innerHTML; pushHistory(document.getElementById("win-title")?.textContent || "Google", () => { html.innerHTML = snap; midiStopPlayback(); });
   html.innerHTML = `${windowBar()}
-  <div class="cic-scanlines"></div>
-  <div class="cic-wrap">
+  <div class="cic-wrap cic-theme-midi">
     <div class="cic-header">
-      <div class="cic-logo">&#9654; MIDI.HELPER<span class="cic-blink">_</span></div>
-      <div class="cic-sub">MIDI SUBSTITUTION CIPHER DECODER // LIBER PRIMUS LINK EXTRACTOR</div>
+      <div class="cic-logo">MIDI.Helper</div>
+      <div class="cic-sub">MIDI substitution cipher decoder &mdash; Liber Primus link extractor</div>
     </div>
     <div class="cic-section">
-      <div class="cic-section-title">&#9632; Upload MIDI File</div>
-      <input class="cic-file-input" type="file" id="midiUpload" accept=".mid,.midi">
+      <div class="cic-section-title">Load MIDI File</div>
+      <button class="cic-btn" id="midiPickBtn" onclick="openFilePicker('midiSubstitution', loadMidiFromDownload)">&#128193; Choose File from Downloads</button>
+      <span class="cic-hint" id="midiFileLabel" style="margin-left:6px">no file selected</span>
       <div id="midiPlayerWrap" style="display:none;margin-top:6px">
-        <button class="cic-btn" id="midiPlayBtn" onclick="midiStartPlayback()">&#9654; PLAY</button>
+        <button class="cic-btn" id="midiPlayBtn" onclick="midiStartPlayback()">&#9654; Play</button>
         <span class="cic-hint" style="margin-left:6px" id="midiPlayInfo"></span>
       </div>
     </div>
     <div class="cic-section">
-      <div class="cic-section-title">&#9632; Output</div>
-      <div class="cic-result-box" id="midiResult"><span class="cic-hint">upload a .mid file to begin decoding</span></div>
+      <div class="cic-section-title">Output</div>
+      <div class="cic-result-box" id="midiResult"><span class="cic-hint">choose a .mid file from Downloads to begin decoding</span></div>
     </div>
   </div>`;
   setWinTitle("MIDI Helper");
   initialHTML = html.innerHTML;
   midiStopPlayback();
   midiPlaybackNotes = [];
-  document.getElementById("midiUpload").addEventListener("change", onMidiFileSelected);
 }
 
 function prepOutguessHelper() {
   const snap = html.innerHTML; pushHistory(document.getElementById("win-title")?.textContent || "Google", () => { html.innerHTML = snap; });
   html.innerHTML = `${windowBar()}
-  <div class="cic-scanlines"></div>
-  <div class="cic-wrap">
+  <div class="cic-wrap cic-theme-stego">
     <div class="cic-header">
-      <div class="cic-logo">&#9654; OUTGUESS.HELPER<span class="cic-blink">_</span></div>
-      <div class="cic-sub">OUTGUESS STEGANOGRAPHY EXTRACTOR // PNG HIDDEN MESSAGE TOOL</div>
+      <div class="cic-logo">Outguess.Helper</div>
+      <div class="cic-sub">Outguess steganography extractor &mdash; PNG hidden message tool</div>
     </div>
     <div class="cic-section">
-      <div class="cic-section-title">&#9632; How It Works</div>
+      <div class="cic-section-title">How It Works</div>
       <div class="cic-rule-block">Outguess embeds hidden text inside PNG images using LSB steganography.<br>
-      Upload the image and enter the passphrase to extract the hidden link.</div>
+      Choose the image and enter the passphrase to extract the hidden link.</div>
     </div>
     <div class="cic-section">
-      <div class="cic-section-title">&#9632; Passphrase</div>
+      <div class="cic-section-title">Passphrase</div>
       <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px">
-        <span class="cic-ref-chip" style="color:#4aff4a;border-color:#2a5a2a;font-size:10px;padding:3px 10px;letter-spacing:2px">CICADA3301</span>
+        <span class="cic-ref-chip" style="color:var(--cic-accent);border-color:var(--cic-panel-accent);font-size:10px;padding:3px 10px;letter-spacing:2px">CICADA3301</span>
       </div>
     </div>
     <div class="cic-section">
-      <div class="cic-section-title">&#9632; Upload Image</div>
-      <input class="cic-file-input" type="file" id="outguessUpload" accept=".png">
+      <div class="cic-section-title">Load Image</div>
+      <button class="cic-btn" id="outguessPickBtn" onclick="openFilePicker('catOutguess', loadOutguessFromDownload)">&#128193; Choose File from Downloads</button>
+      <span class="cic-hint" id="outguessFileLabel" style="margin-left:6px">no file selected</span>
     </div>
     <div class="cic-section">
-      <div class="cic-section-title">&#9632; Extracted Output</div>
-      <div class="cic-result-box" id="outguessResult"><span class="cic-hint">upload a .png file to begin extraction</span></div>
+      <div class="cic-section-title">Extracted Output</div>
+      <div class="cic-result-box" id="outguessResult"><span class="cic-hint">choose a .png file from Downloads to begin extraction</span></div>
     </div>
   </div>`;
   setWinTitle("Outguess Helper");
   initialHTML = html.innerHTML;
-  document.getElementById("outguessUpload").addEventListener("change", onOutguessFileSelected);
 }
 
-async function onOutguessFileSelected(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const resultEl = document.getElementById("outguessResult");
-  resultEl.innerHTML = `<span class="cic-hint">Analysing image...</span>`;
+// Both helper sites used to reach out to the player's real computer via a
+// native <input type="file"> — but the only files that could ever mean
+// anything to them are ones this fictional OS itself handed out through
+// Downloads, so both now pull up openFilePicker() (ui.js) instead, filtered
+// to the matching download type, and regenerate that file's content
+// in-memory from its stored seed exactly the way loadFile() does when you
+// double-click it in the Downloads folder.
 
+async function loadOutguessFromDownload(i) {
+  const name = state.downloadNames[i] || "unnamed.png";
+  const label = document.getElementById("outguessFileLabel");
+  if (label) label.textContent = name;
+  const resultEl = document.getElementById("outguessResult");
+  if (resultEl) resultEl.innerHTML = `<span class="cic-hint">Analysing image...</span>`;
+  const rng = new MonoRandom(state.downloadRules[i]);
+  const url = await renderCatOutguessImage(rng);
+  await analyzeOutguessImage(url, resultEl);
+}
+
+async function analyzeOutguessImage(imgSrcUrl, resultEl) {
+  if (!resultEl) return;
   try {
-    const bitmap = await createImageBitmap(file);
+    const img = new Image();
+    img.src = imgSrcUrl;
+    await new Promise((resolve, reject) => { img.onload = resolve; img.onerror = reject; });
     const canvas = document.createElement('canvas');
-    canvas.width  = bitmap.width;
-    canvas.height = bitmap.height;
+    canvas.width  = img.naturalWidth;
+    canvas.height = img.naturalHeight;
     const ctx = canvas.getContext('2d');
-    ctx.drawImage(bitmap, 0, 0);
+    ctx.drawImage(img, 0, 0);
     const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
     const extracted = lsbExtract(imgData);
@@ -6872,44 +3842,35 @@ async function onOutguessFileSelected(e) {
     resultEl.innerHTML = `
       <p class="cic-status-ok" style="margin-bottom:6px">&#x2713; Outguess extraction successful &mdash; passphrase accepted</p>
       <div class="cic-section-title" style="margin-bottom:4px">Hidden Message</div>
-      <div style="font-family:'Courier New',monospace;font-size:12px;word-break:break-all;color:#4aff4a;padding:4px 0">${extracted.replace(/\n/g,'<br>')}</div>`;
+      <div style="font-family:'Courier New',monospace;font-size:12px;word-break:break-all;color:var(--cic-accent);padding:4px 0">${extracted.replace(/\n/g,'<br>')}</div>`;
   } catch(err) {
     resultEl.innerHTML = `<p class="cic-status-err">&#x26A0; Failed to read image: ${err.message}</p>`;
   }
 }
 
-async function onMidiFileSelected(e) {
-  const file = e.target.files[0];
-  if (!file) return;
+function loadMidiFromDownload(i) {
+  const name = state.downloadNames[i] || "unnamed.mid";
+  const label = document.getElementById("midiFileLabel");
+  if (label) label.textContent = name;
   const resultEl = document.getElementById("midiResult");
-  resultEl.innerHTML = "<p>Parsing...</p>";
+  if (resultEl) resultEl.innerHTML = "<p>Parsing...</p>";
 
+  const rng   = new MonoRandom(state.downloadRules[i]);
+  const notes = buildMidiNotes(midiFullTextFor(rng));
+  midiPlaybackNotes = notes;
+  midiStopPlayback();
+
+  const wrap = document.getElementById("midiPlayerWrap");
+  const info = document.getElementById("midiPlayInfo");
+  if (wrap) wrap.style.display = "";
+  if (info) info.textContent = `${notes.length} notes loaded`;
+
+  analyzeMidiNotes(notes, resultEl);
+}
+
+function analyzeMidiNotes(notes, resultEl) {
+  if (!resultEl) return;
   try {
-    const arrayBuffer = await file.arrayBuffer();
-    const midi = new Midi(arrayBuffer);
-    const notes = [];
-    for (const track of midi.tracks) {
-      for (const note of track.notes) {
-        notes.push({
-          pitch: note.midi,
-          time: note.time,
-          duration: note.duration,
-          velocity: Math.round(note.velocity * 127)
-        });
-      }
-    }
-    notes.sort((a, b) => a.time - b.time);
-    midiPlaybackNotes = notes;
-    const wrap = document.getElementById("midiPlayerWrap");
-    const info = document.getElementById("midiPlayInfo");
-    if (wrap) wrap.style.display = "";
-    if (info) info.textContent = `${notes.length} notes loaded`;
-
-    const WEBSITE_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789";
-    const PANGRAM = "In the quiet village of Zenith, the quick brown fox jumps over a lazy dog near the edge of the woods. Meanwhile, a wizard with a quirky sense of humor conjures a dazzling array of multicolored lights, amusing the bystanders. Across the meadow, a zebra and an exotic bird exchange curious glances, each marveling at the other's striking appearance.";
-    const PI_DIGITS = "314159265358979323846264338327950288419716939937510582097494";
-    const BASE_LENGTH = 480;
-
     const knownFull = (PANGRAM + " " + PI_DIGITS).toLowerCase();
     const knownChars = [];
     for (const ch of knownFull) {
@@ -6972,7 +3933,7 @@ async function onMidiFileSelected(e) {
     }
 
     let output = `<div class="cic-section-title">Decoded Link</div>
-      <div style="font-family:'Courier New',monospace;font-size:12px;word-break:break-all;color:#4aff4a;padding:4px 0">${link}</div>`;
+      <div style="font-family:'Courier New',monospace;font-size:12px;word-break:break-all;color:var(--cic-accent);padding:4px 0">${link}</div>`;
     if (ambiguousPositions.length > 0) {
       output += `<p class="cic-status-warn">⚠ Ambiguity at positions: ${ambiguousPositions.join(', ')} — characters may be incorrect</p>`;
     }
@@ -7015,18 +3976,28 @@ function toolTips() {
     return `<tr>${slice.map(c=>`<td title="Index: ${ASCII_DISPLAY.indexOf(c)}">${c}</td>`).join("")}</tr><tr>${slice.map(c=>`<td style="font-family:ASCIIPigpen-Regular;font-size:14px" title="Index: ${ASCII_DISPLAY.indexOf(c)}">${c}</td>`).join("")}</tr>`;
   }).join("");
   const tapRows = TAP_CODES.map((row, r) =>
-    `<tr><th>${r+1}</th>${row.map((ch,c) => `<td><b style="color:#4aff4a">${r+1},${c+1}</b><br>${ch}</td>`).join("")}</tr>`
+    `<tr><th>${r+1}</th>${row.map((ch,c) => `<td><b style="color:var(--cic-accent)">${r+1},${c+1}</b><br>${ch}</td>`).join("")}</tr>`
   ).join("");
 
   html.innerHTML = `${windowBar()}
-  <div class="cic-scanlines"></div>
-  <div class="cic-wrap">
+  <div class="cic-wrap cic-theme-wiki">
+    <div class="cic-topband"><b>CICADA3301SOLVED</b> &nbsp;wiki</div>
     <div class="cic-header">
-      <div class="cic-logo">&#9654; CICADA3301SOLVED.COM<span class="cic-blink">_</span></div>
-      <div class="cic-sub">COMMUNITY WIKI &amp; TOOL DIRECTORY // MAINTAINED BY SOLVERS</div>
+      <div class="cic-logo">Uncovering Cicada3301Solved.com</div>
+      <div class="cic-sub">Community wiki &amp; tool directory — maintained by solvers</div>
     </div>
-    <div class="cic-section">
-      <div class="cic-section-title">&#9632; Tool Websites</div>
+    <div class="cic-toc">
+      <a href="#sec-tools">Tool Websites</a>
+      <a href="#sec-caesar">ASCII Caesar Cipher</a>
+      <a href="#sec-playfair">ASCII Playfair Cipher</a>
+      <a href="#sec-wordle">Wordle Rules</a>
+      <a href="#sec-tapcode">Tap Code</a>
+      <a href="#sec-pgp">PGP Passphrases</a>
+      <a href="#sec-morse">Morse Code</a>
+    </div>
+    <div class="cic-body">
+    <div class="cic-section" id="sec-tools">
+      <div class="cic-section-title">Tool Websites</div>
       <ul class="cic-site-list">
         <li>www.cicada3301solved.com</li>
         <li>www.asciicaesarcipher.com</li>
@@ -7038,15 +4009,15 @@ function toolTips() {
       </ul>
       <div class="cic-ref-links" style="margin-top:6px">
         ${links.map(([href,label])=>`<a class="cic-ref-chip" target="_blank" rel="noopener noreferrer" href="${href}">${label}</a>`).join("")}
-        <span class="cic-ref-chip" style="color:#5a8a5a">Photoshop / paint.net</span>
+        <span class="cic-ref-chip" style="color:var(--cic-text-faint)">Photoshop / paint.net</span>
       </div>
     </div>
-    <div class="cic-section">
-      <div class="cic-section-title">&#9632; ASCII Caesar Cipher</div>
+    <div class="cic-section" id="sec-caesar">
+      <div class="cic-section-title">ASCII Caesar Cipher</div>
       <div class="cic-rule-block">Shift each character through the <b>printable ASCII range</b> (! to ~, 94 chars total).<br>Alphabet wraps — shift 94 = shift 0.</div>
     </div>
-    <div class="cic-section">
-      <div class="cic-section-title">&#9632; ASCII Playfair Cipher</div>
+    <div class="cic-section" id="sec-playfair">
+      <div class="cic-section-title">ASCII Playfair Cipher</div>
       <div class="cic-rule-block"><b>10×9 Polybius square</b> of printable ASCII (! to ~).<br>
         Same row → shift right 1 &nbsp;|&nbsp; Same col → shift down 1 &nbsp;|&nbsp; Rectangle → swap columns.<br>
         Odd-length input: last character passes through unchanged.</div>
@@ -7055,8 +4026,8 @@ function toolTips() {
       <div class="cic-section-title" style="margin-top:6px">Pigpen Table (Hover for Character Index)</div>
       <div style="overflow-x:auto"><table class="cic-table"><tbody>${pigTable}</tbody></table></div>
     </div>
-    <div class="cic-section">
-      <div class="cic-section-title">&#9632; Wordle Rules</div>
+    <div class="cic-section" id="sec-wordle">
+      <div class="cic-section-title">Wordle Rules</div>
       <div class="cic-rule-block">
         Guess the hidden link one character at a time.<br>
         <b>&#10004;</b> = correct character &amp; position<br>
@@ -7065,37 +4036,28 @@ function toolTips() {
         <b>Charset order:</b> a–z → 0–9 → . → /
       </div>
     </div>
-    <div class="cic-section">
-      <div class="cic-section-title">&#9632; Tap Code</div>
+    <div class="cic-section" id="sec-tapcode">
+      <div class="cic-section-title">Tap Code</div>
       <div class="cic-rule-block">Count taps in each group. <b>First group = row, second = column.</b></div>
       <table class="cic-table cic-tap-table"><thead><tr><th>#</th>${TAP_CODES[0].map((_,c)=>`<th>col ${c+1}</th>`).join("")}</tr></thead><tbody>${tapRows}</tbody></table>
     </div>
-    <div class="cic-section">
-      <div class="cic-section-title">&#9632; PGP Passphrases</div>
+    <div class="cic-section" id="sec-pgp">
+      <div class="cic-section-title">PGP Passphrases</div>
       <div class="cic-rule-block">The passphrase is one of four fixed words.</div>
       <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px">
-        <span class="cic-ref-chip" style="color:#4aff4a;border-color:#2a5a2a;font-size:10px;padding:3px 10px;letter-spacing:1px">INSTAR</span>
-        <span class="cic-ref-chip" style="color:#4aff4a;border-color:#2a5a2a;font-size:10px;padding:3px 10px;letter-spacing:1px">DIVINITY</span>
-        <span class="cic-ref-chip" style="color:#4aff4a;border-color:#2a5a2a;font-size:10px;padding:3px 10px;letter-spacing:1px">CICADA</span>
-        <span class="cic-ref-chip" style="color:#4aff4a;border-color:#2a5a2a;font-size:10px;padding:3px 10px;letter-spacing:1px">CAESAR</span>
+        <span class="cic-ref-chip" style="color:var(--cic-accent);border-color:var(--cic-panel-accent);font-size:10px;padding:3px 10px;letter-spacing:1px">INSTAR</span>
+        <span class="cic-ref-chip" style="color:var(--cic-accent);border-color:var(--cic-panel-accent);font-size:10px;padding:3px 10px;letter-spacing:1px">DIVINITY</span>
+        <span class="cic-ref-chip" style="color:var(--cic-accent);border-color:var(--cic-panel-accent);font-size:10px;padding:3px 10px;letter-spacing:1px">CICADA</span>
+        <span class="cic-ref-chip" style="color:var(--cic-accent);border-color:var(--cic-panel-accent);font-size:10px;padding:3px 10px;letter-spacing:1px">CAESAR</span>
       </div>
     </div>
-    <div class="cic-section">
-      <div class="cic-section-title">&#9632; Morse Code</div>
+    <div class="cic-section" id="sec-morse">
+      <div class="cic-section-title">Morse Code</div>
       <img class="cic-morse-img" src="img/morse_code.svg">
+    </div>
     </div>
   </div>`;
 
-  if (!document.getElementById("morse-svg-style")) {
-    const s = document.createElement("style");
-    s.id = "morse-svg-style";
-    s.textContent = `
-      .cic-morse-img {
-        filter: invert(1);
-      }
-    `;
-    document.head.appendChild(s);
-  }
   setWinTitle("Cicada3301Solved");
 }
 
@@ -7141,12 +4103,14 @@ function byteToBits(b) {
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
-async function catOutguess(ruleseed) {
-  const app  = getLeadTarget();
+// Draws the cat image onto a canvas, embeds the next-step URL via LSB
+// steganography, and returns a PNG data URL. Pure function of the ruleseed
+// (consumes it exactly once, via nextStep) — shared by the inline "here's
+// a cat picture" lead (catOutguess, below) and by the Downloads-folder
+// viewer that re-renders the same file from its stored seed.
+async function renderCatOutguessImage(ruleseed) {
   const next = nextStep(ruleseed);
 
-  // Draw the cat image onto a canvas, embed the URL via LSB steganography,
-  // then export as PNG (lossless so LSBs survive) and offer as a download.
   const img = new Image();
   img.src = 'img/cat.png';
   await new Promise((resolve) => { img.onload = resolve; img.onerror = resolve; });
@@ -7163,9 +4127,13 @@ async function catOutguess(ruleseed) {
   try { lsbEmbed(imgData, next); } catch(e) { /* image too small — skip embed silently */ }
   ctx.putImageData(imgData, 0, 0);
 
-  // Export as PNG blob (lossless — LSBs survive) but name it .png for accuracy
-  const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
-  const url  = URL.createObjectURL(blob);
+  return canvas.toDataURL('image/png');
+}
+
+async function catOutguess(ruleseed) {
+  const app  = getLeadTarget();
+  const seed = ruleseed.seed;
+  const url  = await renderCatOutguessImage(ruleseed);
 
   const container = document.createElement('div');
   container.className = 'lead-block';
@@ -7174,15 +4142,33 @@ async function catOutguess(ruleseed) {
     <img src="${url}"
          oncontextmenu="return false"
          style="max-width:200px;max-height:200px;border:2px solid #444;display:block;margin:0 auto 8px;-webkit-user-drag:none;user-drag:none;">
-    <a class="lead-midi-link"
-       href="${url}"
-       download="cat.png"
-       style="display:inline-block;padding:4px 10px;background:#2a2a3a;border:1px solid #555;border-radius:3px;font-size:10px;color:#7fb3ff;text-decoration:none;">
+    <button type="button" class="lead-midi-link" id="catDownloadBtn"
+       style="display:inline-block;padding:4px 10px;background:#2a2a3a;border:1px solid #555;border-radius:3px;font-size:10px;color:#7fb3ff;cursor:pointer">
       &#11015; Download Image
-    </a>`;
+    </button>`;
 
   app.innerHTML += '<div class="lead-wrap"></div>';
   app.lastElementChild.appendChild(container);
+
+  // Like every other lead, this doesn't trigger an instant native browser
+  // save — it stages the file into Downloads exactly like a real Dropbox
+  // download would (state bookkeeping + sound + notification), so it opens
+  // later from the Downloads folder (or the outguess.helper file picker)
+  // instead of dropping straight onto the user's real disk.
+  const btn = container.querySelector('#catDownloadBtn');
+  if (btn) btn.addEventListener('click', () => {
+    if (btn.disabled) return;
+    btn.disabled = true;
+    const name = generateDownloadName('catOutguess');
+    state.downloads.push('catOutguess');
+    state.downloadRules.push(seed);
+    state.downloadNames.push(name);
+    try { new Audio('audio/callend.mp3').play(); } catch(e) {}
+    showNotification(name, fileTypeIcon('catOutguess'));
+    btn.textContent = '✓ Downloaded';
+    btn.style.opacity = '0.6';
+    btn.style.cursor = 'default';
+  });
 }
 
 const RPG_WEAPONS = [
@@ -7372,7 +4358,10 @@ function rpgBattleLog(ruleseed) {
   const html = renderBattleLog(theme, player, ally, enemies, weapon, armor, accessory,
                                 battleLog, victory, flavor, readPattern);
   
-  app.innerHTML += `<div class="lead-block">${html}</div>`;
+  // No .lead-block wrapper here on purpose — a battle log is a plain text
+  // file, so it shouldn't get the boxed/backgrounded puzzle-card treatment
+  // other lead types get. It just drops straight into the host page.
+  app.innerHTML += html;
   
   console.log(`[RPG Battle] Theme: ${theme}, Pattern: ${readPattern === 0 ? "Player" : readPattern === 1 ? "Ally" : "Enemy"}`);
   console.log(`[RPG Battle] Encoded target: ${target}`);

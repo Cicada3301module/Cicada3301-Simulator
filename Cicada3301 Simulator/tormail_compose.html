@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="icon" href="img/tormail.png">
+    <link rel="stylesheet" type="text/css" href="css/tormail.css">
+    <script src="js/mail.js"></script>
+    <meta charset="utf-8" />
+    <title>TorMail — Compose</title>
+  </head>
+  <body>
+
+    <div class="tm-warning">
+      <span class="tm-warning-inner">
+        &#9632; UNSECURED CONNECTION DETECTED &nbsp;&nbsp;&nbsp; INSTALL CICADAVPN FOR ENCRYPTED TRANSMISSION &nbsp;&nbsp;&nbsp; &#9632; UNSECURED CONNECTION DETECTED &nbsp;&nbsp;&nbsp; INSTALL CICADAVPN FOR ENCRYPTED TRANSMISSION &nbsp;&nbsp;&nbsp; &#9632; UNSECURED CONNECTION DETECTED &nbsp;&nbsp;&nbsp; INSTALL CICADAVPN FOR ENCRYPTED TRANSMISSION &nbsp;&nbsp;&nbsp;
+      </span>
+    </div>
+
+    <div class="tm-container">
+
+      <div class="tm-header">
+        <div class="tm-logo">&#9993; TORMAIL<span class="tm-blink">_</span></div>
+        <div class="tm-logo-sub">ANONYMOUS ENCRYPTED MESSAGING SYSTEM</div>
+        <div class="tm-status">
+          <span class="tm-status-dot"></span>
+          COMPOSING NEW TRANSMISSION
+        </div>
+      </div>
+
+      <div class="tm-field">
+        <div class="tm-label">Recipient</div>
+        <input class="tm-input" id="to" placeholder="recipient@tormail.onion" autocomplete="off" spellcheck="false">
+      </div>
+
+      <div class="tm-field">
+        <div class="tm-label">Subject</div>
+        <input class="tm-input" id="subject" placeholder="subject line..." autocomplete="off" spellcheck="false">
+      </div>
+
+      <div class="tm-field">
+        <div class="tm-label">Message Body</div>
+        <textarea class="tm-input" id="message" placeholder="enter your message..." spellcheck="false"></textarea>
+      </div>
+
+      <button class="tm-send-btn" onclick="sendEmail()"><span>&#9654; TRANSMIT</span></button>
+
+      <div class="tm-error" id="composeError"></div>
+
+    </div>
+
+  </body>
+</html>

@@ -1,93 +1,1583 @@
 @font-face {
-	font-family: 'ASCIIPigpen-Regular';
-	src: url("fonts/asciipigpen.ttf") format('truetype');
+    font-family: 'ASCIIPigpen-Regular';
+    src: url("fonts/asciipigpen.ttf") format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
 }
 
-body{
-	background-color: #2B2C2E;
+/* ── Reset & Base ─────────────────────────────────────────────────────────── */
+
+*, *::before, *::after {
+    box-sizing: border-box;
 }
 
-.sqlInject {
-  border: 1px solid black;
-  border-collapse: collapse;
+/* ── Page Background ──────────────────────────────────────────────────────── */
+/* Was a busy carbon-fiber diagonal-hatch pattern. Now just black, with a
+   faint cicada mark sitting behind the shell that pulses at irregular,
+   randomized intervals (via #cicada-bg-logo in the page's inline script) —
+   not a steady CSS loop, which would read as mechanical rather than as
+   something occasionally, quietly coming alive. */
+
+body {
+    margin: 0;
+    padding: 24px 16px 40px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Courier New', Courier, monospace;
+    background: #000;
+    position: relative;
+    /* The whole simulator (fonts, fields, icons, everything — not just the
+       outer shell) renders at 1.5x, the way a real display running at a
+       comfortable desktop scale would look, rather than at literal 1:1
+       pixel size. All viewport-relative sizing below is pre-divided by
+       this factor so the FINAL on-screen result — after the zoom below
+       multiplies it back up — lands where it's meant to, instead of
+       compounding into something oversized or, worse, taller than the
+       viewport. */
+    --page-zoom: 1.5;
+    zoom: var(--page-zoom);
+    /* Shared width budget for the header + shell below, so the whole
+       simulator scales with the browser window instead of sitting at a
+       fixed size in a sea of black on a large display. Floors out at
+       760px (small windows) and tops out at 1200px (very wide windows),
+       measured in final on-screen pixels (see --page-zoom above). */
+    --vm-max-width: clamp(calc(760px / var(--page-zoom)), calc(82vw / var(--page-zoom)), calc(1200px / var(--page-zoom)));
 }
+
+.cicada-bg-logo {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: url('img/favicon.png') no-repeat center center;
+    background-size: 220px;
+    opacity: 0.05;
+    transition: opacity 2.2s ease;
+}
+.cicada-bg-logo.pulse { opacity: 0.16; }
+
+/* ── Page Header ──────────────────────────────────────────────────────────── */
 
 .header {
-	font-family: "Futura Light";
-	text-align: center;
-	color: #D5D4D2;
-	font-size: 24px;
+    position: relative;
+    z-index: 1;
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+    color: #6a6a6a;
+    font-size: 10px;
+    letter-spacing: 2px;
+    margin: 0 0 14px 0;
+    padding: 0;
+    width: 100%;
+    max-width: var(--vm-max-width);
 }
 
+/* ── VM Shell ─────────────────────────────────────────────────────────────── */
+/* Redesigned to read as a plain remote-viewer/VM console window (the kind of
+   chrome VNC Viewer, VMware, or an RDP client actually has) rather than a
+   glowing cyberpunk terminal: flat panels, one quiet border, no pulsing
+   glow, no CRT scanlines or bloom, no flicker. */
+
+.vm-shell {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: var(--vm-max-width);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #222;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+
+/* ── VM Top Bar ───────────────────────────────────────────────────────────── */
+
+.vm-topbar {
+    background: #18181b;
+    border-bottom: 1px solid #262626;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    user-select: none;
+}
+
+.vm-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.vm-topbar-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+    opacity: 0.7;
+}
+
+.vm-dot-red    { background: #ff5f57; }
+.vm-dot-yellow { background: #febc2e; }
+.vm-dot-green  { background: #28c840; }
+
+.vm-topbar-title {
+    flex: 1;
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 8px;
+    color: #6a6a6a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.vm-topbar-right {
+    flex-shrink: 0;
+}
+
+.vm-topbar-badge {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 7px;
+    color: #6a6a6a;
+    border: 1px solid #333;
+    padding: 1px 5px;
+    border-radius: 2px;
+    white-space: nowrap;
+}
+
+/* ── VM Screen ────────────────────────────────────────────────────────────── */
+
+.vm-screen {
+    position: relative;
+    background: #000;
+    overflow: hidden;
+}
+
+/* ── Monitor (the actual app container) ──────────────────────────────────── */
 
 .monitor {
-	text-align: center;
-	border-radius: 25px;
-	padding: 80px;
-	margin: auto;
-	margin-top: 10px;
-	overflow-wrap: break-word;
-	background-color: #A3A2A1;
+    position: relative;
+    text-align: center;
+    padding: 10px;
+    margin: 0;
+    overflow-wrap: break-word;
+    background-color: #0c0c0e;
+    width: 100%;
+    /* Scales with viewport height too, so the shell fills a reasonable
+       share of the browser window instead of staying a fixed 480px on a
+       tall display. Floors at 480px so it never gets cramped. Pre-divided
+       by --page-zoom (see body) for the same reason as --vm-max-width —
+       otherwise the zoomed result could end up taller than the viewport. */
+    min-height: clamp(calc(480px / var(--page-zoom)), calc(62vh / var(--page-zoom)), calc(760px / var(--page-zoom)));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.redditPost {
-	text-align: center;
-	border-radius: 25px;
-	padding: 80px;
-    width: 800px;
-	margin: auto;
-	margin-top: 10px;
-	overflow-wrap: break-word;
-	background-color: #FFFFFF;
+/* Screens that manage their own full-height layout (the desktop, app
+   windows) shouldn't be vertically centered by the monitor — they need to
+   fill it top-to-bottom instead. */
+.monitor:has(.desktop-wrap),
+.monitor:has(.win-titlebar) {
+    justify-content: flex-start;
+}
+
+/* ── VM Status Bar ────────────────────────────────────────────────────────── */
+
+.vm-statusbar {
+    background: #0a0a0c;
+    border-top: 1px solid #222;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 7px;
+    color: #6a6a6a;
+    user-select: none;
+}
+
+.vm-statusbar-dot {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #3ac25a;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+/* ── Window Title Bar ─────────────────────────────────────────────────────── */
+
+.win-titlebar {
+    display: flex;
+    align-items: center;
+    height: 28px;
+    flex-shrink: 0;
+    user-select: none;
+    width: 100%;
+}
+
+.win-titlebar-title {
+    flex: 1;
+    text-align: center;
+    font-size: 9px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 6px;
+}
+
+/* Back button — shared across all OS styles */
+.win-back-btn {
+    background: transparent;
+    border: none;
+    color: rgba(200,220,255,0.55);
+    font-size: 13px;
+    width: 26px;
+    height: 100%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: color 0.1s, background 0.1s;
+    padding: 0;
+    border-radius: 3px;
+}
+.win-back-btn:hover:not(:disabled) { color: #fff; background: rgba(255,255,255,0.1); }
+.win-titlebar-mac .win-back-btn    { color: rgba(255,255,255,0.45); }
+.win-titlebar-linux .win-back-btn  { color: rgba(255,255,255,0.5); }
+.win-titlebar-linux .win-back-btn:hover:not(:disabled) { color: #fff; }
+
+/* ── Per-app window chrome, by OS ────────────────────────────────────────────
+   Every app screen in the mod routes through windowBar(), so this is the one
+   piece of "window" the player sees constantly. It was referencing these
+   classes without any of them being defined — every window's title bar has
+   been rendering unstyled this whole time. Each variant below is built to
+   read as that OS's actual window chrome, not a shared reskin. */
+
+.win-titlebar-win {
+  background: #2b2b2b;
+  color: #e8e8e8;
+  padding: 0 0 0 8px;
+}
+.win-titlebar-icon { font-size: 12px; margin-right: 6px; flex-shrink: 0; }
+.win-controls { display: flex; height: 100%; flex-shrink: 0; }
+.win-ctrl-btn {
+  background: transparent; border: none; color: #e8e8e8; font-size: 11px;
+  width: 34px; height: 100%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.win-ctrl-btn:hover { background: rgba(255,255,255,0.1); }
+.win-ctrl-close:hover { background: #e81123; color: #fff; }
+
+.win-titlebar-mac {
+  background: #323234;
+  color: #e5e5e5;
+  padding: 0 10px;
+  gap: 8px;
+}
+.win-traffic-lights { display: flex; gap: 7px; flex-shrink: 0; }
+.win-tl { width: 11px; height: 11px; border-radius: 50%; border: none; padding: 0; cursor: pointer; }
+.win-tl-close    { background: #ff5f57; }
+.win-tl-minimize { background: #febc2e; }
+.win-tl-maximize { background: #28c840; }
+.win-tl:hover { filter: brightness(0.85); }
+
+.win-titlebar-linux {
+  background: #363636;
+  color: #eee;
+  padding: 0 4px 0 8px;
+}
+.win-linux-controls { display: flex; height: 100%; flex-shrink: 0; }
+.win-linux-btn {
+  background: transparent; border: none; color: #ccc; font-size: 10px;
+  width: 28px; height: 100%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; border-radius: 3px;
+}
+.win-linux-close:hover { background: #e01b24; color: #fff; }
+
+.sqlInject {
+    border: 1px solid black;
+    border-collapse: collapse;
 }
 
 .incorrect {
-	color: red;
-
+    color: red;
 }
 
 #webApp {
-	padding-top: 10px;
-	padding-bottom: 10px;
-	padding-left: 10px;
-	padding-right: 10px;
+    padding: 10px;
+    /* Grow to fill whatever height .monitor has (which now scales with the
+       viewport) instead of sizing to its own content — otherwise every
+       windowed app's page background stops short and the monitor's own
+       dark background shows through as a flat band above the status bar. */
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
 }
+
+/* ── Downloaded File Viewers ──────────────────────────────────────────────── */
+/* loadFileExplorer() used to open every downloaded file into this same
+   #webApp with nothing but a flat black background — fine for an image,
+   but plain decoded text (which just inherits whatever color surrounds
+   it, same rule as the RPG log/receipts) had nothing to inherit and
+   rendered invisible. Now it opens into one of two generic viewer shells
+   matched to the file's kind, the way a real OS opens a .txt in one app
+   and a .png in another — see fileViewerKind() in utilities.js. */
+#webApp.file-viewer-text {
+    background: #fff;
+    color: #1e1e1e;
+    font-family: 'Consolas', 'Courier New', monospace;
+}
+#webApp.file-viewer-image {
+    background: #2b2b2b;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+/* A downloaded .pgp file is a FILE the OS is opening, not a website — so
+   unlike DecryptPGP.com (the .cic-theme-pgp helper site below) it gets a
+   native-app treatment, closer to a Keychain Access-style key/message
+   viewer, with no site branding or "visit decryptpgp.com" chrome — just
+   the two fields, like the rest of the downloaded-file viewers. */
+#webApp.file-viewer-pgp {
+    background: #f1f2f5;
+    color: #1e1e1e;
+    font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+    padding: 0;
+    display: block;
+    overflow-y: auto;
+}
+.pgpv-body { padding: 14px 18px; }
+.pgpv-row { margin-bottom: 14px; }
+.pgpv-row:last-child { margin-bottom: 0; }
+.pgpv-label { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #6b7280; margin-bottom: 5px; }
+.pgpv-box { background: #fff; border: 1px solid #d8d8dd; border-radius: 6px; padding: 8px 10px; font-family: 'Consolas', 'Courier New', monospace; font-size: 10px; color: #2b2b2b; max-height: 160px; overflow-y: auto; word-break: break-all; white-space: pre-wrap; line-height: 1.5; }
+.pgpv-box pre { margin: 0; white-space: pre-wrap; font-family: inherit; }
+.pgpv-hint { color: #9aa0a8; }
+
+/* ── Quizzington ──────────────────────────────────────────────────────────── */
+
+#quizzington {
+    text-align: center;
+    border-radius: 25px;
+    padding: 80px;
+    margin: auto;
+    margin-top: 10px;
+    width: 350px;
+    overflow-wrap: break-word;
+    background-color: #FFFFFF;
+}
+
+.quizzingtonback {
+    text-align: center;
+    border-radius: 25px;
+    padding: 80px;
+    margin: auto;
+    margin-top: 10px;
+    overflow-wrap: break-word;
+    background-image: url("../img/quizback.png");
+}
+
+/* ── Wordle Tiles ─────────────────────────────────────────────────────────── */
 
 .wordleTextWhite {
     background-image: url("../img/white_square.png");
-	font-size: 24px;
-	width: 32px;
-	height: 32px;
-	position: relative;
-	top: 50%;
-	left: 50%;
+    font-size: 24px;
+    width: 32px;
+    height: 32px;
+    position: relative;
+    top: 50%;
+    left: 50%;
 }
 
 .wordleTextRed {
     background-image: url("../img/red_square.png");
-	font-size: 24px;
-	width: 32px;
-	height: 32px;
-	position: relative;
-	top: 50%;
-	left: 50%;
+    font-size: 24px;
+    width: 32px;
+    height: 32px;
+    position: relative;
+    top: 50%;
+    left: 50%;
 }
 
 .wordleTextGreen {
     background-image: url("../img/green_square.png");
-	font-size: 24px;
-	width: 32px;
-	height: 32px;
-	position: relative;
-	top: 50%;
-	left: 50%;
+    font-size: 24px;
+    width: 32px;
+    height: 32px;
+    position: relative;
+    top: 50%;
+    left: 50%;
 }
+
 .wordleHint {
     background-image: url("../img/hint.png");
-	font-size: 24px;
-	width: 32px;
-	height: 32px;
-	position: relative;
-	top: 50%;
-	left: 50%;
+    font-size: 24px;
+    width: 32px;
+    height: 32px;
+    position: relative;
+    top: 50%;
+    left: 50%;
+}
+
+/* ── Cicada / Tool Pages ──────────────────────────────────────────────────── */
+/* Shared structural system for the four "helper site" tool pages. Each page
+   opts into a distinct real-website-inspired look via a .cic-theme-* modifier
+   class on .cic-wrap, which just redefines the custom properties below —
+   the underlying section/input/button/table markup stays the same. */
+
+.cic-wrap {
+    --cic-bg: #0a0a0f;
+    --cic-panel-bg: rgba(0,40,0,0.18);
+    --cic-panel-border: #1a3a1a;
+    --cic-panel-accent: #2a6a2a;
+    --cic-border: #2a4a2a;
+    --cic-accent: #4aff4a;
+    --cic-accent-dim: #6acc6a;
+    --cic-text: #c8d8c0;
+    --cic-text-dim: #8aaa8a;
+    --cic-text-faint: #5a7a5a;
+    --cic-font: 'Courier New', Courier, monospace;
+    --cic-heading-font: var(--cic-font);
+    --cic-input-bg: #050f05;
+    --cic-table-head-bg: #0d200d;
+    --cic-radius: 2px;
+    --cic-glow: 0 0 8px currentColor;
+    --cic-warn: #ffaa00;
+    --cic-err: #ff4444;
+    background: var(--cic-bg); color: var(--cic-text); font-family: var(--cic-font);
+    padding: 8px; overflow-y: auto; min-height: 100%; box-sizing: border-box;
+    /* .monitor sets text-align:center for its centered pre-login/status
+       screens; these are full document-style pages and read as generic
+       hero/landing sections when that centering leaks in, so reset it. */
+    text-align: left;
+}
+.cic-wrap * { box-sizing: border-box; }
+.cic-scanlines { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px); z-index: 9999; }
+.cic-header { border-bottom: 1px solid var(--cic-border); padding-bottom: 6px; margin-bottom: 10px; }
+.cic-logo { font-family: var(--cic-heading-font); font-size: 15px; color: var(--cic-accent); text-shadow: var(--cic-glow); letter-spacing: 3px; font-weight: bold; }
+.cic-sub { font-size: 9px; color: var(--cic-text-dim); letter-spacing: 2px; margin-top: 1px; }
+.cic-blink { animation: cic-blink 1.1s step-end infinite; }
+@keyframes cic-blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.cic-section { border: 1px solid var(--cic-panel-border); border-left: 3px solid var(--cic-panel-accent); background: var(--cic-panel-bg); padding: 6px 8px; margin: 8px 0; border-radius: 0 var(--cic-radius) var(--cic-radius) 0; }
+.cic-section-title { font-family: var(--cic-heading-font); color: var(--cic-accent); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px; }
+.cic-site-list { list-style: none; padding: 0; margin: 0; }
+.cic-site-list li { padding: 2px 0; color: var(--cic-text-dim); font-size: 10px; }
+.cic-site-list li::before { content: "» "; color: var(--cic-panel-accent); }
+.cic-link { color: var(--cic-accent); text-decoration: none; font-size: 10px; }
+.cic-link:hover { text-shadow: var(--cic-glow); text-decoration: underline; }
+.cic-ref-links { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.cic-ref-chip { background: var(--cic-panel-bg); border: 1px solid var(--cic-panel-accent); padding: 2px 7px; border-radius: var(--cic-radius); font-size: 9px; color: var(--cic-accent-dim); text-decoration: none; }
+.cic-ref-chip:hover { color: var(--cic-accent); }
+.cic-rule-block { background: var(--cic-panel-bg); border: 1px dashed var(--cic-panel-border); padding: 5px 8px; margin: 4px 0; font-size: 10px; line-height: 1.6; color: var(--cic-text); }
+.cic-rule-block b { color: var(--cic-accent); }
+.cic-hint { font-size: 9px; color: var(--cic-text-faint); margin: 2px 0; }
+table.cic-table { border-collapse: collapse; font-size: 9px; width: 100%; margin: 4px 0; }
+table.cic-table th { background: var(--cic-table-head-bg); color: var(--cic-accent); padding: 3px 5px; border: 1px solid var(--cic-panel-border); letter-spacing: 1px; text-transform: uppercase; font-size: 8px; }
+table.cic-table td { padding: 2px 5px; border: 1px solid var(--cic-panel-border); color: var(--cic-text-dim); font-size: 9px; }
+table.cic-table tr:nth-child(even) td { background: var(--cic-panel-bg); }
+table.cic-table td[style*="ASCIIPigpen"] { font-size: 13px; line-height: 1; }
+.cic-poly td { text-align: center; min-width: 18px; color: var(--cic-text-dim); cursor: pointer; }
+.cic-poly-selected { background: var(--cic-accent) !important; color: var(--cic-bg) !important; }
+.cic-input { background: var(--cic-input-bg); border: 1px solid var(--cic-panel-accent); color: var(--cic-accent); font-family: var(--cic-font); font-size: 11px; padding: 4px 6px; width: 100%; outline: none; border-radius: var(--cic-radius); }
+.cic-input:focus { border-color: var(--cic-accent); box-shadow: 0 0 5px color-mix(in srgb, var(--cic-accent) 25%, transparent); }
+.cic-input::placeholder { color: var(--cic-text-faint); }
+textarea.cic-input { resize: vertical; min-height: 60px; }
+.cic-btn { background: var(--cic-table-head-bg); border: 1px solid var(--cic-panel-accent); color: var(--cic-accent); font-family: var(--cic-font); font-size: 11px; padding: 5px 14px; cursor: pointer; border-radius: var(--cic-radius); letter-spacing: 1px; transition: all 0.15s; }
+.cic-btn:hover { background: var(--cic-panel-accent); box-shadow: 0 0 8px color-mix(in srgb, var(--cic-accent) 30%, transparent); color: var(--cic-accent); }
+.cic-btn:active { filter: brightness(0.85); }
+.cic-result-box { background: var(--cic-input-bg); border: 1px solid var(--cic-panel-border); padding: 6px 8px; margin-top: 6px; font-size: 10px; color: var(--cic-accent-dim); min-height: 24px; word-break: break-all; line-height: 1.6; }
+.cic-result-box pre { margin: 0; white-space: pre-wrap; font-size: 9px; color: var(--cic-accent-dim); font-family: var(--cic-font); }
+.cic-status-ok  { color: var(--cic-accent); font-size: 9px; }
+.cic-status-warn { color: var(--cic-warn); font-size: 9px; }
+.cic-status-err  { color: var(--cic-err); font-size: 9px; }
+.cic-shift-row { padding: 1px 0; font-size: 9px; border-bottom: 1px solid var(--cic-panel-border); }
+.cic-shift-row b { color: var(--cic-accent); min-width: 52px; display: inline-block; }
+.cic-file-input { color: var(--cic-accent-dim); font-size: 10px; }
+.cic-file-input::file-selector-button { background: var(--cic-table-head-bg); border: 1px solid var(--cic-panel-accent); color: var(--cic-accent); font-family: var(--cic-font); font-size: 10px; padding: 3px 8px; cursor: pointer; border-radius: var(--cic-radius); }
+.cic-details summary { color: var(--cic-accent); font-size: 10px; cursor: pointer; padding: 2px 0; }
+.cic-progress { display: inline-block; width: 8px; height: 8px; background: var(--cic-accent); margin-right: 4px; animation: cic-blink 0.5s step-end infinite; }
+.cic-morse-img { max-width: 100%; border: 1px solid var(--cic-panel-border); margin-top: 4px; filter: var(--cic-morse-filter, sepia(0.3) hue-rotate(60deg) brightness(0.8)); }
+.cic-tap-table td, .cic-tap-table th { text-align: center; padding: 2px 6px; border: 1px solid var(--cic-panel-border); font-size: 9px; color: var(--cic-text-dim); }
+.cic-tap-table th { color: var(--cic-accent); background: var(--cic-table-head-bg); }
+
+/* Theme: DecryptPGP.com — light online-crypto-tool look (iGolder / devglan style) */
+.cic-theme-pgp {
+    --cic-bg: #eef1f5;
+    --cic-panel-bg: #ffffff;
+    --cic-panel-border: #dde2e8;
+    --cic-panel-accent: #2c5aa0;
+    --cic-border: #c7d0db;
+    --cic-accent: #2c5aa0;
+    --cic-accent-dim: #3f6fb8;
+    --cic-text: #2b2f36;
+    --cic-text-dim: #5c6773;
+    --cic-text-faint: #8a93a0;
+    --cic-font: 'Segoe UI', Arial, Helvetica, sans-serif;
+    --cic-input-bg: #ffffff;
+    --cic-table-head-bg: #f1f4f8;
+    --cic-radius: 4px;
+    --cic-glow: none;
+    --cic-warn: #b45309;
+    --cic-err: #c0392b;
+}
+.cic-theme-pgp .cic-header { display: flex; align-items: baseline; gap: 8px; border-bottom: 2px solid var(--cic-accent); }
+.cic-theme-pgp .cic-section { box-shadow: 0 1px 2px rgba(30,40,60,0.06); }
+.cic-theme-pgp .cic-section-title { text-transform: none; letter-spacing: 0.2px; font-weight: 600; font-size: 11px; color: var(--cic-text-dim); }
+.cic-theme-pgp .cic-btn { text-transform: uppercase; font-weight: 600; background: var(--cic-accent); color: #fff; border-color: var(--cic-accent); }
+.cic-theme-pgp .cic-btn:hover { background: #23477f; box-shadow: none; color: #fff; }
+
+/* Theme: MIDI.Helper — plain, light developer-utility look, matching real
+   MIDI analysis tools (MIDILLI's MIDI Web Tool, midiviewer.io) rather than
+   an invented dark DAW: neutral off-white background, a muted working
+   blue for the few interactive bits, and the decoded output as an actual
+   plain data table — no dark mode, no decorative piano-key art. */
+.cic-theme-midi {
+    --cic-bg: #f4f5f6;
+    --cic-panel-bg: #ffffff;
+    --cic-panel-border: #d7dade;
+    --cic-panel-accent: #d7dade;
+    --cic-border: #d7dade;
+    --cic-accent: #3a5a8a;
+    --cic-accent-dim: #2c4870;
+    --cic-text: #1f2328;
+    --cic-text-dim: #5b6470;
+    --cic-text-faint: #8891a0;
+    --cic-font: 'Segoe UI', Arial, Helvetica, sans-serif;
+    --cic-input-bg: #ffffff;
+    --cic-table-head-bg: #eceef1;
+    --cic-radius: 2px;
+    --cic-glow: none;
+    --cic-warn: #b45309;
+    --cic-err: #b91c1c;
+}
+.cic-theme-midi .cic-section-title { text-transform: none; letter-spacing: 0.2px; font-weight: 600; font-size: 11px; color: var(--cic-text-dim); }
+.cic-theme-midi .cic-btn { background: var(--cic-accent); color: #fff; border-color: var(--cic-accent); font-weight: 600; }
+.cic-theme-midi .cic-btn:hover { background: var(--cic-accent-dim); box-shadow: none; color: #fff; }
+
+/* Theme: Outguess.Helper — light steganography-utility look (stylesuxx style) */
+.cic-theme-stego {
+    --cic-bg: #f6f8f9;
+    --cic-panel-bg: #ffffff;
+    --cic-panel-border: #e1e6e8;
+    --cic-panel-accent: #16a085;
+    --cic-border: #d7dcdf;
+    --cic-accent: #128a71;
+    --cic-accent-dim: #16a085;
+    --cic-text: #22292e;
+    --cic-text-dim: #5c6a70;
+    --cic-text-faint: #8a969b;
+    --cic-font: 'Segoe UI', Arial, Helvetica, sans-serif;
+    --cic-input-bg: #ffffff;
+    --cic-table-head-bg: #eef7f5;
+    --cic-radius: 4px;
+    --cic-glow: none;
+    --cic-warn: #b45309;
+    --cic-err: #c0392b;
+}
+.cic-theme-stego .cic-section { border-left: 3px solid var(--cic-panel-accent); box-shadow: 0 1px 2px rgba(20,40,40,0.06); }
+.cic-theme-stego .cic-btn { background: var(--cic-panel-accent); color: #fff; border-color: var(--cic-panel-accent); font-weight: 600; }
+.cic-theme-stego .cic-btn:hover { background: var(--cic-accent); box-shadow: none; color: #fff; }
+
+/* Theme: Cicada3301Solved.com — community-wiki look (Fandom style) */
+.cic-theme-wiki {
+    --cic-bg: #ffffff;
+    --cic-panel-bg: #f8f9fa;
+    --cic-panel-border: #c8ccd1;
+    --cic-panel-accent: #a2a9b1;
+    --cic-border: #c8ccd1;
+    --cic-accent: #0066cc;
+    --cic-accent-dim: #0b0080;
+    --cic-text: #202122;
+    --cic-text-dim: #54595d;
+    --cic-text-faint: #72777d;
+    --cic-font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --cic-heading-font: Georgia, 'Times New Roman', serif;
+    --cic-input-bg: #ffffff;
+    --cic-table-head-bg: #eaecf0;
+    --cic-radius: 1px;
+    --cic-glow: none;
+    --cic-warn: #ad6200;
+    --cic-err: #b32424;
+    --cic-morse-filter: none;
+    padding: 0 0 10px 0;
+}
+.cic-theme-wiki .cic-topband { background: #202122; color: #fff; padding: 6px 10px; font-size: 11px; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+.cic-theme-wiki .cic-topband b { color: #fff; }
+.cic-theme-wiki .cic-header { padding: 10px 10px 8px; border-bottom: 1px solid var(--cic-border); margin-bottom: 0; }
+.cic-theme-wiki .cic-logo { text-shadow: none; letter-spacing: 0; }
+.cic-theme-wiki .cic-body { padding: 8px 10px 0; }
+.cic-theme-wiki .cic-toc { display: flex; flex-wrap: wrap; gap: 5px; padding: 8px 10px; background: var(--cic-panel-bg); border: 1px solid var(--cic-border); margin: 0 10px 10px; border-radius: 2px; }
+.cic-theme-wiki .cic-toc a { font-size: 10px; color: var(--cic-accent); text-decoration: none; padding: 2px 7px; background: #fff; border: 1px solid var(--cic-border); border-radius: 10px; }
+.cic-theme-wiki .cic-toc a:hover { text-decoration: underline; }
+.cic-theme-wiki .cic-section { border: 1px solid var(--cic-border); border-left: 1px solid var(--cic-border); background: var(--cic-panel-bg); border-radius: 2px; }
+.cic-theme-wiki .cic-section-title { font-family: var(--cic-heading-font); color: var(--cic-text); font-size: 13px; letter-spacing: 0; text-transform: none; border-bottom: 1px solid var(--cic-border); padding-bottom: 4px; }
+.cic-theme-wiki .cic-link, .cic-theme-wiki .cic-ref-chip { color: var(--cic-accent); }
+.cic-theme-wiki .cic-ref-chip { background: #fff; border-radius: 2px; }
+.cic-theme-wiki table.cic-table th { color: var(--cic-text); }
+
+/* ── Download Test Bench (dev-only QA tool, not an in-fiction site) ─────────── */
+/* Deliberately NOT styled like the .cic-wrap "real website" family above —
+   it should read unmistakably as debug tooling, not game content. */
+
+.devtest-wrap { background: #141416; color: #d6d6da; font-family: 'Consolas', 'Courier New', monospace; padding: 0 0 10px; overflow-y: auto; min-height: 100%; box-sizing: border-box; text-align: left; }
+.devtest-wrap * { box-sizing: border-box; }
+.devtest-hazard { height: 6px; background: repeating-linear-gradient(135deg, #dba53f, #dba53f 10px, #141416 10px, #141416 20px); }
+.devtest-banner { background: #dba53f; color: #141416; font-weight: 700; font-size: 10px; letter-spacing: 1px; text-align: center; padding: 4px; }
+.devtest-header { padding: 12px 14px 8px; border-bottom: 1px solid #2c2c30; }
+.devtest-title { font-size: 14px; font-weight: 700; color: #f0c675; }
+.devtest-sub { font-size: 10px; color: #87878f; margin-top: 3px; line-height: 1.5; }
+.devtest-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid #2c2c30; }
+.devtest-status { font-size: 10px; color: #87878f; margin-left: auto; }
+.devtest-list { padding: 6px 14px; }
+.devtest-row { display: flex; align-items: center; gap: 10px; padding: 8px 4px; border-bottom: 1px solid #232326; }
+.devtest-row:last-child { border-bottom: none; }
+.devtest-row-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+.devtest-row-info { flex: 1; min-width: 0; }
+.devtest-row-name { font-size: 11px; color: #d6d6da; }
+.devtest-row-meta { font-size: 9px; color: #6d6d7d; margin-top: 1px; }
+.devtest-btn { background: #202023; border: 1px solid #3a3a40; color: #d6d6da; font-family: inherit; font-size: 10px; padding: 5px 12px; cursor: pointer; letter-spacing: 0.5px; flex-shrink: 0; }
+.devtest-btn:hover { border-color: #dba53f; color: #f0c675; }
+.devtest-btn-primary { border-color: #dba53f; color: #f0c675; }
+.devtest-btn-primary:hover { background: #dba53f; color: #141416; }
+.devtest-btn-danger { border-color: #7a3a3a; color: #d98a8a; }
+.devtest-btn-danger:hover { background: #7a3a3a; color: #fff; }
+
+/* ── Platform (Reddit, 4chan, Pastebin, Twitter, Imgur, Wordle, Quizzington, Dropbox) ── */
+
+.rd-wrap { background:#dae0e6; font-family: 'IBM Plex Sans',Verdana,sans-serif; padding:0; overflow-y:auto; min-height:100%; }
+.rd-header { background:#ff4500; padding:4px 8px; display:flex; align-items:center; gap:6px; }
+.rd-logo { color:#fff; font-weight:900; font-size:14px; letter-spacing:-0.5px; }
+.rd-sub { color:#fff; font-size:10px; opacity:0.9; }
+.rd-card { background:#fff; border:1px solid #ccc; border-radius:4px; margin:6px; display:flex; overflow:hidden; }
+.rd-votes { background:#f8f9fa; border-right:1px solid #edeff1; display:flex; flex-direction:column; align-items:center; padding:6px 4px; gap:2px; flex-shrink:0; }
+.rd-arrow { font-size:12px; color:#878a8c; line-height:1; cursor:pointer; }
+.rd-arrow:hover.rd-arrow-up   { color:#ff4500; }
+.rd-arrow:hover.rd-arrow-down { color:#7193ff; }
+.rd-score { font-size:9px; font-weight:700; color:#1a1a1b; }
+.rd-body { padding:6px 8px; flex:1; min-width:0; }
+.rd-meta { font-size:8px; color:#787c7e; margin-bottom:3px; }
+.rd-meta b { color:#1a1a1b; }
+.rd-user { color:#0079d3; font-size:9px; font-weight:700; margin-bottom:3px; }
+.rd-user::before { content:"u/"; color:#888; }
+.rd-post-btn { background:#ff4500; border:none; color:#fff; font-weight:700; font-size:10px; padding:4px 12px; border-radius:20px; cursor:pointer; margin-top:4px; }
+.rd-post-btn:hover { background:#e03d00; }
+.rd-flair { display:inline-block; background:#e8f0fe; color:#0079d3; font-size:8px; padding:1px 5px; border-radius:2px; margin-bottom:3px; }
+.rd-actions { display:flex; gap:10px; margin-top:6px; }
+.rd-action { font-size:8px; color:#878a8c; font-weight:700; display:flex; align-items:center; gap:3px; }
+.fc-wrap { background:#ffffee; font-family: Arial,sans-serif; padding:4px; overflow-y:auto; min-height:100%; }
+.fc-header { background:#800000; padding:3px 6px; margin-bottom:4px; }
+.fc-header-text { color:#fff; font-size:11px; font-weight:bold; letter-spacing:1px; }
+.fc-boards { color:#ff9999; font-size:8px; margin-top:1px; }
+.fc-boards a { color:#ff9999; text-decoration:none; }
+.fc-boards a:hover { text-decoration:underline; }
+.fc-post { background:#d6daf0; border:1px solid #b7c5d9; padding:4px 6px; margin:3px 0; font-size:10px; }
+.fc-post-header { color:#117743; font-weight:bold; font-size:9px; margin-bottom:2px; }
+.fc-post-no { color:#000091; font-size:8px; margin-left:4px; text-decoration:none; }
+.fc-post-no:hover { text-decoration:underline; }
+.fc-post-reply { color:#000091; font-size:8px; margin-left:4px; text-decoration:none; }
+.fc-post-reply:hover { text-decoration:underline; }
+.fc-post-name { color:#117743; font-weight:bold; }
+.fc-post-body { color:#000; font-size:10px; line-height:1.5; word-break:break-all; }
+.fc-quote { color:#789922; }
+.pb-wrap { background:#2c2c2c; font-family: 'Consolas','Courier New',monospace; overflow-y:auto; min-height:100%; }
+.pb-header { background:#02a2a2; padding:4px 8px; display:flex; align-items:center; gap:6px; }
+.pb-logo { color:#fff; font-weight:900; font-size:14px; letter-spacing:1px; }
+.pb-titlebar { background:#222; padding:5px 8px; font-size:10px; color:#fff; font-weight:700; border-bottom:1px solid #444; }
+.pb-toolbar { background:#3a3a3a; padding:3px 8px; font-size:9px; color:#aaa; border-bottom:1px solid #555; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.pb-toolbar-sep { color:#555; }
+.pb-actions { margin-left:auto; display:flex; gap:8px; }
+.pb-action { color:#02a2a2; text-decoration:none; cursor:pointer; }
+.pb-action:hover { text-decoration:underline; }
+.pb-content { display:flex; }
+.pb-gutter { background:#1e1e1e; color:#6b6b6b; font-size:10px; line-height:1.6; text-align:right; padding:6px 6px 6px 0; user-select:none; flex-shrink:0; }
+/* color matches .pb-code-line so plain lead content dropped in here (which
+   just inherits whatever color surrounds it) isn't left at the browser's
+   default black-on-#2c2c2c. */
+.pb-code { color:#f8f8f2; padding:6px 8px; flex:1; min-width:0; overflow-x:auto; }
+.pb-code-line { color:#f8f8f2; font-size:10px; line-height:1.6; white-space:pre; }
+.pb-meta { color:#02a2a2; font-size:9px; margin-bottom:4px; }
+/* color set here (not just on .tw-user-name/.tw-tweet-body) so plain lead
+   content dropped into #twitterPost/#xPost — which follows the "just
+   text, inherit whatever's around it" rule — isn't left at the browser's
+   default black-on-black. */
+.tw-wrap { background:#000; color:#e7e9ea; font-family: 'Helvetica Neue',Arial,sans-serif; overflow-y:auto; min-height:100%; }
+.tw-header { background:#000; border-bottom:1px solid #2f3336; padding:6px 10px; display:flex; align-items:center; gap:8px; }
+.tw-icon { color:#1d9bf0; font-size:20px; }
+.tw-user-name { color:#fff; font-weight:700; font-size:13px; }
+.tw-user-handle { color:#71767b; font-size:10px; }
+.tw-tweet { border-bottom:1px solid #2f3336; padding:8px 10px; }
+.tw-tweet-body { color:#e7e9ea; font-size:11px; line-height:1.5; margin-bottom:4px; word-break:break-all; }
+.x-icon { color:#fff; font-size:18px; font-weight:900; }
+/* Legacy (pre-2023) Twitter — blue bleeds into the whole card, not just the icon */
+.tw-wrap.tw-legacy { background:#fff; color:#14171a; }
+.tw-wrap.tw-legacy .tw-header { background:#fff; border-bottom:1px solid #e1e8ed; }
+.tw-wrap.tw-legacy .tw-user-name { color:#14171a; }
+.tw-wrap.tw-legacy .tw-user-handle { color:#657786; }
+.tw-wrap.tw-legacy .tw-tweet { border-bottom:1px solid #e1e8ed; }
+.tw-wrap.tw-legacy .tw-tweet-body { color:#14171a; }
+.tw-wrap.tw-legacy .tw-actions { border-top:none; }
+.tw-actions { display:flex; gap:18px; margin-top:6px; }
+.tw-action { font-size:9px; color:#71767b; display:flex; align-items:center; gap:4px; }
+.tw-wrap.tw-legacy .tw-action { color:#657786; }
+.tw-wrap.tw-legacy .tw-action-reply:hover  { color:#1da1f2; }
+.tw-wrap.tw-legacy .tw-action-rt:hover     { color:#17bf63; }
+.tw-wrap.tw-legacy .tw-action-fav:hover    { color:#e0245e; }
+/* color set here so plain lead content dropped straight into #imgur (some
+   lead types render there instead of the image post card, and just
+   inherit whatever color surrounds them) isn't left at the browser's
+   default black-on-#1a1a1b. */
+.ig-wrap { background:#1a1a1b; color:#e4e4e4; font-family: 'Helvetica Neue',Arial,sans-serif; overflow-y:auto; min-height:100%; }
+.ig-header { background:#1a1a1b; border-bottom:2px solid #1bb76e; padding:4px 8px; display:flex; align-items:center; gap:6px; }
+.ig-logo { color:#1bb76e; font-weight:900; font-size:16px; letter-spacing:-1px; }
+.ig-logo span { color:#fff; }
+.ig-post-wrap { background:#282829; border-radius:4px; margin:6px; overflow:hidden; }
+.ig-img-wrap { background:#111; text-align:center; padding:4px; }
+.ig-img-wrap img { max-width:100%; border-radius:2px; }
+.ig-post-info { padding:5px 8px; }
+.ig-post-title { color:#fff; font-size:11px; font-weight:700; margin-bottom:2px; word-break:break-all; }
+.ig-post-author { color:#1bb76e; font-size:9px; }
+.ig-stats { color:#818384; font-size:8px; margin-top:3px; display:flex; align-items:center; gap:10px; }
+.ig-vote { display:flex; align-items:center; gap:3px; }
+.ig-arrow { color:#5c5c5e; font-size:9px; cursor:pointer; }
+.ig-arrow:hover.ig-arrow-up   { color:#1bb76e; }
+.ig-arrow:hover.ig-arrow-down { color:#ff4c4c; }
+.wrd-wrap { background:#fff; font-family: 'Clear Sans','Helvetica Neue',Arial,sans-serif; overflow-y:auto; min-height:100%; }
+.wrd-header { border-bottom:1px solid #d3d6da; padding:6px; text-align:center; }
+.wrd-title { font-weight:900; font-size:16px; letter-spacing:2px; color:#1a1a1b; text-transform:uppercase; }
+.wrd-sub { font-size:9px; color:#787c7e; margin-top:1px; }
+.wordleTextWhite { color:#1a1a1b; }
+.wordleTextGreen { background:#6aaa64 !important; border-color:#6aaa64 !important; color:#fff !important; }
+.wordleTextRed { background:#c9b458 !important; border-color:#c9b458 !important; color:#fff !important; }
+.wordleHint { font-size:12px; color:#787c7e; }
+.qz-wrap { background:#f0f4ff; font-family: Georgia,serif; overflow-y:auto; min-height:100%; }
+.qz-header { background:linear-gradient(135deg,#4a6cf7,#7c3aed); padding:6px 10px; text-align:center; }
+.qz-logo { color:#fff; font-size:15px; font-weight:900; letter-spacing:1px; }
+.qz-sub { color:rgba(255,255,255,0.8); font-size:8px; letter-spacing:2px; margin-top:1px; }
+.qz-body { padding:6px 8px; }
+.qz-disclaimer { background:#fff3cd; border:1px solid #ffc107; border-radius:4px; padding:5px 8px; font-size:9px; color:#856404; margin-bottom:6px; line-height:1.5; }
+.qz-puzzle-box { background:#fff; border:1px solid #dee2e6; border-radius:4px; padding:6px 8px; margin-bottom:6px; }
+.qz-puzzle-label { font-size:9px; font-weight:bold; color:#4a6cf7; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
+.qz-puzzle-data { font-family:'Courier New',monospace; font-size:9px; color:#212529; line-height:1.7; word-break:break-all; }
+.qz-contact { background:#e8eaff; border-radius:4px; padding:4px 8px; font-size:9px; color:#4a6cf7; margin-top:4px; }
+.qz-contact p { margin:1px 0; color:#4a6cf7; }
+.db-wrap { background:#f7f8fc; font-family: 'Helvetica Neue',Arial,sans-serif; overflow-y:auto; min-height:100%; }
+.db-header { background:#0061ff; padding:8px 16px; display:flex; align-items:center; gap:6px; }
+.db-logo { color:#fff; font-weight:900; font-size:14px; letter-spacing:-0.5px; }
+.db-body { padding:24px 20px; display:flex; flex-direction:column; align-items:center; text-align:center; }
+.db-file-card { background:#fff; border:1px solid #e0e4ef; border-radius:10px; padding:24px 20px; display:flex; flex-direction:column; align-items:center; gap:10px; box-shadow:0 2px 12px rgba(0,0,60,0.06); width:100%; max-width:220px; }
+.db-file-icon { color:#0061ff; font-size:40px; flex-shrink:0; }
+.db-file-info { width:100%; }
+.db-file-name { color:#1a1a2e; font-size:11px; font-weight:700; }
+.db-file-meta { color:#9aa0b2; font-size:8px; margin-top:3px; }
+.db-btn { background:#0061ff; border:none; color:#fff; font-weight:700; font-size:10px; padding:8px 20px; border-radius:6px; cursor:pointer; transition:background 0.15s; flex-shrink:0; margin-top:4px; width:100%; }
+.db-btn:hover { background:#0052d6; }
+
+/* ── OS / Desktop ─────────────────────────────────────────────────────────── */
+
+.os-wrap { background:#1a1a2e; font-family:'Segoe UI',Arial,sans-serif; padding:0; overflow-y:auto; min-height:100%; }
+.os-taskbar { background:#0d0d1a; border-top:1px solid #2a2a4a; padding:3px 6px; display:flex; align-items:center; gap:4px; position:sticky; bottom:0; }
+.os-taskbar-btn { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); color:#ccc; font-size:9px; padding:3px 8px; cursor:pointer; border-radius:3px; transition:all 0.15s; display:flex; align-items:center; gap:3px; }
+.os-taskbar-btn:hover { background:rgba(255,255,255,0.15); color:#fff; }
+.os-taskbar-clock { margin-left:auto; color:#aaa; font-size:9px; }
+.os-desktop { padding:8px; }
+.os-welcome { color:#e0e0ff; font-size:13px; font-weight:600; margin-bottom:2px; }
+.os-user { color:#7878cc; font-size:9px; margin-bottom:10px; }
+.os-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+.os-app-btn { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:8px 4px; cursor:pointer; text-align:center; transition:all 0.15s; display:flex; flex-direction:column; align-items:center; gap:3px; }
+.os-app-btn:hover { background:rgba(255,255,255,0.12); border-color:rgba(255,255,255,0.25); transform:translateY(-1px); }
+.os-app-icon { font-size:22px; line-height:1; }
+.os-app-label { color:#ccc; font-size:8px; letter-spacing:0.5px; }
+/* ── Login / lock screen, by OS ──────────────────────────────────────────────
+   This ran as one generic dark-purple sci-fi login card regardless of OS.
+   Since the rest of the mod (window chrome, desktop, taskbar/dock/panel)
+   already branches on detectOS(), the login screen now does too — each
+   variant styled after that OS's real lock/sign-in screen: a centered
+   avatar circle, then username/password, matching that OS's real colors
+   and button shape. The username field stays visible in every variant
+   (unlike a real OS, which would show it after account selection) since
+   guessing the username is part of the puzzle. */
+
+/* Capped to a fixed card width and centered, rather than stretching the
+   OS-colored gradient edge-to-edge across the (now much wider) monitor —
+   a real lock screen fills the whole display because there's a wallpaper
+   photo behind the card breaking up the space; we have no such backdrop,
+   so a full-bleed flat gradient at this width just reads as a large empty
+   rectangle. A bounded card sitting on the monitor's own near-black
+   background keeps it looking deliberate at any window size. */
+.os-login-wrap {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  width:100%; max-width:420px; margin:0 auto;
+  padding:28px 16px; text-align:center;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:0 16px 44px rgba(0,0,0,0.45);
+}
+.os-login-field { width:100%; max-width:220px; margin-bottom:6px; text-align:left; }
+.os-login-avatar {
+  width:64px; height:64px; border-radius:50%; margin-bottom:10px;
+  display:flex; align-items:center; justify-content:center; font-size:30px; flex-shrink:0;
+}
+.os-login-logo { font-size:28px; margin-bottom:4px; }
+.os-login-title { font-size:11px; margin-bottom:16px; }
+.os-login-label { font-size:9px; display:block; margin-bottom:2px; }
+.os-login-input { width:100%; font-size:10px; padding:5px 7px; outline:none; box-sizing:border-box; max-width:220px; }
+.os-login-btn { width:100%; max-width:220px; font-size:10px; padding:6px; cursor:pointer; margin-top:6px; transition:background 0.15s; }
+.os-login-err { color:#ff6666; font-size:9px; margin-top:4px; text-align:center; }
+.os-login-hint { font-size:8px; margin-top:3px; text-align:center; opacity:0.7; }
+
+/* Windows: flat rectangular fields, blue accent, sans-serif. */
+.os-login-win {
+  background: linear-gradient(160deg, #0f3a63 0%, #17527e 45%, #1c6a94 100%);
+  font-family:'Segoe UI',Arial,sans-serif; color:#fff;
+}
+.os-login-win .os-login-avatar { background:rgba(255,255,255,0.15); color:#fff; }
+.os-login-win .os-login-title { color:rgba(255,255,255,0.9); }
+.os-login-win .os-login-label { color:rgba(255,255,255,0.8); }
+.os-login-win .os-login-input { background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.4); border-radius:0; color:#fff; }
+.os-login-win .os-login-input::placeholder { color:rgba(255,255,255,0.5); }
+.os-login-win .os-login-input:focus { border-color:#fff; }
+.os-login-win .os-login-btn { background:#0067c0; border:none; border-radius:2px; color:#fff; font-weight:600; }
+.os-login-win .os-login-btn:hover { background:#1a7fd6; }
+.os-login-win .os-login-hint { color:rgba(255,255,255,0.75); }
+
+/* macOS: rounded pill fields, gray avatar, subdued glass button. */
+.os-login-mac {
+  background: linear-gradient(160deg, #1c1c2e 0%, #2a2a44 100%);
+  font-family:-apple-system,'Segoe UI',Arial,sans-serif; color:#fff;
+}
+.os-login-mac .os-login-avatar { background:#8e8e93; color:#fff; }
+.os-login-mac .os-login-title { color:rgba(255,255,255,0.85); }
+.os-login-mac .os-login-label { color:rgba(255,255,255,0.6); }
+.os-login-mac .os-login-input { background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); border-radius:14px; color:#fff; text-align:center; }
+.os-login-mac .os-login-input:focus { border-color:rgba(255,255,255,0.5); }
+.os-login-mac .os-login-btn { background:rgba(255,255,255,0.16); border:none; border-radius:12px; color:#fff; }
+.os-login-mac .os-login-btn:hover { background:rgba(255,255,255,0.26); }
+.os-login-mac .os-login-hint { color:rgba(255,255,255,0.6); }
+
+/* Linux/GNOME: Adwaita-style flat fields and blue accent button. */
+.os-login-linux {
+  background: linear-gradient(160deg, #2c1f33 0%, #241b2c 100%);
+  font-family:'Cantarell','Segoe UI',Arial,sans-serif; color:#fff;
+}
+.os-login-linux .os-login-avatar { background:#3584e4; color:#fff; }
+.os-login-linux .os-login-title { color:rgba(255,255,255,0.85); }
+.os-login-linux .os-login-label { color:rgba(255,255,255,0.65); }
+.os-login-linux .os-login-input { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); border-radius:6px; color:#fff; }
+.os-login-linux .os-login-input:focus { border-color:#3584e4; }
+.os-login-linux .os-login-btn { background:#3584e4; border:none; border-radius:6px; color:#fff; font-weight:600; }
+.os-login-linux .os-login-btn:hover { background:#4a90e2; }
+.os-login-linux .os-login-hint { color:rgba(255,255,255,0.6); }
+/* ── SQL Injection Easter Egg: raw user-table dump ───────────────────────────
+   Deliberately NOT styled like the OS chrome around it — this is meant to
+   read as a raw database/query result dropped onto the screen, so it gets
+   a plain white background instead of the login screen's OS-themed wrap. */
+.os-sql-dump {
+    background: #fff;
+    color: #000;
+    text-align: left;
+    padding: 18px 16px;
+    font-family: 'Courier New', Courier, monospace;
+}
+.os-sql-dump-title { font-size: 11px; font-weight: bold; color: #000; margin-bottom: 4px; }
+.os-sql-dump-sub { font-size: 9px; color: #333; margin: 0 0 10px; }
+.os-sql-table { width:100%; border-collapse:collapse; font-size:9px; margin-top:6px; }
+.os-sql-table th { background:#eee; color:#000; padding:4px 6px; border:1px solid #000; text-align:left; }
+.os-sql-table td { color:#000; padding:4px 6px; border:1px solid #000; }
+
+/* ── Tor Browser ──────────────────────────────────────────────────────────── */
+
+/* Real Tor Browser's first-run page (about:tor) is a plain white page with a
+   restrained purple accent, not an immersive dark-purple "hacker" theme. */
+.tor-wrap { background:#fff; color:#2a2a2a; font-family:'Segoe UI',Arial,sans-serif; overflow-y:auto; min-height:100%; }
+.tor-header { background:#fff; border-bottom:1px solid #e2e2e2; padding:6px 8px; display:flex; align-items:center; gap:6px; }
+.tor-logo { color:#2a2a2a; font-weight:700; font-size:13px; }
+.tor-sub { color:#7d4698; font-size:8px; letter-spacing:0.5px; text-transform:uppercase; }
+.tor-body { padding:16px 10px; }
+.tor-shield { font-size:36px; display:block; text-align:center; margin:4px 0 8px; }
+.tor-tagline { color:#2a2a2a; font-size:12px; font-weight:600; text-align:center; margin-bottom:12px; }
+.tor-input-row { display:flex; gap:4px; margin:0 auto 8px; max-width:280px; }
+.tor-input { flex:1; background:#fff; border:1px solid #ccc; color:#222; font-size:10px; padding:5px 8px; border-radius:3px; outline:none; }
+.tor-input:focus { border-color:#7d4698; }
+.tor-btn { background:#7d4698; border:none; color:#fff; font-size:10px; font-weight:600; padding:5px 12px; border-radius:3px; cursor:pointer; white-space:nowrap; }
+.tor-btn:hover { background:#68397f; }
+.tor-notice { color:#737373; font-size:9px; text-align:center; line-height:1.5; }
+
+/* ── Google ───────────────────────────────────────────────────────────────── */
+
+.goog-wrap { background:#fff; font-family:Arial,sans-serif; overflow-y:auto; min-height:100%; }
+.goog-header { padding:4px 8px; border-bottom:1px solid #e0e0e0; display:flex; align-items:center; justify-content:flex-end; gap:6px; }
+.goog-header-link { color:#666; font-size:9px; text-decoration:none; cursor:pointer; }
+.goog-body { display:flex; flex-direction:column; align-items:center; padding:12px 8px 8px; }
+.goog-logo { display:flex; gap:1px; font-size:28px; font-weight:700; margin-bottom:8px; line-height:1; }
+.goog-g { color:#4285f4; } .goog-o1 { color:#ea4335; } .goog-o2 { color:#fbbc05; }
+.goog-gl { color:#4285f4; } .goog-e { color:#34a853; }
+.goog-search-box { display:flex; align-items:center; border:1px solid #dfe1e5; border-radius:24px; padding:4px 10px; gap:4px; width:100%; max-width:260px; box-shadow:0 1px 3px rgba(0,0,0,0.1); margin-bottom:8px; }
+.goog-search-box:focus-within { box-shadow:0 1px 6px rgba(32,33,36,0.28); border-color:rgba(223,225,229,0); }
+.goog-search-icon { color:#9aa0a6; font-size:12px; }
+.goog-input { border:none; outline:none; font-size:11px; color:#202124; flex:1; min-width:0; }
+.goog-btn-row { display:flex; gap:6px; justify-content:center; }
+.goog-btn { background:#f8f9fa; border:1px solid #f8f9fa; color:#3c4043; font-size:10px; padding:5px 12px; border-radius:4px; cursor:pointer; }
+.goog-btn:hover { border-color:#dadce0; box-shadow:0 1px 1px rgba(0,0,0,0.1); }
+
+/* ── Skype ────────────────────────────────────────────────────────────────── */
+
+.sky-wrap { background:#f5f5f5; font-family:'Segoe UI',Arial,sans-serif; overflow-y:auto; min-height:100%; }
+.sky-header { background:#00aff0; padding:5px 8px; display:flex; align-items:center; gap:6px; }
+.sky-logo { color:#fff; font-weight:700; font-size:14px; font-style:italic; }
+.sky-body { padding:8px; display:flex; flex-direction:column; align-items:center; }
+.sky-display { background:#fff; border:1px solid #ddd; border-radius:4px; padding:5px 10px; font-size:14px; font-weight:300; color:#333; margin-bottom:6px; min-width:120px; text-align:center; min-height:24px; }
+.sky-pad { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; width:150px; }
+.sky-key { background:#fff; border:1px solid #ddd; border-radius:50%; width:44px; height:44px; text-align:center; font-size:13px; font-weight:600; color:#333; cursor:pointer; transition:background 0.1s; }
+.sky-key:hover { background:#e8f5fe; }
+.sky-key:active { background:#d0eeff; }
+/* Skype's dial/answer action has always been green, not the header's blue. */
+.sky-call-btn { background:#3dc25a; border:none; color:#fff; border-radius:50%; width:40px; height:40px; font-size:17px; cursor:pointer; margin-top:8px; display:flex; align-items:center; justify-content:center; transition:background 0.15s; }
+.sky-call-btn:hover { background:#33a94c; }
+.sky-contact { display:flex; align-items:center; gap:8px; padding:5px 4px; border-bottom:1px solid #eee; cursor:pointer; transition:background 0.1s; }
+.sky-contact:hover { background:#e8f5fe; }
+.sky-contact-avatar { position:relative; width:28px; height:28px; border-radius:50%; background:#00aff0; color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.sky-contact-avatar::after { content:''; position:absolute; right:-1px; bottom:-1px; width:8px; height:8px; border-radius:50%; background:#3dc25a; border:1.5px solid #fff; }
+.sky-contact-call { background:none; border:none; color:#3dc25a; font-size:14px; cursor:pointer; padding:2px 4px; border-radius:3px; }
+.sky-contact-call:hover { background:#e6f7ea; }
+
+/* ── Google SERP ──────────────────────────────────────────────────────────── */
+
+.goog-serp-wrap { background:#fff; font-family:Arial,sans-serif; padding:8px 10px; overflow-y:auto; min-height:100%; }
+.goog-serp-query { display:flex; align-items:center; border:1px solid #dfe1e5; border-radius:24px; padding:5px 12px; margin-bottom:4px; box-shadow:0 1px 3px rgba(0,0,0,0.1); }
+.goog-serp-result { margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid #f0f0f0; }
+.goog-serp-site { display:flex; align-items:center; gap:6px; margin-bottom:2px; }
+.goog-serp-favicon { width:14px; height:14px; border-radius:2px; color:#fff; font-size:8px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.goog-serp-domain { font-size:10px; color:#202124; font-weight:500; }
+.goog-serp-url { font-size:8px; color:#4d5156; }
+.goog-serp-title { font-size:12px; color:#1a0dab; margin-bottom:2px; cursor:pointer; line-height:1.3; }
+.goog-serp-title:hover { text-decoration:underline; }
+.goog-serp-desc { font-size:9px; color:#4d5156; line-height:1.5; }
+
+/* ── Maps ─────────────────────────────────────────────────────────────────── */
+
+.map-wrap { background:#fff; font-family:Arial,sans-serif; overflow-y:auto; min-height:100%; }
+.map-header { background:#4285f4; padding:5px 8px; display:flex; align-items:center; gap:6px; }
+.map-logo { color:#fff; font-weight:700; font-size:13px; letter-spacing:-0.5px; }
+.map-body { padding:8px; }
+.map-field { margin-bottom:5px; }
+.map-label { font-size:9px; color:#5f6368; letter-spacing:0.5px; display:block; margin-bottom:2px; }
+.map-input { width:100%; border:1px solid #dfe1e5; border-radius:4px; padding:4px 8px; font-size:10px; color:#202124; outline:none; box-sizing:border-box; }
+.map-input:focus { border-color:#4285f4; box-shadow:0 0 0 2px rgba(66,133,244,0.2); }
+.map-btn { background:#4285f4; border:none; color:#fff; font-size:10px; padding:5px 14px; border-radius:4px; cursor:pointer; margin-top:4px; }
+.map-btn:hover { background:#2a75f3; }
+
+/* ── Downloads ────────────────────────────────────────────────────────────── */
+
+/* Styled as a native file-explorer list (Downloads is a folder, not a
+   website) rather than a browser's downloads page: breadcrumb toolbar,
+   column headers, plain rows with a Name/Type layout. */
+.dl-wrap { background:#fff; font-family:'Segoe UI',Arial,sans-serif; overflow-y:auto; min-height:100%; color:#000; }
+.dl-toolbar { background:#f3f3f3; border-bottom:1px solid #d4d4d4; padding:5px 8px; font-size:9px; color:#333; }
+.dl-breadcrumb-sep { color:#999; margin:0 2px; }
+.dl-columns { display:flex; background:#f3f3f3; border-bottom:1px solid #d4d4d4; padding:3px 8px; font-size:8px; color:#555; font-weight:600; }
+.dl-col-name { flex:1; }
+.dl-col-type { width:90px; flex-shrink:0; }
+.dl-body { padding:0; }
+.dl-empty { color:#888; font-size:10px; text-align:center; padding:20px; }
+.dl-item { display:flex; align-items:center; gap:6px; padding:4px 8px; cursor:pointer; border-bottom:1px solid #f2f2f2; }
+.dl-item:nth-child(even) { background:#f7f9fc; }
+.dl-item:hover { background:#e5f1fb; }
+.dl-item-icon { font-size:14px; width:16px; flex-shrink:0; text-align:center; }
+.dl-item-name { color:#000; font-size:9px; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dl-item-type { color:#555; font-size:8px; width:90px; flex-shrink:0; }
+
+/* ── In-game File Picker ──────────────────────────────────────────────────── */
+
+/* A helper site's "Open File" dialog — reuses the Downloads-folder list
+   styling above, wrapped in a small native-looking dialog window so
+   choosing a file feels like a real OS file-open prompt instead of a
+   plain web form, without ever reaching the player's actual computer. */
+.fp-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+  display: flex; align-items: center; justify-content: center; z-index: 500;
+}
+.fp-dialog {
+  width: 320px; max-width: 90%; max-height: 70%; display: flex; flex-direction: column;
+  background: #fff; border-radius: 6px; overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+}
+.fp-titlebar {
+  background: #e8e8e8; border-bottom: 1px solid #d0d0d0; padding: 6px 10px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: 'Segoe UI', Arial, sans-serif; font-size: 10px; font-weight: 600; color: #333;
+}
+.fp-close {
+  background: none; border: none; color: #666; font-size: 14px; line-height: 1;
+  cursor: pointer; padding: 0 2px;
+}
+.fp-close:hover { color: #c0392b; }
+.fp-dl-wrap { min-height: 0; overflow-y: auto; }
+
+/* ── Onion Site ───────────────────────────────────────────────────────────── */
+
+.on-wrap { background:#0a0010; font-family:'Courier New',Courier,monospace; padding:8px; overflow-y:auto; min-height:100%; }
+.on-header { border-bottom:1px solid #2a1040; padding-bottom:5px; margin-bottom:8px; }
+.on-addr { color:#7a40c0; font-size:8px; letter-spacing:1px; word-break:break-all; background:#0d0018; border:1px solid #1a0830; padding:3px 6px; border-radius:2px; margin-bottom:4px; }
+.on-secure { color:#4aaa4a; font-size:8px; letter-spacing:1px; }
+.on-lock { font-size:10px; margin-right:3px; }
+.on-content { color:#c8a8e8; font-size:10px; line-height:1.6; }
+.on-content p { color:#c8a8e8; margin:3px 0; }
+
+/* ── Primus Onion ─────────────────────────────────────────────────────────── */
+/* This onion page is showing the same real Liber Primus content as the Help
+   Center page, so it gets the same parchment/book treatment — no gold glow,
+   no vignette, no pulsing loading text. The .onion address bar stays a
+   plain technical strip (real browser chrome), since that part represents
+   Tor Browser's UI around the page, not the book itself. */
+
+.po-wrap { background:#e9ddc0; color:#2a2115; font-family:Georgia,'Palatino Linotype','Book Antiqua',Palatino,serif; overflow-y:auto; min-height:100%; }
+.po-addr { color:#555; font-size:8px; word-break:break-all; background:#fff; border-bottom:1px solid #ccc; padding:4px 8px; font-family:'Courier New',monospace; }
+.po-secure { color:#2e7d32; font-size:8px; background:#fff; padding:0 8px 5px; border-bottom:1px solid #ccc; margin-bottom:8px; }
+.po-rune-header { text-align:center; padding:6px 4px 8px; margin:0 10px 8px; border-bottom:2px solid #2a2115; }
+.po-rune-banner { font-size:18px; letter-spacing:2px; color:#2a2115; font-family:'Courier New',Courier,monospace; }
+.po-title { color:#2a2115; font-size:10px; letter-spacing:1px; text-transform:uppercase; font-weight:700; margin-top:3px; }
+.po-puzzle-label { color:#3a2e1c; font-size:9px; margin:6px 10px 3px; }
+.po-puzzle-runes { font-size:18px; letter-spacing:2px; color:#2a2115; font-family:'Courier New',Courier,monospace; word-break:break-all; line-height:1.6; margin:0 10px; }
+.po-module-name { color:#2a2115; font-size:9px; margin:4px 10px 0; font-style:italic; }
+.po-method { color:#6a5a3a; font-size:8px; margin:2px 10px 8px; }
+.po-loading { color:#6a5a3a; font-size:10px; font-style:italic; }
+
+/* ── Product Website ──────────────────────────────────────────────────────── */
+/* This is an original Cicada-authored page, not an impersonation of a real
+   site, so the green-terminal identity itself is fine (it matches the real
+   3301 aesthetic, same reasoning as the DecryptPGP/MIDI tool pages) — it
+   only needed the letter-spacing and glow toned down from "every line
+   maxed out" to something a real terminal readout would look like. */
+.pw-wrap { background:#0a0a0f; color:#c8d8c0; font-family:'Courier New',monospace; padding:8px; overflow-y:auto; min-height:100%; }
+.pw-img { display:block; max-width:100%; margin:0 auto 8px; border:1px solid #1a3a1a; filter:sepia(0.3) hue-rotate(60deg) brightness(0.7); }
+.pw-msg { font-size:9px; color:#4a6a4a; text-align:center; margin-bottom:6px; }
+.pw-timer { font-size:32px; color:#4aff4a; text-shadow:0 0 4px rgba(74,255,74,0.35); letter-spacing:1px; font-family:'Courier New',monospace; text-align:center; padding:6px 0; }
+.pw-timer-label { font-size:8px; color:#2a4a2a; letter-spacing:1px; text-align:center; margin-bottom:4px; }
+.pw-coords { font-size:14px; color:#4aff4a; letter-spacing:0.5px; text-align:center; line-height:1.8; white-space:pre; padding:6px 0; }
+
+/* ── Lead Blocks (shared across platforms) ───────────────────────────────── */
+
+.lead-wrap { padding: 8px; }
+.lead-block { background: rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.1); border-radius: 4px; padding: 6px 8px; margin: 4px 0; word-break: break-all; }
+.lead-label { font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: #888; margin-bottom: 3px; }
+/* Decoded hex/Caesar/Playfair output is plain text dropped into whatever
+   page hosts it — same rule as the RPG battle log and receipts: no boxed
+   card, no syntax-highlight colors of its own, just inherit the host.
+   Monospace is kept because these are column-aligned (hex bytes, cipher
+   grids), which is a legibility need, not decoration. */
+.lead-hex, .lead-caesar, .lead-playfair {
+  font-family: 'Courier New', monospace; font-size: 10px; line-height: 1.6;
+  color: inherit; background: transparent; word-break: break-all;
+}
+.lead-canvas-wrap { border: 1px solid rgba(0,0,0,0.15); border-radius: 4px; overflow: hidden; margin: 4px 0; display: inline-block; max-width: 100%; }
+canvas { display: block; max-width: 100%; }
+/* A receipt here is plain text (like the RPG battle log), not an image of a
+   receipt — so no boxed card, no background, no border. It just inherits
+   whatever page it's dropped into. Monospace is kept because real receipts
+   are fixed-width printed, which is a legibility/alignment fact, not a
+   decorative choice. */
+.lead-receipt-wrap { font-family: 'Courier New', monospace; font-size: 9px; color: inherit; background: transparent; margin: 4px 0; }
+.lead-receipt-title { font-weight: bold; font-size: 10px; text-align: center; border-bottom: 1px dashed currentColor; padding-bottom: 3px; margin-bottom: 4px; opacity: 0.9; }
+.lead-receipt-line { padding: 1px 0; }
+.lead-midi-link { font-family: 'Courier New', monospace; font-size: 10px; }
+
+/* A downloaded .mid file previews like a real OS previews audio — a small
+   player card (icon, Play/Pause, a scrubber), not a bare download-link
+   chip. Sits on the plain white file-viewer-text background the same way
+   e.g. macOS Quick Look drops a dark audio-preview card onto a white page. */
+.mp-player {
+  max-width: 320px; margin: 24px auto; padding: 14px 16px;
+  background: #23262b; border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+.mp-row { display: flex; align-items: center; gap: 10px; }
+.mp-play-btn {
+  flex: none; font-family: 'Courier New', monospace; font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; color: #fff; background: #3a6df0; border: none; border-radius: 20px;
+  padding: 8px 14px; cursor: pointer;
+}
+.mp-play-btn:hover { background: #4a7bff; }
+.mp-info { flex: 1; min-width: 0; }
+.mp-title { color: #eee; font-size: 12px; font-weight: 600; }
+.mp-meta { color: #8a8f98; font-size: 9px; letter-spacing: 0.5px; margin-top: 2px; }
+.mp-icon { flex: none; font-size: 18px; opacity: 0.7; }
+.mp-progress-track { margin-top: 12px; background: #3a3d44; border-radius: 3px; height: 4px; overflow: hidden; }
+.mp-progress-fill { height: 100%; width: 0%; background: #3a6df0; border-radius: 3px; }
+
+/* ── Pizza ────────────────────────────────────────────────────────────────── */
+
+/* PizzaNet, 1994 style: Pizza Hut's real first online-ordering site was "kept
+   pretty basic" — a plain webform, since browsers of the era could barely
+   render inline images. This skin leans into that instead of a TV-commercial
+   look: gray page, default serif, a small logo GIF-style banner, beveled
+   90s-HTML buttons (border:2px outset), no gradients, no glow, no motion. */
+.pz-wrap { background: #c0c0c0; font-family: "Times New Roman", Times, serif; color: #000; padding: 6px; overflow-y: auto; }
+.pz-header { background: #ffffff; border: 1px solid #808080; padding: 6px 8px; text-align: center; margin-bottom: 4px; }
+.pz-logo { font-size: 20px; color: #a00000; font-weight: bold; letter-spacing: 0; }
+.pz-tagline { font-size: 10px; color: #333; font-family: "Times New Roman", Times, serif; font-style: italic; }
+.pz-star { display: none; }
+.pz-marquee { background:#fff; color:#a00000; font-size:9px; font-family:"Times New Roman",serif; padding:2px 4px; white-space:nowrap; overflow:hidden; border-bottom:1px solid #808080; }
+.pz-marquee-inner { display:inline-block; animation: pz-scroll 18s linear infinite; }
+@keyframes pz-scroll { from{transform:translateX(320px)} to{transform:translateX(-100%)} }
+.pz-section { background: #fff; border: 1px solid #808080; margin: 4px 0; padding: 6px; }
+.pz-section-title { font-size: 11px; font-weight:bold; color: #000; border-bottom: 1px solid #808080; margin-bottom: 4px; padding-bottom:2px; }
+.pz-size-btn { background: #d4d0c8; border: 2px outset #fff; color: #000; font-family: "Times New Roman", Times, serif; font-size: 11px; padding: 4px 10px; margin: 2px; cursor: pointer; }
+.pz-size-btn:hover:not(:disabled) { background: #e0ddd4; }
+.pz-size-btn:active:not(:disabled) { border-style: inset; }
+.pz-size-btn:disabled { opacity: 0.5; cursor: default; }
+.pz-size-btn.selected { border-style: inset; background: #b8c8e8; }
+.pz-topping, .pz-drink { background: #d4d0c8; border: 2px outset #fff; color: #000; font-family: "Times New Roman", Times, serif; font-size: 9px; padding: 2px; margin: 2px; cursor: pointer; width: 56px; vertical-align: top; text-align: center; }
+.pz-topping:hover:not(:disabled), .pz-drink:hover:not(:disabled) { background: #e0ddd4; }
+.pz-topping:disabled, .pz-drink:disabled { opacity: 0.5; cursor: default; }
+.pz-topping.selected, .pz-drink.selected { border-style: inset; background: #b8c8e8; }
+.pz-action-btn { background: #d4d0c8; border: 2px outset #fff; color: #000; font-family: "Times New Roman", Times, serif; font-size: 12px; font-weight:bold; padding: 5px 14px; margin: 3px; cursor: pointer; }
+.pz-action-btn:disabled { opacity: 0.5; cursor: default; }
+.pz-action-btn:active:not(:disabled) { border-style: inset; }
+.pz-confirm-btn { background: #d4d0c8; }
+.pz-toppings-grid { display: flex; flex-wrap: wrap; }
+.pz-builder-row { display: flex; gap: 4px; align-items: flex-start; }
+.pz-canvas-wrap { flex-shrink: 0; background: #fff; border: 1px solid #808080; padding: 4px; text-align: center; }
+.pz-canvas-label { font-size: 9px; color: #333; font-family: "Times New Roman", serif; margin-top: 2px; min-height: 12px; }
+.pz-form-col { flex: 1; min-width: 0; }
+.pz-remove-btn { background: #d4d0c8; border: 1px outset #fff; color: #000; font-size: 8px; font-family: "Times New Roman", serif; padding: 1px 4px; margin: 1px; cursor: pointer; }
+.pz-remove-btn:hover { background: #e0ddd4; }
+.pz-topping-tag { display: inline-block; background: #fff; border: 1px solid #808080; font-size: 8px; font-family: "Times New Roman", serif; color: #000; padding: 1px 3px; margin: 1px; }
+.pz-cart-section { background: #fff; border: 1px solid #808080; margin: 4px 0; padding: 6px; }
+.pz-cart-item { display: flex; align-items: center; gap: 3px; padding: 2px 0; border-bottom: 1px solid #ccc; font-size: 10px; }
+.pz-cart-edit { background: #d4d0c8; border: 1px outset #fff; color: #000; font-size: 10px; padding: 1px 5px; cursor: pointer; flex-shrink: 0; }
+.pz-cart-del { background: #d4d0c8; border: 1px outset #fff; color: #a00000; font-size: 10px; padding: 1px 5px; cursor: pointer; flex-shrink: 0; }
+
+/* ── Pizza Receipt ────────────────────────────────────────────────────────── */
+/* A "PizzaNet" order confirmation would just be the next screen the plain
+   webform above sends you to — same austere look, not a separate theme. */
+
+.pz-receipt-wrap { background:#c0c0c0; font-family:"Times New Roman",Times,serif; color:#000; padding:6px; overflow-y:auto; min-height:100%; }
+.pz-receipt-header { background:#fff; text-align:center; padding:6px; border:1px solid #808080; margin-bottom:6px; }
+.pz-receipt-logo { font-size:16px; font-weight:bold; color:#a00000; }
+.pz-receipt-sub { font-size:9px; font-family:"Times New Roman",serif; color:#333; }
+.pz-receipt-divider { border:none; border-top:1px solid #808080; margin:5px 0; }
+.pz-receipt-item { background:#fff; border:1px solid #808080; padding:4px 6px; margin:3px 0; font-size:10px; color:#000; }
+.pz-receipt-meta { font-size:9px; color:#333; margin:2px 0; font-family:"Times New Roman",serif; }
+.pz-receipt-dest { font-size:9px; color:#000; word-break:break-all; font-family:"Courier New",monospace; margin-top:4px; }
+.pz-receipt-footer { text-align:center; font-size:9px; font-family:"Times New Roman",serif; color:#333; margin-top:6px; }
+
+/* ── ASCIICaesarCipher.com (styled after cryptii.com) ────────────────────── */
+/* cryptii's real UI is a light, flat, blue-accented chain of "bricks" (each a
+   labeled step — Text -> Caesar Cipher -> Text) connected top to bottom, with
+   no dark theme, no monospace-everywhere, no glow. Deliberately styled
+   nothing like the green cic-* terminal tools elsewhere in the mod — this is
+   supposed to read as a different, real, currently-existing tool. */
+
+.cry-wrap { background:#f3f4f6; font-family:-apple-system,'Segoe UI',Arial,sans-serif; padding:0; overflow-y:auto; min-height:100%; color:#1f2430; }
+.cry-topbar { background:#fff; border-bottom:1px solid #e2e4e9; padding:8px 12px; }
+.cry-topbar-title { font-size:13px; font-weight:700; color:#2f6fed; }
+.cry-topbar-sub { font-size:9px; color:#8a8f9c; margin-top:1px; display:block; }
+.cry-pipe { padding:12px; display:flex; flex-direction:column; align-items:stretch; max-width:360px; margin:0 auto; }
+.cry-brick { background:#fff; border:1px solid #e2e4e9; border-radius:6px; padding:8px 10px; box-shadow:0 1px 2px rgba(20,20,40,0.04); }
+.cry-brick-op { border-color:#c7d7fb; background:#f7faff; }
+.cry-brick-label { font-size:9px; font-weight:700; color:#4a5063; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+.cry-brick-tag { font-size:8px; font-weight:400; text-transform:none; color:#8a8f9c; letter-spacing:0; }
+.cry-connector { text-align:center; color:#b7bcc7; font-size:12px; padding:2px 0; }
+.cry-input { width:100%; border:1px solid #dcdfe4; border-radius:4px; padding:6px 8px; font-size:11px; font-family:'Consolas','Courier New',monospace; color:#1f2430; outline:none; }
+.cry-input:focus { border-color:#2f6fed; }
+.cry-btn { background:#2f6fed; border:none; color:#fff; font-size:10px; font-weight:600; padding:6px 14px; border-radius:4px; cursor:pointer; }
+.cry-btn:hover { background:#265cc9; }
+.cry-output { background:#f8f9fb; border:1px solid #e2e4e9; border-radius:4px; padding:6px 8px; font-size:9px; color:#4a5063; max-height:220px; overflow-y:auto; }
+.cry-hint { color:#8a8f9c; font-style:italic; }
+.cry-shift-row { font-family:'Consolas','Courier New',monospace; font-size:9px; color:#1f2430; padding:1px 0; border-bottom:1px solid #eef0f3; }
+.cry-shift-row b { color:#2f6fed; margin-right:6px; }
+
+/* ── Tormail ──────────────────────────────────────────────────────────────── */
+
+.tm-wrap { background-color: #000000; font-family: 'Courier New', Courier, monospace; padding: 0; overflow-y: auto; min-height: 100%; }
+.tm-marquee { background-color: #FF0000; padding: 2px 0; }
+.tm-marquee span { color: #ffffff; font-size: 10px; font-family: 'Courier New', monospace; letter-spacing: 1px; }
+.tm-header { padding: 6px 8px; border-bottom: 1px solid #330000; display: flex; align-items: center; gap: 8px; }
+.tm-logo-icon { color: #FF0000; font-size: 20px; }
+.tm-logo-text { color: #ffffff; font-size: 13px; letter-spacing: 1px; font-weight: bold; }
+.tm-logo-sub { color: #880000; font-size: 8px; letter-spacing: 0.5px; display: block; margin-top: 1px; }
+.tm-body { padding: 6px 8px; }
+.tm-toolbar { display: flex; align-items: center; gap: 4px; margin-bottom: 6px; }
+.tm-btn { background: #000; border: 1px solid #FF0000; color: #FF0000; font-family: 'Courier New', monospace; font-size: 10px; padding: 3px 10px; cursor: pointer; }
+.tm-btn:hover { background: #FF0000; color: #000; }
+.tm-folder-label { color: #880000; font-size: 9px; text-transform: uppercase; border-bottom: 1px solid #1a0000; padding-bottom: 2px; margin-bottom: 4px; }
+.tm-email-row { display: flex; align-items: center; gap: 6px; padding: 4px 5px; border-bottom: 1px solid #0d0000; cursor: pointer; transition: background 0.1s; }
+.tm-email-row:hover { background: #1a0000; }
+.tm-email-dot { width: 6px; height: 6px; border-radius: 50%; background: #FF0000; flex-shrink: 0; }
+.tm-email-dot.read { background: #440000; }
+.tm-email-from { color: #FF4444; font-size: 10px; min-width: 80px; flex-shrink: 0; }
+.tm-email-subject { color: #ffffff; font-size: 10px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tm-empty { color: #440000; font-size: 10px; padding: 8px 5px; letter-spacing: 1px; }
+.tm-wrap p { color: #ffffff; }
+
+/* ── Liber Primus Help ────────────────────────────────────────────────────── */
+/* The real Liber Primus is a physical book: cream/aged paper, black ink,
+   plain typeset rune tables — no neon glow, no vignette, no CRT trappings.
+   This skin is built to look like a scanned page of that book instead of a
+   generic "ancient hacker terminal." */
+
+.lp-wrap { background: #e9ddc0; color: #2a2115; font-family: Georgia, 'Palatino Linotype', 'Book Antiqua', Palatino, serif; padding: 10px; overflow-y: auto; min-height: 100%; }
+.lp-header { text-align: center; padding: 6px 4px 10px; border-bottom: 2px solid #2a2115; margin-bottom: 10px; }
+.lp-rune-banner { font-size: 20px; letter-spacing: 3px; color: #2a2115; margin-bottom: 4px; font-family: 'Courier New', Courier, monospace; }
+.lp-title { font-size: 14px; color: #2a2115; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
+.lp-subtitle { font-size: 8px; color: #5a4a30; letter-spacing: 1px; margin-top: 3px; font-style: italic; }
+.lp-divider { text-align: center; color: #7a6a48; font-size: 11px; letter-spacing: 4px; margin: 8px 0; }
+.lp-section { border: 1px solid #b3a274; background: rgba(0,0,0,0.03); padding: 6px 8px; margin: 8px 0; }
+.lp-section-title { color: #2a2115; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; margin-bottom: 6px; border-bottom: 1px solid #b3a274; padding-bottom: 4px; }
+.lp-method { padding: 3px 0; font-size: 10px; color: #3a2e1c; line-height: 1.6; border-bottom: 1px solid #d6c9a2; }
+.lp-method:last-child { border-bottom: none; }
+.lp-method b { color: #2a2115; }
+.lp-gematria-grid { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.lp-rune-cell { background: #f2e8ce; border: 1px solid #b3a274; padding: 3px 5px; text-align: center; min-width: 36px; }
+.lp-rune-symbol { font-size: 18px; color: #2a2115; display: block; line-height: 1.2; font-family: 'Courier New', Courier, monospace; }
+.lp-rune-letter { font-size: 8px; color: #6a5a3a; display: block; margin-top: 1px; }
+.lp-rune-index { font-size: 7px; color: #a3936a; display: block; }
+
+/* ── Desktop / App Menu ───────────────────────────────────────────────────── */
+
+/* Wallpapers — each one styled to read as that OS's own default desktop
+   look, instead of the same neon-green/teal Cicada tint painted under all
+   three. */
+.dt-wallpaper-win {
+  /* Windows' default spotlight-style wallpaper: a blue gradient. */
+  background: linear-gradient(160deg, #0f3a63 0%, #17527e 45%, #1c6a94 100%);
+  padding: 10px;
+}
+.dt-wallpaper-mac {
+  /* A smooth dark two-tone gradient, closer to macOS's own dark dynamic
+     wallpapers than a multi-color hacker gradient. */
+  background: linear-gradient(160deg, #1c1c2e 0%, #2a2a44 100%);
+  padding: 10px;
+}
+.dt-wallpaper-linux {
+  /* Muted plum/gray, in the spirit of Ubuntu/GNOME's default desktop. */
+  background: linear-gradient(160deg, #2c1f33 0%, #241b2c 100%);
+  padding: 10px;
+}
+
+/* Desktop icon grid */
+.dt-icons-grid { display:flex; flex-wrap:wrap; gap:10px; align-content:flex-start; padding:4px; }
+.dt-icon-wrap { display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; width:54px; }
+.dt-icon-wrap:hover .dt-icon { filter:brightness(1.2); transform:translateY(-2px); }
+.dt-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--icon-color) 80%, white), var(--icon-color));
+  position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+  display: flex; align-items: center; justify-content: center;
+  transition: filter 0.15s, transform 0.15s;
+}
+.dt-icon-gloss {
+  position: absolute; top:0; left:0; right:0; height:50%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.35), rgba(255,255,255,0.05));
+  border-radius: 10px 10px 0 0; pointer-events:none;
+}
+.dt-icon-glyph { font-size:20px; position:relative; z-index:1; }
+.dt-icon-label { font-size:8px; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,0.8); text-align:center; line-height:1.2; word-break:break-word; max-width:54px; }
+
+/* The glossy gradient squircle is a macOS app-icon convention — real Windows
+   and GNOME desktop icons are flat (just the glyph, no colored badge behind
+   it), so those two wallpapers flatten the shared .dt-icon markup instead of
+   getting their own duplicated icon HTML. The mac wallpaper and dock icons
+   are untouched and keep the glossy squircle. */
+.dt-wallpaper-win .dt-icon,
+.dt-wallpaper-linux .dt-icon {
+  background: none; box-shadow: none; border-radius: 0;
+}
+.dt-wallpaper-win .dt-icon-gloss,
+.dt-wallpaper-linux .dt-icon-gloss { display: none; }
+.dt-wallpaper-win .dt-icon-glyph,
+.dt-wallpaper-linux .dt-icon-glyph { font-size: 30px; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6)); }
+
+/* Windows taskbar — flat, like Windows 10/11's actual dark taskbar. No
+   colored accent border; that was Cicada-green bleeding into OS chrome. */
+.desktop-win { display:flex; flex-direction:column; background:#0a0a1a; }
+.win-taskbar { background:#1f1f1f; padding:4px 8px; display:flex; align-items:center; gap:6px; flex-shrink:0; }
+.win-start-btn { background:#0078d7; border:none; color:#fff; font-size:9px; padding:4px 10px; cursor:pointer; border-radius:3px; font-weight:600; flex-shrink:0; }
+.win-start-btn:hover { background:#1a8fe8; }
+.win-taskbar-apps { display:flex; gap:4px; flex:1; }
+.win-taskbar-app { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.14); color:#e8e8e8; font-size:13px; padding:3px 8px; cursor:pointer; border-radius:3px; transition:background 0.1s; }
+.win-taskbar-app:hover { background:rgba(255,255,255,0.18); border-color:rgba(255,255,255,0.3); }
+.win-taskbar-clock { margin-left:auto; color:#e8e8e8; font-size:8px; text-align:right; line-height:1.5; flex-shrink:0; }
+.win-username-tag { color:rgba(255,255,255,0.6); font-size:8px; margin-bottom:4px; }
+
+/* macOS menubar & dock */
+.desktop-mac { display:flex; flex-direction:column; background:linear-gradient(160deg, #1c1c2e 0%, #2a2a44 100%); }
+.mac-menubar { background:rgba(0,0,0,0.75); backdrop-filter:blur(10px); padding:4px 8px; display:flex; align-items:center; gap:10px; flex-shrink:0; border-bottom:1px solid rgba(255,255,255,0.15); }
+.mac-apple { color:#fff; font-size:13px; }
+.mac-menu-item { color:rgba(255,255,255,0.85); font-size:9px; cursor:default; }
+.mac-menubar-right { margin-left:auto; display:flex; gap:8px; }
+.mac-dock { padding:4px 8px; display:flex; justify-content:center; flex-shrink:0; }
+.mac-dock-inner { background:rgba(255,255,255,0.12); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.2); border-radius:14px; padding:4px 8px; display:flex; gap:6px; align-items:flex-end; box-shadow:0 4px 20px rgba(0,0,0,0.4); }
+.dock-item { display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; }
+.dock-item:hover .dt-icon { transform:translateY(-6px) scale(1.1); }
+.dock-label { font-size:7px; color:rgba(255,255,255,0.7); white-space:nowrap; opacity:0; transition:opacity 0.15s; }
+.dock-item:hover .dock-label { opacity:1; }
+
+/* Linux panel — a flat GNOME-style dark top bar. No teal glow border; that
+   was the same Cicada-tint bleeding into what should be neutral OS chrome. */
+.desktop-linux { display:flex; flex-direction:column; background:linear-gradient(160deg, #2c1f33 0%, #241b2c 100%); }
+.linux-panel { background:#2d2d2d; padding:4px 8px; display:flex; align-items:center; flex-shrink:0; }
+.linux-panel-left { display:flex; align-items:center; }
+.linux-panel-center { flex:1; text-align:center; color:rgba(255,255,255,0.9); font-size:9px; }
+.linux-panel-right { margin-left:auto; }
+.linux-panel-btn { background:transparent; border:none; color:rgba(255,255,255,0.85); font-size:9px; cursor:pointer; padding:2px 6px; border-radius:3px; }
+.linux-panel-btn:hover { background:rgba(255,255,255,0.1); }
+.linux-panel-user { color:rgba(255,255,255,0.65); font-size:8px; }
+
+/* ── About This PC, by OS ─────────────────────────────────────────────────── */
+/* Was one dark neon-terminal box regardless of platform, even though it
+   reported the detected OS in its own text. Now it looks like that OS's
+   actual About/System-Properties panel: macOS and GNOME get a rounded,
+   centered card (different palettes); Windows gets a plain, sharp-edged,
+   left-aligned settings page with the OK button bottom-right. */
+
+.about-pc { min-width: 220px; max-width: 260px; padding: 16px 20px; font-size: 9px; }
+.about-pc-rows { margin: 10px 0; }
+.about-pc-row { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; }
+
+.about-pc-mac {
+  background: #2c2c2e; color: #f0f0f0; border-radius: 12px; text-align: center;
+  font-family: -apple-system, 'Segoe UI', Arial, sans-serif;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+.about-pc-mac .about-pc-icon { font-size: 30px; margin-bottom: 4px; }
+.about-pc-mac .about-pc-name { font-size: 13px; font-weight: 700; }
+.about-pc-mac .about-pc-sub { font-size: 9px; color: rgba(255,255,255,0.55); margin-bottom: 6px; }
+.about-pc-mac .about-pc-row { border-top: 1px solid rgba(255,255,255,0.1); }
+.about-pc-mac .about-pc-label { color: rgba(255,255,255,0.55); }
+.about-pc-mac .about-pc-btn {
+  margin-top: 10px; background: rgba(255,255,255,0.14); border: none; color: #fff;
+  font-size: 10px; padding: 5px 22px; border-radius: 12px; cursor: pointer;
+}
+.about-pc-mac .about-pc-btn:hover { background: rgba(255,255,255,0.22); }
+
+.about-pc-linux {
+  background: #242424; color: #eee; border-radius: 12px; text-align: center;
+  font-family: 'Cantarell', 'Segoe UI', Arial, sans-serif;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+.about-pc-linux .about-pc-icon { font-size: 30px; margin-bottom: 4px; }
+.about-pc-linux .about-pc-name { font-size: 13px; font-weight: 700; }
+.about-pc-linux .about-pc-sub { font-size: 9px; color: rgba(255,255,255,0.55); margin-bottom: 6px; }
+.about-pc-linux .about-pc-row { border-top: 1px solid rgba(255,255,255,0.08); }
+.about-pc-linux .about-pc-label { color: rgba(255,255,255,0.55); }
+.about-pc-linux .about-pc-btn {
+  margin-top: 10px; background: #3584e4; border: none; color: #fff;
+  font-size: 10px; font-weight: 600; padding: 5px 22px; border-radius: 8px; cursor: pointer;
+}
+.about-pc-linux .about-pc-btn:hover { background: #4a90e2; }
+
+.about-pc-win {
+  background: #f3f3f3; color: #1a1a1a; border-radius: 2px; text-align: left;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4); border: 1px solid #d0d0d0;
+}
+.about-pc-win .about-pc-title { font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+.about-pc-win .about-pc-name-win { font-size: 11px; font-weight: 700; }
+.about-pc-win .about-pc-sub-win { font-size: 9px; color: #555; margin-bottom: 4px; border-bottom: 1px solid #d0d0d0; padding-bottom: 8px; }
+.about-pc-win .about-pc-row { border-top: 1px solid #e2e2e2; }
+.about-pc-win .about-pc-label { color: #555; }
+.about-pc-win .about-pc-btn-row { text-align: right; margin-top: 8px; }
+.about-pc-win .about-pc-btn {
+  background: #0067c0; border: none; color: #fff;
+  font-size: 9px; padding: 5px 18px; border-radius: 2px; cursor: pointer;
+}
+.about-pc-win .about-pc-btn:hover { background: #1a7fd6; }
+
+/* ── Desktop monitor overrides ────────────────────────────────────────────── */
+/* When the desktop is active, the monitor's padding and text-align must not
+   interfere with the full-bleed layout. The desktop-wrap fills the monitor
+   by pulling back the padding with negative margin. */
+
+.monitor:has(.desktop-wrap) {
+  padding: 0;
+  text-align: left;
+}
+
+.desktop-wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;   /* grow to fill .monitor's full (now viewport-scaled) height */
+  min-height: 400px;
+  width: 100%;
+}
+
+/* Wallpaper fills remaining space between top bar and bottom bar */
+.dt-wallpaper {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+  min-height: 200px;
+}
+
+/* ── Crossword Puzzle ─────────────────────────────────────────────────────── */
+
+.cell {
+  position: relative;
+  cursor: pointer;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cell.black    { background: #1a1a1a; cursor: default; }
+.cell.highlighted { background: #a7d8ff; }
+.cell.active   { background: #ffc107; }
+
+.cell-number {
+  position: absolute;
+  top: 2px; left: 2px;
+  font-size: 0.5rem;
+  color: #000;
+  font-family: Arial, sans-serif;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.cell-input {
+  width: 100%; height: 100%;
+  background: transparent;
+  border: none; outline: none;
+  text-align: center;
+  font-family: 'Times New Roman', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #000;
+  text-transform: uppercase;
+  cursor: pointer;
+  caret-color: transparent;
+  padding: 0;
+  box-sizing: border-box;
+}
+.cell-input.correct   { color: #1a7a1a; }
+.cell-input.incorrect { color: #c8102e; }
+
+.clue-item {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 3px;
+  font-size: 0.72rem;
+  color: #333;
+  line-height: 1.4;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-left: 2px solid transparent;
+  transition: all 0.12s;
+  align-items: flex-start;
+}
+.clue-item:hover, .clue-item.active {
+  border-left-color: #326891;
+  background: #f0f7ff;
+  color: #000;
+}
+.clue-num {
+  font-weight: 700;
+  color: #000;
+  flex-shrink: 0;
+  min-width: 1.4rem;
+  font-size: 0.7rem;
+}
+.clue-type {
+  display: inline-block;
+  font-size: 0.55rem;
+  letter-spacing: 0.05em;
+  padding: 0.1rem 0.3rem;
+  border-radius: 2px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+.clue-type.definition { background:#e8f5e8; color:#1a7a1a; }
+.clue-type.synonym    { background:#e8f0ff; color:#326891; }
+.clue-type.antonym    { background:#fff0f0; color:#c8102e; }
+.clue-type.answer     { background:#fffbe8; color:#8a6a00; }
+
+.encrypt-tag {
+  font-size: 0.55rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 2px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 2px;
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+}
+.encryption-block {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  padding: 3px 6px;
+  font-size: 0.65rem;
+  color: #666;
+  margin-top: 2px;
+  font-style: italic;
+  word-break: break-all;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RPG BATTLE LOG PUZZLE
+   Treated as a text file dropped into whatever site is hosting it: no theme
+   background/border/glow of its own, no per-theme color coding. Text color
+   is always just whatever the host already uses (effectively black or
+   white), and the background is always transparent so the host shows
+   through. Monospace is kept only because every theme's header/footer uses
+   box-drawing characters (╔═╗, ┌─┐, ━━━) that need a fixed-width font to
+   line up — that's a legibility requirement, not decoration. Crit hits are
+   marked with weight/underline instead of a color, since color is off the
+   table now. */
+
+.rpg-battle, .rpg-jrpg, .rpg-modern, .rpg-dnd, .rpg-terminal {
+  font-family: 'Courier New', Courier, monospace;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: inherit;
+  padding: 0;
+  margin: 8px 0;
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.rpg-header { margin-bottom: 8px; }
+.rpg-footer { margin-top: 8px; }
+
+.rpg-log {
+  margin: 8px 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.rpg-turn { padding: 2px 0; margin: 1px 0; }
+.rpg-crit { font-weight: bold; }
+
+.rpg-dmg { font-weight: bold; }
+.rpg-crit .rpg-dmg { text-decoration: underline; }
+
+.rpg-hint {
+  margin-top: 8px;
+  font-size: 9px;
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.rpg-title-box, .rpg-title { line-height: 1.3; }
+.rpg-vs, .rpg-flavor, .rpg-narrative { text-align: center; }
+.rpg-flavor, .rpg-narrative { font-style: italic; font-size: 9px; margin-top: 6px; }
+.rpg-enemy { padding-left: 20px; }
+
+@media (max-width: 500px) {
+  .rpg-battle, .rpg-jrpg, .rpg-modern, .rpg-dnd, .rpg-terminal { font-size: 9px; }
+  .rpg-log { max-height: 300px; }
+  .rpg-turn, .rpg-hint { font-size: 8px; }
 }

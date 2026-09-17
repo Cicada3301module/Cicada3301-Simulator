@@ -1,0 +1,267 @@
+@font-face {
+  font-family: 'ASCIIPigpen-Regular';
+  src: url("fonts/asciipigpen.ttf") format('truetype');
+}
+
+/* ── Reset ───────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Root Variables ──────────────────────────────────────────────────────── */
+
+:root {
+  --red:       #ff2200;
+  --red-dim:   #8a1200;
+  --bg:        #050000;
+  --bg2:       #0d0000;
+  --bg3:       #150000;
+  --text:      #ffcccc;
+  --text-dim:  #aa5555;
+  --text-faint:#552222;
+  --border:    #330000;
+  --border2:   #550000;
+  --mono:      'Courier New', Courier, monospace;
+}
+
+/* ── Body & Background ───────────────────────────────────────────────────── */
+/* The real TorMail (2011-2013) ran one of two plain webmail apps on a Tor
+   hidden service — there's no record of it being styled at all beyond basic
+   colors. No CRT scanlines or vignette here: those belong to the VM "monitor"
+   bezel elsewhere in the mod, not to what would render as an ordinary
+   (if grim-looking) browser window. */
+
+body {
+  background-color: var(--bg);
+  font-family: var(--mono);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* ── Warning Marquee ─────────────────────────────────────────────────────── */
+/* Scrolling ad/warning marquees on shady sites are genuinely period-accurate
+   clutter from this era of the web — kept, just without letter-spacing. */
+
+.tm-warning {
+  background: var(--red);
+  color: #000;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: bold;
+  padding: 3px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 100;
+}
+
+.tm-warning-inner {
+  display: inline-block;
+  animation: tm-scroll 18s linear infinite;
+  padding-left: 100%;
+}
+
+@keyframes tm-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
+}
+
+/* ── Main Container ──────────────────────────────────────────────────────── */
+
+.tm-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 16px 14px 20px;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+
+.tm-header {
+  border-bottom: 1px solid var(--border2);
+  padding-bottom: 10px;
+  margin-bottom: 16px;
+}
+
+.tm-logo {
+  font-size: 18px;
+  color: var(--red);
+  font-weight: bold;
+}
+
+.tm-logo-sub {
+  font-size: 8px;
+  color: var(--text-faint);
+  margin-top: 2px;
+}
+
+.tm-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  font-size: 8px;
+  color: var(--text-dim);
+}
+
+.tm-status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--red);
+  flex-shrink: 0;
+}
+
+/* ── Section Label ───────────────────────────────────────────────────────── */
+
+.tm-label {
+  font-size: 8px;
+  color: var(--red);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tm-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Field Groups ────────────────────────────────────────────────────────── */
+
+.tm-field {
+  margin-bottom: 12px;
+}
+
+/* ── Inputs ──────────────────────────────────────────────────────────────── */
+
+.tm-input {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 7px 10px;
+  outline: none;
+}
+
+.tm-input:focus {
+  border-color: var(--red);
+}
+
+.tm-input::placeholder {
+  color: var(--text-faint);
+  font-size: 10px;
+}
+
+textarea.tm-input {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.6;
+}
+
+/* ── Send Button ─────────────────────────────────────────────────────────── */
+/* A plain bordered toggle instead of a fill-wipe hover animation — closer to
+   what an actual <input type=submit> on a site like this would have done. */
+
+.tm-send-btn {
+  background: transparent;
+  border: 1px solid var(--red);
+  color: var(--red);
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 8px 20px;
+  cursor: pointer;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.tm-send-btn:hover { background: var(--red); color: #000; }
+.tm-send-btn:active { background: var(--red-dim); border-color: var(--red-dim); }
+
+/* ── Error ───────────────────────────────────────────────────────────────── */
+
+.tm-error {
+  font-size: 9px;
+  color: var(--red);
+  margin-top: 6px;
+  min-height: 14px;
+}
+
+/* ── Reply / Read View ───────────────────────────────────────────────────── */
+
+.tm-meta-block {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  margin-bottom: 10px;
+}
+
+.tm-meta-row {
+  font-size: 10px;
+  color: var(--text-dim);
+  padding: 2px 0;
+}
+
+.tm-meta-row span {
+  color: var(--text);
+}
+
+.tm-message-block {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  font-size: 11px;
+  color: var(--text);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin-bottom: 10px;
+}
+
+.tm-attachment-block {
+  background: var(--bg3);
+  border: 1px dashed var(--border2);
+  padding: 8px 12px;
+  font-size: 9px;
+  color: var(--text-dim);
+}
+
+.tm-attachment-block img {
+  display: block;
+  margin-top: 8px;
+  max-width: 120px;
+  border: 1px solid var(--border2);
+  filter: sepia(0.4) hue-rotate(300deg) brightness(0.8);
+}
+
+/* ── Divider ─────────────────────────────────────────────────────────────── */
+
+.tm-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 14px 0;
+}
+
+/* ── Blink ───────────────────────────────────────────────────────────────── */
+/* The blinking text cursor is another genuinely period-authentic touch — kept. */
+
+.tm-blink {
+  animation: tm-blink 1.1s step-end infinite;
+}
+
+@keyframes tm-blink {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0; }
+}

@@ -1,0 +1,108 @@
+LEG 1:
+
+SQL Injection
+Tor App
+Google App
+Skype App
+Map App
+.onion link
+Message in Solid Color Image
+reddit link
+Coordinates
+Phone Number
+Spectrogram
+NATO Phonetic Alphabet
+Morse Code
+Tap Code
+QR Code In Posters
+First Image Replica
+Image Product Website
+ASCII Caesar Cipher
+Hex to ASCII Conversion
+Imgur link
+4chan link
+Pastebin Link
+Twitter Link
+X Link
+Dropbox Link
+MIDI Substitution
+Helpful Links (www.cicada3301solved.com, www.asciicaesarcipher.com, liberprimus.onion)
+Liber Primus
+
+LEG 2:
+
+Jacobo - QR Codes in Websites
+TracksJosh - ASCII Pigpen
+TracksJosh - PGP
+TracksJosh - ASCII Playfair
+TracksJosh - Google/Tor Link Wordle
+TracksJosh - Pizza Ordering
+redpenguin - Quizzington J Puzzle
+redpenguin - Crossword Puzzle
+Axodeau - Axodeau Cats
+Ghastly - Fictional RPG Logs "The player and enemy use different items which affect the damage output of their attacks, but what the item actually does in terms of the modification isn't stated; the modification numbers are required for some kind of code"	
+Diffuse - Image Stenography (Altar actual pixels)
+TylerY2992 - Masyu
+
+	
+TylerY2992 - Color-By-Number
+	-Question: Does the C# program generate JS' Color-By-Number puzzle?
+
+	-Issue: Polygons cannot be pixelated, should be smooth lines.
+
+	-Big Issue: Puzzle has ambiguity (Must guarantee uniqueness)
+
+
+Ghastly - Fictional RPG Logs "The player and enemy use different items which affect the damage output of their attacks, but what the item actually does in terms of the modification isn't stated; the modification numbers are required for some kind of code"	
+
+	-Issue: rpgBattleLogs in Dropbox do not load.
+
+
+TylerY2992 - Wikipedia Scavenger Hunt
+Crazycaleb - Bartending Recipes
+TracksJosh - YouTube
+	youtube.com/watch?v={seed}
+	ASL
+	Semaphore
+	NATO Notecards
+
+GAMEPLAY ROOMS:
+Setup Gameplay Room
+New Birthday Room
+Minecraft Gameplay Room
+Screensavers Room
+Saw Gamepley Room
+Elevator Room
+
+MODULE-SPECIFIC:
+Instar Emergence Plays During Information Phase (Link and Profile Visible)
+Transition from Information Phase to Submission Phase (Glitch Shader, Cicada Logo Flashes like Glitches, Runes on Screen, Nothing Visible for Five Seconds)
+Submission Phase (Spotlight with Dust Particles Shine on Module, Sound Plays Indicating Module is in Submission Phase)
+Interconnectedness Plays During Submission Phase
+Runes Appear on Screen as Buttons are Pressed
+Incorrect Submission Returns Defuser to Information Phase
+Correct Submission Returns User to Bomb and Original Room
+
+GENERAL:
+Split Everything into its own file
+
+
+Leg 3:
+TracksJosh - Visual Cryptography (https://en.wikipedia.org/wiki/Visual_cryptography)
+TracksJosh - Book Cipher
+TracksJosh - Braille
+TracksJosh - Nyctographic Alphabet
+TracksJosh - IPA
+TracksJosh - Barcode
+TracksJosh - Lego
+TracksJosh - Separated Colors (Red picture, Green Picture, Blue Picture)
+TracksJosh - Custom Operating Systems for Clues
+
+MANUAL:
+One for The Cicada
+	Page 1 of #, where # = random digit
+	SVG Interactable, clicking when either LSD of minute or second = #, transition to manual hosted on new GitHub account
+One for Cicada3301
+	Cicada3301 Simulator hidden inside a comment of this manual.
+	Describes thought process of solving ambiguity, using ambiguity
+	Contains Table of 
